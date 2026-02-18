@@ -1,0 +1,12 @@
+# Entornos virtuales
+venv/
+env/
+# Archivos de configuración sensible
+.env
+# Archivos de base de datos local
+*.sqlite3
+# Carpetas de dependencias de frontend
+node_modules/
+# Archivos temporales de Python
+__pycache__/
+*.py[cod]
