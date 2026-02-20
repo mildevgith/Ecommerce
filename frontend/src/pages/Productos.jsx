@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 
 import anillosHome from "../assets/imgsHero/anillosHome.jpeg";
 import camaronHomepre from "../assets/imgsHero/camaronHomepre.jpeg";
-import crustaceos from "../assets/imgsHero/crustaceos.jpeg";
+import crustaceos from "../assets/imgsHero/Crustaceos.jpeg";
 import enteros from "../assets/imgsHero/enteros.jpeg";
 import fileteTilapia from "../assets/imgsHero/fileteTilapia.jpeg";
 import filetes from "../assets/imgsHero/filetes.jpeg";
