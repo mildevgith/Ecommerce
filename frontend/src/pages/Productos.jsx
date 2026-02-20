@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // IMPORTANTE
 import Navbar from "../components/Navbar";
 
-import LangostinoHome from "../assets/imgsHero/langostinoHome.jpeg";
+
 import anillosHome from "../assets/imgsHero/anillosHome.jpeg";
 import camaronHomepre from "../assets/imgsHero/camaronHomepre.jpeg";
 import crustaceos from "../assets/imgsHero/crustaceos.jpeg";
