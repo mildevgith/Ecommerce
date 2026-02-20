@@ -1,7 +1,7 @@
 // src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Para redirigir
-import { useAuth } from "../Hooks/useAuth"; // Para el estado global
+import { useAuth } from "../hooks/useAuth"; // Para el estado global
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
