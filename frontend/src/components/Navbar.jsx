@@ -14,7 +14,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/imgsHero/logo.png";
 import slogan from "../assets/imgsHero/slogan.png";
-import { useAuth } from "../Hooks/useAuth.jsx";// 👈 IMPORTANTE: Usamos el hook profesional
+import { useAuth } from "../hooks/useAuth.jsx";// 👈 IMPORTANTE: Usamos el hook profesional
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
