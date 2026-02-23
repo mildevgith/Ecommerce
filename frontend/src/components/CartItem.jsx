@@ -1,4 +1,4 @@
-// src/components/CartItem.jsx
+
 export default function CartItem({ item, onAdd, onRemove }) {
   return (
     <div className="flex items-center justify-between border-b py-4">
@@ -14,7 +14,6 @@ export default function CartItem({ item, onAdd, onRemove }) {
         </div>
       </div>
 
-      {/* Controles de cantidad */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => onRemove(item.id)}

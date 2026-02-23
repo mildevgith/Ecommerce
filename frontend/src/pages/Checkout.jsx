@@ -24,7 +24,7 @@ export default function Checkout() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("✅ Pedido confirmado. ¡Gracias por tu compra!");
+    alert("Pedido confirmado. ¡Gracias por tu compra!");
   };
 
   return (
@@ -163,9 +163,9 @@ export default function Checkout() {
             onChange={handleChange}
             className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#de6e28] transition"
           >
-            <option value="tarjeta">💳 Tarjeta de crédito</option>
-            <option value="transferencia">🏦 Transferencia bancaria</option>
-            <option value="efectivo">💵 Pago en efectivo</option>
+            <option value="tarjeta"> Tarjeta de crédito</option>
+            <option value="transferencia"> Transferencia bancaria</option>
+            <option value="efectivo"> Pago en efectivo</option>
           </select>
         </div>
 
@@ -239,7 +239,7 @@ export default function Checkout() {
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
           type="submit"
-          className="w-full bg-gradient-to-r from-[#de6e28] to-[#0bafd4] text-white font-semibold py-3 rounded-lg shadow-md hover:opacity-90 transition"
+          className="w-full bg-gradient-to from-[#de6e28] to-[#0bafd4] text-white font-semibold py-3 rounded-lg shadow-md hover:opacity-90 transition"
         >
           Confirmar pedido
         </motion.button>

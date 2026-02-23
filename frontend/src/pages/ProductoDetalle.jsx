@@ -3,11 +3,9 @@ import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
-// Imágenes de ejemplo
 import Hero from "../assets/imgsHero/hero3.jpeg";
 import salmon from "../assets/imgsHero/salmon.jpg";
-// import recetaVideo from "../assets/videos/receta.mp4"; // ← si usas un video local
+
 
 export default function ProductoDetalle() {
   const { id } = useParams();
@@ -65,7 +63,6 @@ export default function ProductoDetalle() {
         className="pt-28 max-w-7xl mx-auto px-6 py-12"
       >
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Imagen principal */}
           <motion.div
             whileHover={{ scale: 1.02 }}
             className="rounded-3xl overflow-hidden shadow-2xl border border-gray-100"
@@ -77,7 +74,6 @@ export default function ProductoDetalle() {
             />
           </motion.div>
 
-          {/* Información del producto */}
           <div>
             <h2 className="text-sm uppercase tracking-wider text-[#0bafd4] mb-2">
               {producto.categoria}
@@ -87,7 +83,6 @@ export default function ProductoDetalle() {
               {producto.nombre}
             </h1>
 
-            {/* Calificación con estrellas */}
             <div className="flex items-center mb-4">
               {[...Array(5)].map((_, i) => (
                 <Star
@@ -124,14 +119,13 @@ export default function ProductoDetalle() {
                 : "Sin stock"}
             </p>
 
-            {/* Botones de acción */}
             <div className="flex flex-wrap gap-4">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-[#de6e28] to-[#0bafd4] text-white font-semibold py-3 px-8 rounded-xl shadow-md transition"
+                className="bg-gradient-to from-[#de6e28] to-[#0bafd4] text-white font-semibold py-3 px-8 rounded-xl shadow-md transition"
               >
-                🛒 Agregar al carrito
+               Agregar al carrito
               </motion.button>
 
               <Link
@@ -144,14 +138,12 @@ export default function ProductoDetalle() {
           </div>
         </div>
 
-        {/* Galería secundaria + Video */}
         <div className="mt-16">
           <h3 className="text-2xl font-bold text-[#242a57] mb-6">
             Galería y receta recomendada
           </h3>
 
           <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* Galería de imágenes */}
             <div className="flex gap-4 overflow-x-auto pb-4">
               {producto.imagenes.map((img, index) => (
                 <img
@@ -163,7 +155,6 @@ export default function ProductoDetalle() {
               ))}
             </div>
 
-            {/* Video de receta */}
             <div className="rounded-2xl overflow-hidden shadow-xl border border-gray-200">
               {producto.video ? (
                 <iframe

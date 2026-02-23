@@ -18,7 +18,6 @@ import ProductoCategoria from "./pages/ProductoCategoria";
 function App() {
   return (
     <Routes>
-      {/* Layout envuelve todas las rutas */}
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="productos" element={<Productos />} />

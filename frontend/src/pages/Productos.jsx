@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // IMPORTANTE
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 import LangostinoHome from "../assets/imgsHero/LangostinoHome.jpeg";
@@ -38,7 +38,7 @@ export default function Productos() {
     setProductos(data);
   }, []);
 
-  // Paginación
+
   const indexOfLast = currentPage * productsPerPage;
   const indexOfFirst = indexOfLast - productsPerPage;
   const currentProducts = productos.slice(indexOfFirst, indexOfLast);
@@ -47,8 +47,6 @@ export default function Productos() {
   return (
     <>
       <Navbar />
-
-      {/* HERO */}
       <section className="relative w-full h-[70vh] sm:h-[75vh] flex items-center justify-center overflow-hidden shadow-md">
         <img src={mix} alt="Productos frescos del mar" className="absolute inset-0 w-full h-full object-cover opacity-80" />
         <div className="absolute inset-0 bg-black/25"></div>
@@ -69,16 +67,14 @@ export default function Productos() {
           </Link>
         </div>
 
-        {/* OLA */}
         <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 150" xmlns="http://www.w3.org/2000/svg">
           <path
             fill="#ffffff"
             d="M0,32L48,37.3C96,43,192,53,288,64C384,75,480,85,576,80C672,75,768,53,864,53.3C960,53,1056,75,1152,80C1248,85,1344,75,1392,69.3L1440,64L1440,150L1392,150C1344,150,1248,150,1152,150C1056,150,960,150,864,150C768,150,672,150,576,150C480,150,384,150,288,150C192,150,96,150,48,150L0,150Z"
           ></path>
         </svg>
-      </section>
 
-      {/* PRODUCTOS */}
+      </section>
       <section className="container mx-auto px-4 py-14">
         <h2 className="text-2xl font-bold text-blue-900 mb-10">Catálogo de Productos</h2>
 
@@ -104,7 +100,7 @@ export default function Productos() {
                   </Link>
 
                   <Link
-                    to={`/productoDetalle/${producto.id}`} // Cambiado a productoDetalle
+                    to={`/productoDetalle/${producto.id}`}
                     className="border border-blue-600 text-blue-600 px-4 py-2 rounded-full text-sm hover:bg-blue-600 hover:text-white transition flex justify-center"
                   >
                     Ver detalles
@@ -115,7 +111,6 @@ export default function Productos() {
           ))}
         </div>
 
-        {/* PAGINADOR */}
         <div className="flex justify-center items-center gap-3 mt-10">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
             <button

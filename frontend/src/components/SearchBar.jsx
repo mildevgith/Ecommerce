@@ -5,10 +5,10 @@ import { Search } from "lucide-react"; // icono moderno
 export default function SearchBar({ onSearch }) {
   const [query, setQuery] = useState("");
 
-  // Función que se ejecuta al enviar el formulario
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSearch(query); // envía el texto al componente padre
+    onSearch(query);
   };
 
   return (

@@ -29,7 +29,7 @@ export default function PerfilCliente() {
         Mi cuenta
       </h2>
 
-      {/* Información del cliente */}
+
       <div className="bg-white shadow-md rounded-xl p-6 mb-8">
         <h3 className="text-xl font-semibold text-blue-700 mb-3">
           Información personal
@@ -39,7 +39,7 @@ export default function PerfilCliente() {
         <p><strong>Dirección:</strong> {cliente.direccion}</p>
       </div>
 
-      {/* Pedidos */}
+      
       <div className="bg-white shadow-md rounded-xl p-6">
         <h3 className="text-xl font-semibold text-blue-700 mb-3">
           Mis pedidos

@@ -9,6 +9,10 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from twilio.rest import Client
 
+from rest_framework import viewsets
+from .models import Profile, UserOTP
+from .serializers import ProfileSerializer, UserOTPSerializer
+
 from .models import (
     TiendaProducto, TiendaCliente, TiendaCategoria, TiendaCarrito,
     TiendaItemcarrito, TiendaPedido, TiendaPago, UserOTP, Profile
@@ -19,7 +23,7 @@ from .serializers import (
     DetalleProductoSerializer, TiendaPagoSerializer
 )
 
-# Cargar variables de entorno al inicio
+
 load_dotenv()
 
 class RegisterView(APIView):
@@ -93,7 +97,16 @@ class VerifyOTPView(APIView):
         except UserOTP.DoesNotExist:
             return Response({"error": "Código incorrecto"}, status=status.HTTP_400_BAD_REQUEST)
 
-# --- VIEWSETS ---
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+class UserOTPViewSet(viewsets.ModelViewSet):
+    queryset = UserOTP.objects.all()
+    serializer_class = UserOTPSerializer
+
 class ProductoViewSet(viewsets.ModelViewSet):
     queryset = TiendaProducto.objects.all().order_by('id')
     serializer_class = TiendaProductoSerializer
@@ -118,3 +131,4 @@ class TiendaPedidoViewSet(viewsets.ModelViewSet):
 class PagoViewSet(viewsets.ModelViewSet):
     queryset = TiendaPago.objects.all().order_by('id')
     serializer_class = TiendaPagoSerializer
+

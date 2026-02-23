@@ -4,18 +4,15 @@ from .models import (
     TiendaItemcarrito, TiendaPedido, TiendaDetallepedido,
     TiendaHistorialestadopedido, TiendaMetodopago, TiendaPago,
     TiendaDetalleproducto, TiendaInventario, TiendaResenaproducto,
-    TiendaCupondescuento
+    TiendaCupondescuento, UserOTP, Profile
 )
 
-# --- CONFIGURACIÓN PARA PRUEBAS Y CAPTURAS ---
+
 
 @admin.register(TiendaCliente)
 class TiendaClienteAdmin(admin.ModelAdmin):
-    # Columnas visibles en la lista principal
     list_display = ('user', 'ciudad', 'departamento', 'telefono')
-    # Filtros laterales para búsqueda rápida
     list_filter = ('ciudad', 'departamento')
-    # Buscador por nombre de usuario
     search_fields = ('user__username', 'telefono')
 
 @admin.register(TiendaProducto)
@@ -23,14 +20,12 @@ class TiendaProductoAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'precio', 'stock', 'categoria', 'fecha_creacion')
     list_filter = ('categoria', 'fecha_creacion')
     search_fields = ('nombre',)
-    # Permite editar el stock y precio directamente desde la lista
     list_editable = ('precio', 'stock')
 
 @admin.register(TiendaPedido)
 class TiendaPedidoAdmin(admin.ModelAdmin):
     list_display = ('id', 'cliente', 'fecha_pedido', 'total', 'estado_actual')
     list_filter = ('estado_actual', 'fecha_pedido')
-    # Ordenar por el pedido más reciente
     ordering = ('-fecha_pedido',)
 
 @admin.register(TiendaInventario)
@@ -48,7 +43,7 @@ class TiendaCupondescuentoAdmin(admin.ModelAdmin):
     list_display = ('codigo', 'descuento', 'valido_hasta', 'activo')
     list_editable = ('activo',)
 
-# Registro sencillo para los modelos complementarios
+
 admin.site.register(TiendaCategoria)
 admin.site.register(TiendaCarrito)
 admin.site.register(TiendaItemcarrito)
@@ -57,3 +52,6 @@ admin.site.register(TiendaHistorialestadopedido)
 admin.site.register(TiendaMetodopago)
 admin.site.register(TiendaDetalleproducto)
 admin.site.register(TiendaResenaproducto)
+admin.site.register(UserOTP)
+admin.site.register(Profile)
+

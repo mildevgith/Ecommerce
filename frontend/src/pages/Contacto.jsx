@@ -16,7 +16,7 @@ export default function Contacto() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f5f8ff] to-[#eaf5ff] flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-16">
+    <div className="min-h-screen bg-gradient-to from-[#f5f8ff] to-[#eaf5ff] flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-16">
       {/* Título principal */}
       <motion.h2
         initial={{ opacity: 0, y: -30 }}
@@ -100,7 +100,7 @@ export default function Contacto() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           type="submit"
-          className="mt-6 w-full bg-gradient-to-r from-[#de6e28] via-[#0bafd4] to-[#242a57] text-white py-2.5 sm:py-3 rounded-lg font-semibold text-base sm:text-lg shadow-md hover:shadow-lg transition"
+          className="mt-6 w-full bg-gradient-to from-[#de6e28] via-[#0bafd4] to-[#242a57] text-white py-2.5 sm:py-3 rounded-lg font-semibold text-base sm:text-lg shadow-md hover:shadow-lg transition"
         >
           Enviar mensaje
         </motion.button>

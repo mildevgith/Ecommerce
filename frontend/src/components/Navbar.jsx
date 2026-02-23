@@ -1,8 +1,8 @@
 // src/components/Navbar.jsx
 import {
   Home,
-  LogOut // Añadí este para un posible botón de salida
-  ,
+  LogOut,
+
   Menu,
   Search,
   ShoppingCart,
@@ -14,13 +14,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/imgsHero/logo.png";
 import slogan from "../assets/imgsHero/slogan.png";
-import { useAuth } from "../Hooks/useAuth.jsx";// 👈 IMPORTANTE: Usamos el hook profesional
+import { useAuth } from "../Hooks/useAuth.jsx";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, isAuthenticated, logout } = useAuth(); // 👈 Extraemos los datos globales
-
-  // Función para formatear el nombre (muestra el nombre o el inicio del email)
+  const { user, isAuthenticated, logout } = useAuth();
   const displayName = user?.nombre || user?.email?.split('@')[0] || "Usuario";
 
   return (
@@ -34,7 +32,7 @@ export default function Navbar() {
             <img src={slogan} alt="Slogan Expomarket" className="h-8 w-auto sm:h-10 block" />
           </Link>
 
-          {/* Buscador central (escritorio) */}
+          {/* Buscador central */}
           <div className="hidden md:flex flex-1 justify-center">
             <div className="flex items-center w-full max-w-md bg-gray-100 rounded-full shadow-inner focus-within:ring-2 focus-within:ring-[#ff9800]">
               <input type="text" placeholder="Buscar productos..." className="flex-1 bg-transparent px-4 py-2 text-sm text-gray-700 focus:outline-none" />
@@ -53,7 +51,6 @@ export default function Navbar() {
               <Tag size={15} /> Ofertas
             </Link>
 
-            {/* BOTÓN DINÁMICO: MI CUENTA / NOMBRE */}
             <Link to="/cuenta" className="flex items-center gap-1 hover:text-[#ff9800] transition px-3 py-1 rounded-lg bg-slate-50 border border-transparent hover:border-orange-200">
               <User size={15} className={isAuthenticated ? "text-orange-500" : ""} />
               <span className={isAuthenticated ? "font-bold text-orange-600" : ""}>

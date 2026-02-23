@@ -70,8 +70,7 @@ export default function Ofertas() {
 
   return (
     <div className="pt-24">
-      {/* HERO superior */}
-      <section className="relative bg-gradient-to-r from-[#1a237e] via-[#283593] to-[#3949ab] text-white text-center py-16 px-4">
+      <section className="relative bg-gradient-to from-[#1a237e] via-[#283593] to-[#3949ab] text-white text-center py-16 px-4">
         <h1 className="text-4xl sm:text-5xl font-extrabold mb-4">
            Ofertas Especiales del Mes
         </h1>
@@ -123,7 +122,7 @@ export default function Ofertas() {
                   </span>
                 </div>
                 <button className="bg-[#1a237e] hover:bg-[#303f9f] text-white py-2 px-4 rounded-full text-sm transition">
-                  Agregar al carrito 🛒
+                  Agregar al carrito
                 </button>
               </div>
             </div>
@@ -133,7 +132,7 @@ export default function Ofertas() {
 
       {/* Franja final de llamado a la acción */}
       <section className="bg-[#ff9800] text-white text-center py-12 mt-10">
-        <h2 className="text-3xl font-bold mb-4">¡Aprovecha antes que se acaben! ⚡</h2>
+        <h2 className="text-3xl font-bold mb-4">¡Aprovecha antes que se acaben! </h2>
         <p className="text-lg mb-6">Las mejores ofertas de pescados y mariscos frescos.</p>
         <a
           href="/productos"

@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import camaronPrecoHero from "../assets/imgsHero/camaronPrecoHero.jpg";
@@ -7,7 +6,6 @@ import hero3 from "../assets/imgsHero/hero3.jpeg";
 export default function Nosotros() {
   return (
     <div className="pt-24 text-gray-700 overflow-hidden">
-      {/* 🌊 Hero principal */}
       <section className="relative w-full h-[500px]">
         <motion.img
           src={camaronPrecoHero}
@@ -18,10 +16,8 @@ export default function Nosotros() {
           transition={{ duration: 1.8, ease: "easeOut" }}
         />
 
-        {/* Capa de color degradado */}
         <div className="absolute inset-0 bg-gradient from-[#242a57]/80 via-[#0bafd4]/30 to-transparent" />
 
-        {/* Contenido centrado */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6">
           <motion.h1
             initial={{ y: -40, opacity: 0 }}
@@ -44,7 +40,7 @@ export default function Nosotros() {
             a tu hogar con calidad, frescura y responsabilidad.
           </motion.p>
 
-          {/* 🌊 Botón animado */}
+          {/* Botón animado */}
           <motion.div
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
@@ -59,7 +55,7 @@ export default function Nosotros() {
         </div>
       </section>
 
-      {/* 🐟 Nuestra historia */}
+      {/* Nuestra historia */}
       <section className="max-w-6xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
         <motion.div
           initial={{ x: -100, opacity: 0 }}
@@ -104,8 +100,8 @@ export default function Nosotros() {
         </motion.div>
       </section>
 
-      {/* 🌱 Nuestros valores */}
-      <section className="bg-gradient-to-b from-[#f9fafc] to-[#eef4ff] py-20">
+      {/* Nuestros valores */}
+      <section className="bg-gradient-to from-[#f9fafc] to-[#eef4ff] py-20">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <motion.h2
             initial={{ opacity: 0, y: -40 }}
@@ -157,13 +153,13 @@ export default function Nosotros() {
         </div>
       </section>
 
-      {/* ⚓ Cierre con mensaje de marca */}
+      {/* Cierre con mensaje de marca */}
       <motion.section
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         transition={{ duration: 1.2 }}
         viewport={{ once: true }}
-        className="bg-gradient-to-r from-[#242a57] to-[#0bafd4] text-white py-16 text-center"
+        className="bg-gradient-to from-[#242a57] to-[#0bafd4] text-white py-16 text-center"
       >
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Comprometidos con la frescura y la confianza

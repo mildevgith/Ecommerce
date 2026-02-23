@@ -5,7 +5,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // PERSISTENCIA REAL: Al cargar la web, recuperamos la sesión
+    
     useEffect(() => {
         const token = localStorage.getItem('token');
         const savedUser = localStorage.getItem('userData');
@@ -21,14 +21,14 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    // FUNCIÓN DE LOGIN PARA PRODUCCIÓN
+
     const login = (userData, token) => {
         localStorage.setItem('token', token);
         localStorage.setItem('userData', JSON.stringify(userData));
         setUser(userData);
     };
 
-    // CIERRE DE SESIÓN LIMPIO
+
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userData');

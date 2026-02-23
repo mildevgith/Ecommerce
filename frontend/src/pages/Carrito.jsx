@@ -50,7 +50,7 @@ export default function Carrito() {
 
   return (
     <div className="pt-24 px-6 min-h-screen bg-gray-50">
-      {/* 🛒 Encabezado */}
+      {/* Encabezado */}
       <motion.h2
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -83,7 +83,7 @@ export default function Carrito() {
           transition={{ duration: 0.5 }}
           className="max-w-5xl mx-auto bg-white shadow-md rounded-2xl p-6"
         >
-          {/* 🧾 Lista de productos */}
+          {/* Lista de productos */}
           <div className="divide-y divide-gray-200">
             {carrito.map((item) => (
               <CartItem
@@ -95,7 +95,7 @@ export default function Carrito() {
             ))}
           </div>
 
-          {/* 💰 Total y acciones */}
+          {/*  Total y acciones */}
           <div className="text-right mt-8">
             <p className="text-2xl font-bold text-[#242a57] mb-4">
               Total:{" "}

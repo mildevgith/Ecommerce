@@ -76,10 +76,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-slate-50/50 selection:bg-orange-200">
 
-      {/* ===== HERO SECTION CON ANIMATE PRESENCE =====
-          POR QUÉ: AnimatePresence permite que la imagen anterior salga suavemente
-          mientras la nueva entra, creando un efecto cinematográfico.
-      */}
       <section className="relative h-[95vh] w-full overflow-hidden bg-black">
         <AnimatePresence mode="wait">
           <motion.div
@@ -148,10 +144,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== BENTO GRID CATEGORIES =====
-          POR QUÉ: El grid tradicional es aburrido. El Bento Grid (usado por Apple)
-          da jerarquía visual: unas cosas se ven más importantes que otras.
-      */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 flex flex-col items-end justify-between gap-4 md:flex-row md:items-center">
           <div>
@@ -178,13 +170,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== PRODUCTOS DESTACADOS CON GLASSMORPHISM EN BOTONES ===== */}
+
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-      {/* Ahora mapeamos el array REAL que creaste arriba */}
+
         {PROD_DESTACADOS.map((producto, i) => (
           <div key={i} className="group relative rounded-2xl bg-white/5 p-3 border border-white/10 transition-all hover:bg-white/10">
             <div className="relative overflow-hidden rounded-xl h-64">
-              {/* ✅ AQUÍ ESTÁ EL TRUCO: Usamos la variable de la imagen */}
               <img
                 src={producto.img}
                 alt={producto.nombre}

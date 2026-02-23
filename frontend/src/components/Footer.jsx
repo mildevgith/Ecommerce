@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#1a237e] text-white py-10 mt-16">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* 🐟 Sección 1: Información general */}
+        {/*  Sección 1: Información general */}
         <div>
           <h2 className="text-xl font-bold mb-3 text-[#ff9800]">Expomarket</h2>
           <p className="text-gray-200 text-sm leading-relaxed">
@@ -13,7 +13,7 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* 📞 Sección 2: Contacto */}
+        {/*  Sección 2: Contacto */}
         <div>
           <h3 className="text-lg font-semibold mb-3 text-[#ff9800]">Contáctanos</h3>
           <ul className="space-y-2 text-sm">
@@ -29,7 +29,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* 🌐 Sección 3: Redes sociales */}
+        {/*  Sección 3: Redes sociales */}
         <div>
           <h3 className="text-lg font-semibold mb-3 text-[#ff9800]">Síguenos</h3>
           <div className="flex gap-4">
@@ -53,10 +53,10 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* 🔻 Línea inferior */}
+      {/*  Línea inferior */}
       <div className="border-t border-gray-700 mt-10 pt-4 text-center text-sm text-gray-300">
         © {new Date().getFullYear()} Expomarket. Todos los derechos reservados.
       </div>
     </footer>
   );
-} 
+}

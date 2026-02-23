@@ -1,4 +1,3 @@
-// src/components/Loader.jsx
 export default function Loader() {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-blue-700">

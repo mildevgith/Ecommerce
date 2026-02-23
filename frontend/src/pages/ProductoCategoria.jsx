@@ -3,12 +3,11 @@ import { useEffect, useState } from "react";
 import hero3 from "../assets/imgsHero/hero3.jpeg";
 
 export default function ProductoCategoria() {
-  const { categoria } = useParams(); // Obtenemos el parámetro de la URL
+  const { categoria } = useParams();
   const [productos, setProductos] = useState([]);
 
   useEffect(() => {
-    // Aquí deberías llamar a tu API filtrando por categoría
-    // Ejemplo temporal para prueba:
+    
    const productosMock = [
       { id: 1, nombre: "Camarón Precocido", precio: "$35.000 / Kg", imagen: "/img/camaronHomepre.jpeg", categoria: "mariscos" },
       { id: 2, nombre: "Langostino", precio: "$68.000 / Kg", imagen: "/img/langostinoHome.jpeg", categoria: "mariscos" },

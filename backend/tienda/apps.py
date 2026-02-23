@@ -5,5 +5,4 @@ class TiendaConfig(AppConfig):
     name = 'tienda'
 
     def ready(self):
-        # Esto le dice a Django que importe las señales cuando la app inicie
         import tienda.signals

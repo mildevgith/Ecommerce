@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from .models import Profile, UserOTP
 from .models import TiendaProducto, TiendaCliente, TiendaCategoria, TiendaCarrito, TiendaItemcarrito, TiendaPedido,  TiendaHistorialestadopedido, TiendaDetalleproducto
 
 
@@ -62,6 +62,19 @@ class TiendaPagoSerializer(serializers.ModelSerializer):
   class Meta:
     model = TiendaPedido
     fields = '__all__'
+
+
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
+class UserOTPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserOTP
+        fields = ['otp_code', 'created_at'] # Por seguridad, no envíes el ID del usuario aquí
 
 
 

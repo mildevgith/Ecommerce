@@ -1,14 +1,13 @@
-// src/pages/Login.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Para redirigir
-import { useAuth } from "../Hooks/useAuth"; // Para el estado global
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { login } = useAuth(); // Extraemos la función profesional de login
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -21,7 +20,7 @@ export default function Login() {
     setError("");
 
     try {
-      // LLAMADA REAL AL BACKEND
+
       const response = await fetch("http://localhost:8000/api/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,17 +30,16 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // 1. Guardamos en el contexto (esto actualiza el Navbar al instante)
-        // data debe traer: { user: {email, nombre...}, token: "jwt-string" }
+
         login(data.user, data.token);
 
-        // 2. Redirección inmediata a Ofertas
+
         navigate("/ofertas");
       } else {
         setError(data.error || "Credenciales incorrectas");
       }
     } catch (err) {
-      // Ahora usamos 'err' para ver el mensaje real en la consola
+      
       console.error("Error detallado:", err);
       setError("Error de conexión con el servidor. Revisa si el backend está encendido.");
     }

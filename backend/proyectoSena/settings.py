@@ -23,7 +23,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', # Siempre de primero
+    'corsheaders.middleware.CorsMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -64,11 +64,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- CONFIGURACIÓN DE CORS (REAL) ---
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
 
-# --- CONFIGURACIÓN REST FRAMEWORK ---
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -76,15 +74,10 @@ REST_FRAMEWORK = {
     ],
 }
 
-
-
-# Configuración para enviar correos vía Gmail
-# proyectoSena/settings.py
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'carlos288913@gmail.com' # Tu correo real
-EMAIL_HOST_PASSWORD = 'vffw bqfe fejr ipjc' # La clave de 16 letras que generaste
+EMAIL_HOST_USER = 'carlos288913@gmail.com'
+EMAIL_HOST_PASSWORD = 'vffw bqfe fejr ipjc'
 DEFAULT_FROM_EMAIL = 'EXPOMARKET <carlos288913@gmail.com>'

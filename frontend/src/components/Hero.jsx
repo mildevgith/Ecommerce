@@ -1,8 +1,7 @@
-// src/components/Hero.jsx
 export default function Hero() {
   return (
     <section className="relative bg-blue-900 text-white py-20 px-6 text-center">
-      {/* Imagen de fondo con opacidad */}
+
       <div
         className="absolute inset-0 bg-cover bg-center opacity-50"
         style={{
@@ -11,7 +10,7 @@ export default function Hero() {
         }}
       ></div>
 
-      {/* Contenido superpuesto */}
+
       <div className="relative z-10">
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
           Bienvenido a Expomarket
