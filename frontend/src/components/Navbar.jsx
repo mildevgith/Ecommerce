@@ -16,6 +16,7 @@ import logo from "../assets/imgsHero/logo.png";
 import slogan from "../assets/imgsHero/slogan.png";
 import { useAuth } from "../Hooks/useAuth.jsx";
 
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();

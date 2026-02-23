@@ -1,6 +1,8 @@
 import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../Hooks/useAuth";
+
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -39,7 +41,7 @@ export default function Login() {
         setError(data.error || "Credenciales incorrectas");
       }
     } catch (err) {
-      
+
       console.error("Error detallado:", err);
       setError("Error de conexión con el servidor. Revisa si el backend está encendido.");
     }
