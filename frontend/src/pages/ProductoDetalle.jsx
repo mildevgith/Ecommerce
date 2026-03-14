@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import Hero from "../assets/imgsHero/hero3.jpeg";
-import salmon from "../assets/imgsHero/salmon.jpg";
+import Hero from "../assets/hero3.jpeg";
+import salmon from "../assets/salmon.jpg";
 
 
 export default function ProductoDetalle() {

@@ -3,17 +3,17 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 
-import anillosHome from "../assets/imgsHero/anillosHome.jpeg";
-import camaronHomepre from "../assets/imgsHero/camaronHomepre.jpeg";
-import crustaceos from "../assets/imgsHero/Crustaceos.jpeg";
-import enteros from "../assets/imgsHero/enteros.jpeg";
-import fileteTilapia from "../assets/imgsHero/fileteTilapia.jpeg";
-import filetes from "../assets/imgsHero/filetes.jpeg";
-import fishcate from "../assets/imgsHero/fishcate.jpeg";
-import hero3 from "../assets/imgsHero/hero3.jpeg";
-import mix from "../assets/imgsHero/mix.jpeg";
-import postasSalmon from "../assets/imgsHero/postasSalmon.jpg";
-import postaspargo from "../assets/imgsHero/postaspargo.jpeg";
+import crustaceos from "../assets/Crustaceos.jpeg";
+import anillosHome from "../assets/anillosHome.jpeg";
+import camaronHomepre from "../assets/camaronHomepre.jpeg";
+import enteros from "../assets/enteros.jpeg";
+import fileteTilapia from "../assets/fileteTilapia.jpeg";
+import filetes from "../assets/filetes.jpeg";
+import fishcate from "../assets/fishcate.jpeg";
+import hero3 from "../assets/hero3.jpeg";
+import mix from "../assets/mix.jpeg";
+import postasSalmon from "../assets/postasSalmon.jpg";
+import postaspargo from "../assets/postaspargo.jpeg";
 
 export default function Productos() {
   const [productos, setProductos] = useState([]);

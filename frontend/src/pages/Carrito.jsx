@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import anillosHome from "../assets/imgsHero/anillosHome.jpeg";
-import fileteTilapia from "../assets/imgsHero/fileteTilapia.jpeg";
+import anillosHome from "../assets/anillosHome.jpeg";
+import fileteTilapia from "../assets/fileteTilapia.jpeg";
 import CartItem from "../components/CartItem";
 
 export default function Carrito() {

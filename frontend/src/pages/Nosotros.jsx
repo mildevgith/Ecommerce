@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import camaronPrecoHero from "../assets/imgsHero/camaronPrecoHero.jpg";
-import hero3 from "../assets/imgsHero/hero3.jpeg";
+import camaronPrecoHero from "../assets/camaronPrecoHero.jpg";
+import hero3 from "../assets/hero3.jpeg";
 
 export default function Nosotros() {
   return (

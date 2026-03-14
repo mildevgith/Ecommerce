@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/imgsHero/logo.png";
-import slogan from "../assets/imgsHero/slogan.png";
+import logo from "../assets/logo.png";
+import slogan from "../assets/slogan.png";
 import { useAuth } from "../Hooks/useAuth.jsx";
 
 

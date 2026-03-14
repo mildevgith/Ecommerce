@@ -7,7 +7,8 @@ class TiendaProductoSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = TiendaProducto
-    fields = '__all__'
+    fields = ['id', 'nombre', 'descripcion', 'precio', 'stock', 'imagen', 'fecha_creacion', 'categoria']
+
 
 class TiendaClienteSerializer(serializers.ModelSerializer):
 
@@ -19,7 +20,8 @@ class TiendaCategoriaSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = TiendaCategoria
-    fields = '__all__'
+    fields = ['id', 'nombre', 'descripcion', 'imagen']
+
 
 class TiendaCarritoSerializer(serializers.ModelSerializer):
 

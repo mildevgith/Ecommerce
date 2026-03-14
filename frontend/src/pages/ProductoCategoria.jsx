@@ -1,27 +1,27 @@
-import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import hero3 from "../assets/imgsHero/hero3.jpeg";
+import { useParams } from "react-router-dom";
 
 export default function ProductoCategoria() {
   const { categoria } = useParams();
   const [productos, setProductos] = useState([]);
 
   useEffect(() => {
-    
-   const productosMock = [
-      { id: 1, nombre: "Camarón Precocido", precio: "$35.000 / Kg", imagen: "/img/camaronHomepre.jpeg", categoria: "mariscos" },
-      { id: 2, nombre: "Langostino", precio: "$68.000 / Kg", imagen: "/img/langostinoHome.jpeg", categoria: "mariscos" },
-      { id: 3, nombre: "Filete de Pescado", precio: "$25.000 / Kg", imagen: "/img/filetes.jpeg", categoria: "filetes-de-pescado" },
-      { id: 4, nombre: "Pescado Entero", precio: "$18.000 / Kg", imagen: hero3, categoria: "pescados-enteros" },
-      { id: 5, nombre: "Aros de Calamar", precio: "$22.000 / Kg", imagen: "/img/anillosHome.jpeg", categoria: "complementos" },
-    ];
+  // 1. Definimos la función para traer datos de Django
+  const obtenerProductos = async () => {
+    try {
+      // Usamos tu endpoint real (ajusta la URL si es necesario)
+      const respuesta = await fetch(`http://localhost:8000/api/productos/?categoria=${categoria}`);
+      const datos = await respuesta.json();
 
-    const filtrados = productosMock.filter(
-      (p) => p.categoria.toLowerCase() === categoria.toLowerCase()
-    );
+      // 2. Guardamos los datos reales en el estado
+      setProductos(datos);
+    } catch (error) {
+      console.error("Error conectando con la API de Expomarket:", error);
+    }
+  };
 
-    setProductos(filtrados);
-  }, [categoria]);
+  obtenerProductos();
+}, [categoria]); // Se ejecuta cada vez que cambias de categoría
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-20">

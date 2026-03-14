@@ -21,6 +21,7 @@ class TiendaCliente(models.Model):
 class TiendaCategoria(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
+    imagen = models.ImageField(upload_to='categorias/', blank=True, null=True)
 
     class Meta:
         db_table = 'tienda_categoria'
@@ -34,7 +35,7 @@ class TiendaProducto(models.Model):
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
-    imagen = models.CharField(max_length=100, blank=True, null=True)
+    imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     categoria = models.ForeignKey('tienda.TiendaCategoria', on_delete=models.DO_NOTHING)
 

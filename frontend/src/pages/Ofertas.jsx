@@ -1,8 +1,8 @@
 // src/pages/Ofertas.jsx
-import mix from "../assets/imgsHero/mix.jpeg";
-import enteros from "../assets/imgsHero/enteros.jpeg";
-import fileteTilapia from "../assets/imgsHero/fileteTilapia.jpeg";
-import anillosHome from "../assets/imgsHero/anillosHome.jpeg";
+import anillosHome from "../assets/anillosHome.jpeg";
+import enteros from "../assets/enteros.jpeg";
+import fileteTilapia from "../assets/fileteTilapia.jpeg";
+import mix from "../assets/mix.jpeg";
 
 export default function Ofertas() {
   const productos = [
