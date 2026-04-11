@@ -1,61 +1,110 @@
-import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+
+import logo from "../assets/logo.png";
+import slogan from "../assets/slogan.png";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1a237e] text-white py-10 mt-16">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/*  Sección 1: Información general */}
-        <div>
-          <h2 className="text-xl font-bold mb-3 text-[#ff9800]">Expomarket</h2>
-          <p className="text-gray-200 text-sm leading-relaxed">
-            Tu tienda de confianza en pescados, mariscos y productos del mar frescos.
-            Calidad garantizada y atención personalizada en cada pedido.
+    <footer className="bg-slate-950 text-white pt-20 pb-10 font-sans">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+
+          {/* logo, slogan texto e iconos */}
+          <div className="space-y-6">
+
+
+            <Link to="/" className="inline-block">
+              <img
+                src={logo}
+                alt="Logo Expomarket Grupo GRB"
+                className="h-16 w-auto object-contain transition-transform hover:scale-105"
+              />
+            </Link>
+
+
+            <Link to="/" className="inline-block">
+              <img
+                src={slogan}
+                alt="Logo Expomarket Grupo GRB"
+                className="h-12 w-auto object-contain transition-transform hover:scale-105"
+              />
+            </Link>
+
+            <p className="text-slate-400 text-sm font-medium leading-relaxed">
+              Llevamos la frescura del mar directamente a tu hogar o negocio en Cali.
+              Calidad premium garantizada por **Grupo GRB SAS**.
+            </p>
+
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center border border-slate-800 hover:border-orange-500 hover:text-orange-500 transition-all shadow-lg">
+                <Facebook size={18} />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center border border-slate-800 hover:border-orange-500 hover:text-orange-500 transition-all shadow-lg">
+                <Instagram size={18} />
+              </a>
+            </div>
+
+          </div>
+
+          {/* Navegación */}
+          <div>
+            <h3 className="text-white font-black mb-6 uppercase text-xs tracking-widest border-b border-slate-800 pb-2 inline-block">Navegación</h3>
+            <ul className="space-y-4 text-sm font-medium text-slate-400">
+              <li><Link to="/" className="hover:text-orange-500 transition-colors">Inicio</Link></li>
+              <li><Link to="/productos" className="hover:text-orange-500 transition-colors">Productos</Link></li>
+              <li><Link to="/nosotros" className="hover:text-orange-500 transition-colors">Sobre Nosotros</Link></li>
+              <li><Link to="/ofertas" className="hover:text-orange-500 transition-colors">Ofertas</Link></li>
+            </ul>
+          </div>
+
+          {/*  Contacto */}
+          <div>
+            <h3 className="text-white font-black mb-6 uppercase text-xs tracking-widest border-b border-slate-800 pb-2 inline-block">Atención</h3>
+            <ul className="space-y-4 text-sm font-medium text-slate-400">
+              <li className="flex items-start gap-3">
+                <Phone size={18} className="text-orange-500 shrink-0" />
+                <span>+57 300 123 4567</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <Mail size={18} className="text-orange-500 shrink-0" />
+                <span className="break-all">contacto@expomarket.com</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <MapPin size={18} className="text-orange-500 shrink-0" />
+                <span>Cali, Valle del Cauca<br/>Sector Sur</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Suscripción */}
+          <div>
+            <h3 className="text-white font-black mb-6 uppercase text-xs tracking-widest border-b border-slate-800 pb-2 inline-block">Suscripción</h3>
+            <p className="text-sm font-medium text-slate-400 mb-4">Entérate de nuestras ofertas premium.</p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="Tu email"
+                className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm font-medium w-full focus:outline-none focus:border-orange-500 transition-colors"
+              />
+              <button className="bg-orange-500 hover:bg-orange-600 px-3 rounded-xl transition-colors shadow-lg shadow-orange-500/20">
+                <ExternalLink size={18} />
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Copyright */}
+        <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-slate-500 text-[10px] uppercase tracking-widest font-bold">
+            © {new Date().getFullYear()} Expomarket | Grupo GRB SAS
           </p>
-        </div>
-
-        {/*  Sección 2: Contacto */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-[#ff9800]">Contáctanos</h3>
-          <ul className="space-y-2 text-sm">
-            <li className="flex items-center gap-2">
-              <Phone size={16} /> +57 300 123 4567
-            </li>
-            <li className="flex items-center gap-2">
-              <Mail size={16} /> contacto@expomarket.com
-            </li>
-            <li className="flex items-center gap-2">
-              <MapPin size={16} /> Cartagena, Colombia
-            </li>
-          </ul>
-        </div>
-
-        {/*  Sección 3: Redes sociales */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3 text-[#ff9800]">Síguenos</h3>
-          <div className="flex gap-4">
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#ff9800] transition"
-            >
-              <Facebook size={22} />
-            </a>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#ff9800] transition"
-            >
-              <Instagram size={22} />
-            </a>
+          <div className="flex gap-6 text-[10px] uppercase tracking-widest font-bold text-slate-500">
+            <a href="#" className="hover:text-white transition-colors">Términos</a>
+            <a href="#" className="hover:text-white transition-colors">Privacidad</a>
           </div>
         </div>
-      </div>
-
-      {/*  Línea inferior */}
-      <div className="border-t border-gray-700 mt-10 pt-4 text-center text-sm text-gray-300">
-        © {new Date().getFullYear()} Expomarket. Todos los derechos reservados.
       </div>
     </footer>
   );

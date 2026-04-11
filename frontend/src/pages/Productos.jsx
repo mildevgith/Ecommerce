@@ -1,19 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import axios from "axios";
 
 
-import crustaceos from "../assets/Crustaceos.jpeg";
-import anillosHome from "../assets/anillosHome.jpeg";
-import camaronHomepre from "../assets/camaronHomepre.jpeg";
-import enteros from "../assets/enteros.jpeg";
-import fileteTilapia from "../assets/fileteTilapia.jpeg";
-import filetes from "../assets/filetes.jpeg";
-import fishcate from "../assets/fishcate.jpeg";
-import hero3 from "../assets/hero3.jpeg";
+
 import mix from "../assets/mix.jpeg";
-import postasSalmon from "../assets/postasSalmon.jpg";
-import postaspargo from "../assets/postaspargo.jpeg";
+
 
 export default function Productos() {
   const [productos, setProductos] = useState([]);
@@ -21,21 +14,18 @@ export default function Productos() {
   const productsPerPage = 6;
 
   useEffect(() => {
-    const data = [
-      { id: 1, nombre: "Bagre", descripcion: "Deliciosas postas de Bagre Basa", precio: 18000, imagen: hero3 },
-      { id: 2, nombre: "Anillos de calamar", descripcion: "Frescos para apanar y gratinar", precio: 32000, imagen: anillosHome },
-      { id: 3, nombre: "Filete de Tilapia", descripcion: "Ideal para parrilla o ceviche", precio: 23000, imagen: fileteTilapia },
-      { id: 4, nombre: "Postas de Salmón", descripcion: "Calidad premium", precio: 55000, imagen: postasSalmon },
-      { id: 5, nombre: "Camarón Precocido", descripcion: "Pelado y desvenado, listo para cocinar", precio: 55000, imagen: camaronHomepre },
-      { id: 6, nombre: "Camarón Crudo Limpio", descripcion: "Ideal para parrilla o ceviche", precio: 35000, imagen: crustaceos },
-      { id: 7, nombre: "Pargo Rojo", descripcion: "Perfecto para encocado o frito", precio: 59000, imagen: enteros },
-      { id: 8, nombre: "Filete de Corvina", descripcion: "Ideal para ceviche peruano", precio: 75000, imagen: filetes },
-      { id: 9, nombre: "Mojarra Sesa", descripcion: "Perfecta para fritar o apanada", precio: 25000, imagen: fishcate },
-      { id: 10, nombre: "Postas de Bagre de Río", descripcion: "Tradicional para sancocho", precio: 19000, imagen: hero3 },
-      { id: 11, nombre: "Mixtura de Mariscos", descripcion: "Perfecta para cazuela o arroz marinero", precio: 28000, imagen: mix },
-      { id: 12, nombre: "Postas de Robalo", descripcion: "Ideal para frito o sudado", precio: 75000, imagen: postaspargo },
-    ];
-    setProductos(data);
+    // 2. Definimos la función para traer datos de la DB
+    const obtenerProductos = async () => {
+      try {
+        // Usa la URL de tu API de Django
+        const response = await axios.get("http://localhost:8000/api/productos/");
+        setProductos(response.data);
+      } catch (error) {
+        console.error("Error al conectar con la base de datos:", error);
+      }
+    };
+
+    obtenerProductos();
   }, []);
 
 

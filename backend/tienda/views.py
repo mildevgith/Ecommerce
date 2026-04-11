@@ -111,6 +111,8 @@ class ProductoViewSet(viewsets.ModelViewSet):
     queryset = TiendaProducto.objects.all().order_by('id')
     serializer_class = TiendaProductoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    queryset = TiendaProducto.objects.filter(es_destacado=True)[:4]
+    serializer_class = TiendaProductoSerializer# vista chek de desatacados
 
 class TiendaClienteViewSet(viewsets.ModelViewSet):
     queryset = TiendaCliente.objects.all().order_by('id')

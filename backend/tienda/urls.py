@@ -19,11 +19,11 @@ router.register(r'profile', ProfileViewSet)
 router.register(r'otp', UserOTPViewSet)
 
 urlpatterns = [
-    
+
     path('', include(router.urls)),
-
-
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/request-otp/', RequestOTPView.as_view(), name='request-otp'),
     path('auth/verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
 ]
+
+
