@@ -1,8 +1,6 @@
-// src/components/Navbar.jsx
 import {
   Home,
   LogOut,
-
   Menu,
   Search,
   ShoppingCart,
@@ -11,16 +9,27 @@ import {
   X
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // se usa para cambiar de pagina de manera dinamica
 import logo from "../assets/logo.png";
 import slogan from "../assets/slogan.png";
 import { useAuth } from "../Hooks/useAuth.jsx";
 
-
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el buscador
+  const navigate = useNavigate(); // Hook para redireccionar
   const { user, isAuthenticated, logout } = useAuth();
   const displayName = user?.nombre || user?.email?.split('@')[0] || "Usuario";
+
+  // Función para procesar la búsqueda
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      // Redirige a productos con el parámetro real que Django espera
+      navigate(`/productos?search=${encodeURIComponent(searchTerm)}`);
+      setMenuOpen(false); // Cierra el menú en móvil si estaba abierto
+    }
+  };
 
   return (
     <nav className="bg-white shadow-md fixed w-full top-0 z-50">
@@ -33,14 +42,20 @@ export default function Navbar() {
             <img src={slogan} alt="Slogan Expomarket" className="h-8 w-auto sm:h-10 block" />
           </Link>
 
-          {/* Buscador central */}
+          {/* Buscador central (Versión Escritorio) */}
           <div className="hidden md:flex flex-1 justify-center">
-            <div className="flex items-center w-full max-w-md bg-gray-100 rounded-full shadow-inner focus-within:ring-2 focus-within:ring-[#ff9800]">
-              <input type="text" placeholder="Buscar productos..." className="flex-1 bg-transparent px-4 py-2 text-sm text-gray-700 focus:outline-none" />
-              <button className="bg-[#ff9800] hover:bg-[#fb8c00] text-white rounded-full p-2 transition">
+            <form onSubmit={handleSearchSubmit} className="flex items-center w-full max-w-md bg-gray-100 rounded-full shadow-inner focus-within:ring-2 focus-within:ring-[#ff9800]">
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                className="flex-1 bg-transparent px-4 py-2 text-sm text-gray-700 focus:outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button type="submit" className="bg-[#ff9800] hover:bg-[#fb8c00] text-white rounded-full p-2 transition">
                 <Search size={18} />
               </button>
-            </div>
+            </form>
           </div>
 
           {/* Enlaces escritorio */}
@@ -64,7 +79,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Menú móvil */}
+          {/* Menú móvil (Icono) */}
           <div className="md:hidden">
             <button onClick={() => setMenuOpen(!menuOpen)} className="text-[#1a237e] hover:text-[#ff9800] transition">
               {menuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -77,9 +92,21 @@ export default function Navbar() {
       {menuOpen && (
         <div className="md:hidden bg-white border-t shadow-lg animate-slide-down">
           <div className="px-5 py-4 space-y-3">
-            {/* ... buscador móvil ... */}
 
-            {/* Links de navegación móvil dinámicos */}
+            {/* Buscador móvil real */}
+            <form onSubmit={handleSearchSubmit} className="flex items-center w-full bg-gray-100 rounded-full px-4 py-2 mb-4">
+              <input
+                type="text"
+                placeholder="Buscar..."
+                className="flex-1 bg-transparent text-sm focus:outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button type="submit">
+                <Search size={16} className="text-gray-500" />
+              </button>
+            </form>
+
             {[
               { label: "Inicio", to: "/", icon: <Home size={18} /> },
               { label: "Ofertas", to: "/ofertas", icon: <Tag size={18} /> },
@@ -100,7 +127,6 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {/* Opción de cerrar sesión rápida en móvil si está logueado */}
             {isAuthenticated && (
               <button onClick={() => { logout(); setMenuOpen(false); }} className="flex items-center gap-2 py-2 text-red-500 w-full text-left">
                 <LogOut size={18} /> Cerrar Sesión

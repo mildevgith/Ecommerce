@@ -1,4 +1,8 @@
 import os
+
+from django.db.models import Q
+from django.contrib.postgres.search import TrigramSimilarity # Opcional: para búsquedas por parecido
+from rest_framework import filters
 from dotenv import load_dotenv
 from django.shortcuts import render
 from rest_framework import viewsets, status
@@ -107,12 +111,25 @@ class UserOTPViewSet(viewsets.ModelViewSet):
     queryset = UserOTP.objects.all()
     serializer_class = UserOTPSerializer
 
+# tienda/views.py
+
+
 class ProductoViewSet(viewsets.ModelViewSet):
-    queryset = TiendaProducto.objects.all().order_by('id')
     serializer_class = TiendaProductoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = TiendaProducto.objects.filter(es_destacado=True)[:4]
-    serializer_class = TiendaProductoSerializer# vista chek de desatacados
+
+    def get_queryset(self):
+        queryset = TiendaProducto.objects.all().order_by('id')
+        search_query = self.request.query_params.get('search', None)
+
+        if search_query:
+            # __unaccent: Ignora tildes
+            # __icontains: Ignora mayúsculas/minúsculas
+            queryset = queryset.filter(
+                Q(nombre__unaccent__icontains=search_query) |
+                Q(descripcion__unaccent__icontains=search_query)
+            )
+        return queryset
 
 class TiendaClienteViewSet(viewsets.ModelViewSet):
     queryset = TiendaCliente.objects.all().order_by('id')
