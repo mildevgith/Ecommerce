@@ -1,153 +1,107 @@
 import os
-
 from django.db.models import Q
-from django.contrib.postgres.search import TrigramSimilarity # Opcional: para búsquedas por parecido
-from rest_framework import filters
-from dotenv import load_dotenv
-from django.shortcuts import render
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from django.contrib.auth.models import User
-from django.core.mail import send_mail
 from twilio.rest import Client
-
-from rest_framework import viewsets
-from .models import Profile, UserOTP
-from .serializers import ProfileSerializer, UserOTPSerializer
+from dotenv import load_dotenv
 
 from .models import (
-    TiendaProducto, TiendaCliente, TiendaCategoria, TiendaCarrito,
-    TiendaItemcarrito, TiendaPedido, TiendaPago, UserOTP, Profile
+    TiendaProducto, TiendaCategoria, TiendaCarrito,
+    TiendaPedido, TiendaPago, UserOTP, Profile
 )
 from .serializers import (
-    TiendaProductoSerializer, TiendaClienteSerializer, TiendaCategoriaSerializer,
-    TiendaCarritoSerializer, TiendaItemcarritoSerializer, TiendaPedidoSerializer,
-    DetalleProductoSerializer, TiendaPagoSerializer
+    TiendaProductoSerializer, TiendaCategoriaSerializer,
+    TiendaCarritoSerializer, TiendaPedidoSerializer,
+    TiendaPagoSerializer, ProfileSerializer
 )
-
 
 load_dotenv()
 
-class RegisterView(APIView):
+# --- SECCIÓN 1: AUTENTICACIÓN ---
+
+class AuthRegisterView(APIView):
     def post(self, request):
         email = request.data.get('email')
+        password = request.data.get('password')
         whatsapp = request.data.get('whatsapp')
-        if not email or not whatsapp:
-            return Response({"error": "Email y WhatsApp son obligatorios"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not email or not password or not whatsapp:
+            return Response({"error": "Todos los campos son obligatorios"}, status=400)
 
         if User.objects.filter(email=email).exists():
-            return Response({"error": "El usuario ya existe"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "El usuario ya existe"}, status=400)
 
-        user = User.objects.create_user(username=email, email=email)
-        profile = user.profile
+        user = User.objects.create_user(username=email, email=email, password=password)
+
+        # Usamos get_or_create por si el Signal no se disparó
+        profile, _ = Profile.objects.get_or_create(user=user)
         profile.whatsapp = whatsapp
         profile.save()
-        return Response({"message": "Usuario creado correctamente"}, status=status.HTTP_201_CREATED)
 
-class RequestOTPView(APIView):
+        return Response({"message": "Usuario creado correctamente"}, status=201)
+
+class AuthVerifyView(APIView):
     def post(self, request):
         email = request.data.get('email')
-        channel = request.data.get('channel')
-
-        try:
-            user = User.objects.get(email=email)
-            otp_obj, _ = UserOTP.objects.get_or_create(user=user)
-            otp_obj.generate_code()
-
-            mensaje = f"Tu código de verificación para Expomar es: {otp_obj.otp_code}"
-
-            if channel == 'Email':
-                send_mail(
-                    'Código de Verificación - Expomar',
-                    mensaje,
-                    None,
-                    [email],
-                    fail_silently=False,
-                )
-
-            elif channel == 'WhatsApp':
-                # --- INTEGRACIÓN SEGURA DE TWILIO ---
-                account_sid = os.getenv('TWILIO_ACCOUNT_SID')
-                auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-
-                if not account_sid or not auth_token:
-                    return Response({"error": "Configuración de Twilio faltante"}, status=500)
-
-                client = Client(account_sid, auth_token)
-                numero_destino = f"whatsapp:{user.profile.whatsapp}"
-
-                client.messages.create(
-                    body=mensaje,
-                    from_='whatsapp:+14155238886',
-                    to=numero_destino
-                )
-
-            return Response({"message": f"Código enviado por {channel}"})
-
-        except User.DoesNotExist:
-            return Response({"error": "Usuario no encontrado"}, status=404)
-        except Exception as e:
-            return Response({"error": f"Error al enviar: {str(e)}"}, status=500)
-
-class VerifyOTPView(APIView):
-    def post(self, request):
-        email = request.data.get('email')
-        code = request.data.get('code')
-        try:
-            otp_obj = UserOTP.objects.get(user__email=email, otp_code=code)
+        password = request.data.get('password')
+        user = authenticate(username=email, password=password)
+        if user:
             return Response({"message": "Login exitoso", "user": {"email": email}})
-        except UserOTP.DoesNotExist:
-            return Response({"error": "Código incorrecto"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Credenciales inválidas"}, status=401)
+
+# --- SECCIÓN 2: DASHBOARD (CUENTA) ---
+
+@api_view(['GET'])
+def user_dashboard(request):
+    email = request.query_params.get('email')
+    serializer = ProfileSerializer(profile)
+    if not email:
+        return Response({"error": "Email requerido"}, status=400)
+    try:
+        profile = Profile.objects.get(user__email=email)
+        recent_orders = TiendaPedido.objects.filter(cliente__user__email=email).order_by('-id')[:5]
+        featured_offers = TiendaProducto.objects.filter(en_oferta=True)[:4]
+        profile = Profile.objects.get(user__email=email)
 
 
+        return Response({
+            "profile": {
+                "user": {"email": email},
+                "whatsapp": profile.whatsapp,
+                "puntos": profile.puntos
+            },
+            "orders": TiendaPedidoSerializer(recent_orders, many=True).data,
+            "offers": TiendaProductoSerializer(featured_offers, many=True).data
+        })
+    except Profile.DoesNotExist:
+        return Response({"error": "Perfil no encontrado"}, status=404)
 
-class ProfileViewSet(viewsets.ModelViewSet):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+# --- SECCIÓN 3: CATÁLOGO ---
 
-class UserOTPViewSet(viewsets.ModelViewSet):
-    queryset = UserOTP.objects.all()
-    serializer_class = UserOTPSerializer
-
-# tienda/views.py
-
-
-class ProductoViewSet(viewsets.ModelViewSet):
+class ProductCatalogViewSet(viewsets.ModelViewSet):
     serializer_class = TiendaProductoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        queryset = TiendaProducto.objects.all().order_by('id')
-        search_query = self.request.query_params.get('search', None)
-
-        if search_query:
-            # __unaccent: Ignora tildes
-            # __icontains: Ignora mayúsculas/minúsculas
-            queryset = queryset.filter(
-                Q(nombre__unaccent__icontains=search_query) |
-                Q(descripcion__unaccent__icontains=search_query)
-            )
+        queryset = TiendaProducto.objects.all().order_by('-id')
+        only_offers = self.request.query_params.get('offers', None)
+        if only_offers:
+            queryset = queryset.filter(en_oferta=True)
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(Q(nombre__icontains=search) | Q(descripcion__icontains=search))
         return queryset
 
-class TiendaClienteViewSet(viewsets.ModelViewSet):
-    queryset = TiendaCliente.objects.all().order_by('id')
-    serializer_class = TiendaClienteSerializer
-
-class TiendaCategoriaViewSet(viewsets.ModelViewSet):
-    queryset = TiendaCategoria.objects.all().order_by('id')
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = TiendaCategoria.objects.all()
     serializer_class = TiendaCategoriaSerializer
 
-class TiendaCarritoViewSet(viewsets.ModelViewSet):
-    queryset = TiendaCarrito.objects.all().order_by('id')
-    serializer_class = TiendaCarritoSerializer
-
-class TiendaPedidoViewSet(viewsets.ModelViewSet):
-    queryset = TiendaPedido.objects.all().order_by('id')
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = TiendaPedido.objects.all()
     serializer_class = TiendaPedidoSerializer
-
-class PagoViewSet(viewsets.ModelViewSet):
-    queryset = TiendaPago.objects.all().order_by('id')
-    serializer_class = TiendaPagoSerializer
-

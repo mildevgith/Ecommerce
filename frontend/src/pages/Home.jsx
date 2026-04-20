@@ -1,9 +1,12 @@
 // Importamos herramientas de animación para que la web no sea estática y aburrida
 import { AnimatePresence, motion } from "framer-motion";
+
 // Importamos iconos visuales de Lucide para mejorar la interfaz de usuario (UI)
 import { Clock, MessageSquare, ShieldCheck, Truck } from "lucide-react";
+
 // Importamos hooks esenciales de React: useEffect para efectos secundarios y useState para datos dinámicos
 import { useEffect, useState } from "react";
+
 // Importamos Link para navegar entre páginas sin que el navegador recargue toda la web (SPA)
 import { Link } from "react-router-dom";
 
@@ -29,7 +32,7 @@ export default function Home() {
   const API_URL = `${BASE_URL}/api`;
 
   // Variable con el número de WhatsApp de Expomarket (Cali) para contacto directo
-  const whatsappNumber = "5733174262521";
+  const whatsappNumber = "573174262521";
   // Creamos el link de WhatsApp codificando el mensaje para que los espacios no rompan la URL
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("¡Hola Expomarket! Me interesa información para mi negocio.")}`;
 
@@ -70,7 +73,7 @@ export default function Home() {
     };
     // Llamamos a la función asíncrona definida arriba
     fetchData();
-  }, []);
+  }, [API_URL]); // El arreglo con API_URL asegura que si esa variable cambia, volvamos a pedir los datos (aunque en este caso no debería cambiar)
 
   // Función de ayuda para arreglar las rutas de las imágenes que vienen de Django Media
   const getImageUrl = (url) => {
@@ -100,7 +103,7 @@ export default function Home() {
             {/* Imagen del hero con opacidad al 60% para que el texto blanco resalte mejor */}
             <img src={HERO_IMAGES[index]} className="h-full w-full object-cover opacity-60" alt="Expomarket" />
             {/* Capa oscura con degradado de negro a transparente para darle profundidad visual */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-slate-900/40 to-transparent" />
           </motion.div>
         </AnimatePresence>
 
@@ -114,7 +117,7 @@ export default function Home() {
           >
             Frescura que se <br />
             {/* Texto con degradado de naranja a ámbar usando técnicas de CSS moderno */}
-            <span className="bg-gradient-to-r from-orange-400 to-amber-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-t from-orange-400 to-amber-600 bg-clip-text text-transparent">
               siente en cada bocado
             </span>
           </motion.h1>
@@ -174,7 +177,7 @@ export default function Home() {
               {/* Imagen de la categoría con efecto de zoom al pasar el mouse (group-hover) */}
               <img src={getImageUrl(cat.imagen)} className="h-full w-full object-cover transition-transform group-hover:scale-110" alt={cat.nombre} />
               {/* Overlay oscuro para que el nombre de la categoría sea legible */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-8 flex flex-col justify-end">
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent p-8 flex flex-col justify-end">
                 <h3 className="text-2xl font-bold text-white uppercase">{cat.nombre}</h3>
                 {/* Link dinámico que lleva a la página específica de esa categoría usando su ID */}
                 <Link to={`/categoria/${cat.id}`} className="text-orange-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
@@ -220,7 +223,7 @@ export default function Home() {
         <div className="bg-slate-900 rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row items-center gap-10 overflow-hidden relative">
           {/* Lado izquierdo: Texto informativo para empresas */}
           <div className="flex-1 z-10">
-            <span className="text-orange-500 font-bold uppercase text-sm">B2B Expomarket</span>
+            <span className="text-orange-500 font-bold uppercase text-sm"> Expomarket</span>
             <h2 className="text-3xl md:text-5xl font-black text-white mt-4 mb-6">¿Surtimos tu negocio?</h2>
             <p className="text-slate-400 mb-8 max-w-md">Precios especiales para restaurantes y pescaderías en Cali. Calidad y cumplimiento garantizado.</p>
             {/* Botón de WhatsApp especializado en ventas mayoristas */}

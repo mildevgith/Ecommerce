@@ -17,7 +17,7 @@ class TiendaClienteAdmin(admin.ModelAdmin):
 
 @admin.register(TiendaProducto)
 class TiendaProductoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'precio', 'stock', 'categoria', 'fecha_creacion')
+    list_display = ('nombre', 'precio', 'stock', 'categoria', 'fecha_creacion', 'en_oferta', 'precio_oferta' )
     list_filter = ('categoria', 'fecha_creacion')
     search_fields = ('nombre',)
     list_editable = ('precio', 'stock')

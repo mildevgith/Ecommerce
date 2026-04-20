@@ -33,12 +33,17 @@ class TiendaCategoria(models.Model):
 class TiendaProducto(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
-    precio = models.DecimalField(max_digits=10, decimal_places=3)
+    precio = models.DecimalField(max_digits=12, decimal_places=2) # Cambiado de 3 a 2
+    precio_oferta = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     stock = models.IntegerField()
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     categoria = models.ForeignKey('tienda.TiendaCategoria', on_delete=models.DO_NOTHING)
     es_destacado = models.BooleanField(default=False)
+    # Manejo de productos en ofertas
+    en_oferta = models.BooleanField(default=False, verbose_name="¿Está en oferta?")
+    # Opcional: Para ofertas relámpago
+    fin_oferta = models.DateTimeField(null=True, blank=True, verbose_name="Vence el")
 
     class Meta:
         db_table = 'tienda_producto'
@@ -166,6 +171,7 @@ class Profile(models.Model):
     whatsapp = models.CharField(max_length=20, null=True, blank=True, verbose_name="Número de WhatsApp")
     puntos = models.IntegerField(default=0, verbose_name="Puntos de Fidelidad")
     direccion = models.TextField(null=True, blank=True, verbose_name="Dirección de Envío")
+    img = models.ImageField(upload_to='perfiles/', null=True, blank=True)
 
     def __str__(self):
         return f"Perfil de {self.user.email}"
