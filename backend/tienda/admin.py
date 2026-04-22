@@ -15,12 +15,22 @@ class TiendaClienteAdmin(admin.ModelAdmin):
     list_filter = ('ciudad', 'departamento')
     search_fields = ('user__username', 'telefono')
 
+from django.contrib import admin
+from .models import TiendaProducto
+
 @admin.register(TiendaProducto)
-class TiendaProductoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'precio', 'stock', 'categoria', 'fecha_creacion', 'en_oferta', 'precio_oferta' )
-    list_filter = ('categoria', 'fecha_creacion')
+class ProductoAdmin(admin.ModelAdmin):
+    # Campos que se ven en la tabla principal
+    list_display = ('nombre', 'precio', 'stock', 'categoria', 'en_oferta')
+    
+    # Permite editar el precio y el stock sin entrar al producto (¡Muy útil!)
+    list_editable = ('precio', 'stock', 'en_oferta')
+    
+    # Filtros laterales
+    list_filter = ('categoria', 'en_oferta', 'fecha_creacion')
+    
+    # Buscador por nombre
     search_fields = ('nombre',)
-    list_editable = ('precio', 'stock')
 
 @admin.register(TiendaPedido)
 class TiendaPedidoAdmin(admin.ModelAdmin):
