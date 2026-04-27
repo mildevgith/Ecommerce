@@ -71,8 +71,7 @@ export default function Productos() {
 
   return (
     <>
-      {/* Insertamos la barra de navegación en la parte superior */}
-      <Navbar />
+      
 
       {/* SECCIÓN HERO: Banner visual de la página de productos */}
       <section className="relative w-full h-[70vh] flex items-center justify-center overflow-hidden shadow-md">

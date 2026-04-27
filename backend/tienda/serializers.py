@@ -6,20 +6,22 @@ from .models import (
     TiendaPedido, TiendaHistorialestadopedido, TiendaDetalleproducto
 )
 
-# 1. Serializer para el modelo User de Django (Necesario para el Perfil)
+# 1. TRADUCTOR DE USUARIO: Convierte los datos básicos de Django (ID, email) a JSON
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'username']
 
-# 2. Perfil de Usuario (Ahora incluye la información del User)
+# 2. TRADUCTOR DE PERFIL: Muy importante para que el Navbar muestre el nombre del usuario logueado
 class ProfileSerializer(serializers.ModelSerializer):
+    # Meto el UserSerializer adentro para que cuando React pida el perfil,
+    # también le llegue el email y el username del usuario.
     user = UserSerializer(read_only=True)
     class Meta:
         model = Profile
         fields = ['id', 'user', 'whatsapp', 'puntos', 'direccion', 'img']
 
-# 3. Productos (Incluye campos de oferta y destacados)
+# 3. TRADUCTOR DE PRODUCTOS: Pasa toda la info del pescado a React (precios, ofertas, etc.)
 class TiendaProductoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaProducto
@@ -29,31 +31,33 @@ class TiendaProductoSerializer(serializers.ModelSerializer):
             'precio_oferta', 'es_destacado', 'fin_oferta'
         ]
 
-# 4. Clientes
+# 4. TRADUCTOR DE CLIENTES: Convierte todos los campos (__all__) de la tabla cliente
 class TiendaClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaCliente
         fields = '__all__'
 
-# 5. Categorías
+# 5. TRADUCTOR DE CATEGORÍAS: Envía el nombre y la foto de la categoría (Ej: Mariscos)
 class TiendaCategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaCategoria
         fields = ['id', 'nombre', 'descripcion', 'imagen']
 
-# 6. Carrito e Items
+# 6. TRADUCTOR DEL CARRITO: Maneja lo que el usuario quiere comprar
 class TiendaCarritoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaCarrito
         fields = '__all__'
 
 class TiendaItemcarritoSerializer(serializers.ModelSerializer):
+    # Aquí hago un truco: 'producto_detalle' trae toda la info del pescado
+    # para que en el carrito de React veamos la foto y el nombre, no solo el ID.
+    producto_detalle = TiendaProductoSerializer(source='producto', read_only=True)
     class Meta:
         model = TiendaItemcarrito
-        producto_detalle = TiendaProductoSerializer(source='producto', read_only=True)
         fields = ['id', 'carrito', 'producto', 'cantidad', 'producto_detalle']
 
-# 7. Pedidos e Historial
+# 7. TRADUCTOR DE PEDIDOS: Convierte las compras finalizadas para el historial del usuario
 class TiendaPedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaPedido
@@ -64,22 +68,17 @@ class TiendaHistorialestadopedidoSerializer(serializers.ModelSerializer):
         model = TiendaHistorialestadopedido
         fields = '__all__'
 
-# 8. Detalles Adicionales y Seguridad
-class DetalleProductoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TiendaProducto
-        fields = '__all__'
-
+# 8. TRADUCTOR DE SEGURIDAD (OTP): Convierte el código de 4 números que enviamos por correo
 class UserOTPSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserOTP
         fields = ['otp_code', 'created_at']
 
-# 9. Pagos (Corregido: Apuntando a los campos correctos)
+# 9. TRADUCTOR DE PAGOS: Verifica si el pedido está pagado o pendiente
 class MetodoPagoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaPedido
-        fields = ['id', 'estado_actual'] # Ajustado según tus modelos de pedido
+        fields = ['id', 'estado_actual']
 
 class TiendaPagoSerializer(serializers.ModelSerializer):
     class Meta:

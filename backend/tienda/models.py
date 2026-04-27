@@ -3,8 +3,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 import random
 
-
+# --- TABLA DE CLIENTES ---
 class TiendaCliente(models.Model):
+    # Conecto el cliente con un usuario del sistema (solo un cliente por usuario)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
     direccion = models.CharField(max_length=255)
     telefono = models.CharField(max_length=20)
@@ -12,12 +13,13 @@ class TiendaCliente(models.Model):
     departamento = models.CharField(max_length=100)
 
     class Meta:
-        db_table = 'tienda_cliente'
+        db_table = 'tienda_cliente' # Nombre real de la tabla en SQL
 
     def __str__(self):
         return self.user.username if self.user else f"Cliente {self.id}"
 
 
+# --- CATEGORÍAS (Ej: Camarones, Pescados, Pulpos) ---
 class TiendaCategoria(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
@@ -30,19 +32,19 @@ class TiendaCategoria(models.Model):
         return self.nombre
 
 
+# --- PRODUCTOS ---
 class TiendaProducto(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
-    precio = models.DecimalField(max_digits=12, decimal_places=2) # Cambiado de 3 a 2
+    precio = models.DecimalField(max_digits=12, decimal_places=2)
     precio_oferta = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    stock = models.IntegerField()
+    stock = models.IntegerField() # Cantidad disponible
     imagen = models.ImageField(upload_to='productos/', blank=True, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
+    # Relaciono el producto con una categoría (Un producto pertenece a una categoría)
     categoria = models.ForeignKey('tienda.TiendaCategoria', on_delete=models.DO_NOTHING)
     es_destacado = models.BooleanField(default=False)
-    # Manejo de productos en ofertas
     en_oferta = models.BooleanField(default=False, verbose_name="¿Está en oferta?")
-    # Opcional: Para ofertas relámpago
     fin_oferta = models.DateTimeField(null=True, blank=True, verbose_name="Vence el")
 
     class Meta:
@@ -52,6 +54,7 @@ class TiendaProducto(models.Model):
         return self.nombre
 
 
+# --- EL CARRITO DE COMPRAS ---
 class TiendaCarrito(models.Model):
     creado = models.DateTimeField(auto_now_add=True)
     cliente = models.OneToOneField('tienda.TiendaCliente', on_delete=models.DO_NOTHING)
@@ -60,6 +63,7 @@ class TiendaCarrito(models.Model):
         db_table = 'tienda_carrito'
 
 
+# --- LOS OBJETOS DENTRO DEL CARRITO ---
 class TiendaItemcarrito(models.Model):
     cantidad = models.IntegerField()
     carrito = models.ForeignKey('tienda.TiendaCarrito', on_delete=models.DO_NOTHING)
@@ -69,11 +73,12 @@ class TiendaItemcarrito(models.Model):
         db_table = 'tienda_itemcarrito'
 
 
+# --- EL PEDIDO FINALIZADO ---
 class TiendaPedido(models.Model):
     fecha_pedido = models.DateTimeField(auto_now_add=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     direccion_envio = models.CharField(max_length=255)
-    estado_actual = models.CharField(max_length=50)
+    estado_actual = models.CharField(max_length=50) # Ej: Pendiente, Enviado
     cliente = models.ForeignKey('tienda.TiendaCliente', on_delete=models.DO_NOTHING)
 
     class Meta:
@@ -83,6 +88,7 @@ class TiendaPedido(models.Model):
         return f"Pedido #{self.id} de {self.cliente.user.username}"
 
 
+# --- DETALLE DEL PEDIDO (Lo que compró exactamente) ---
 class TiendaDetallepedido(models.Model):
     cantidad = models.IntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
@@ -93,6 +99,7 @@ class TiendaDetallepedido(models.Model):
         db_table = 'tienda_detallepedido'
 
 
+# --- HISTORIAL (Para saber cuándo cambió de "Enviado" a "Entregado") ---
 class TiendaHistorialestadopedido(models.Model):
     estado = models.CharField(max_length=50)
     fecha_cambio = models.DateTimeField(auto_now_add=True)
@@ -102,6 +109,7 @@ class TiendaHistorialestadopedido(models.Model):
         db_table = 'tienda_historialestadopedido'
 
 
+# --- MÉTODOS DE PAGO (Ej: Nequi, Tarjeta, Efectivo) ---
 class TiendaMetodopago(models.Model):
     nombre = models.CharField(max_length=100)
 
@@ -112,10 +120,11 @@ class TiendaMetodopago(models.Model):
         return self.nombre
 
 
+# --- EL PAGO REALIZADO ---
 class TiendaPago(models.Model):
     fecha_pago = models.DateTimeField(auto_now_add=True)
-    referencia = models.CharField(max_length=100)
-    estado = models.CharField(max_length=50)
+    referencia = models.CharField(max_length=100) # Código del banco
+    estado = models.CharField(max_length=50) # Ej: Aprobado
     metodo = models.ForeignKey('tienda.TiendaMetodopago', on_delete=models.DO_NOTHING, blank=True, null=True)
     pedido = models.OneToOneField('tienda.TiendaPedido', on_delete=models.DO_NOTHING)
 
@@ -123,6 +132,7 @@ class TiendaPago(models.Model):
         db_table = 'tienda_pago'
 
 
+# --- DETALLES EXTRA (Para descripciones muy largas de productos) ---
 class TiendaDetalleproducto(models.Model):
     detalles = models.TextField()
     producto = models.OneToOneField('tienda.TiendaProducto', on_delete=models.DO_NOTHING)
@@ -131,17 +141,19 @@ class TiendaDetalleproducto(models.Model):
         db_table = 'tienda_detalleproducto'
 
 
+# --- CONTROL DE INVENTARIO ---
 class TiendaInventario(models.Model):
     cantidad_actual = models.IntegerField()
-    actualizado = models.DateTimeField(auto_now=True)
+    actualizado = models.DateTimeField(auto_now=True) # Se actualiza solo al cambiar datos
     producto = models.OneToOneField('tienda.TiendaProducto', on_delete=models.DO_NOTHING)
 
     class Meta:
         db_table = 'tienda_inventario'
 
 
+# --- RESEÑAS Y ESTRELLITAS ---
 class TiendaResenaproducto(models.Model):
-    puntuacion = models.IntegerField()
+    puntuacion = models.IntegerField() # Ej: del 1 al 5
     comentario = models.TextField()
     fecha = models.DateTimeField(auto_now_add=True)
     cliente = models.ForeignKey('tienda.TiendaCliente', on_delete=models.DO_NOTHING)
@@ -151,8 +163,9 @@ class TiendaResenaproducto(models.Model):
         db_table = 'tienda_resenaproducto'
 
 
+# --- CUPONES DE DESCUENTO ---
 class TiendaCupondescuento(models.Model):
-    codigo = models.CharField(unique=True, max_length=20)
+    codigo = models.CharField(unique=True, max_length=20) # Ej: PESCADO2024
     descuento = models.DecimalField(max_digits=5, decimal_places=2)
     valido_desde = models.DateField()
     valido_hasta = models.DateField()
@@ -165,7 +178,7 @@ class TiendaCupondescuento(models.Model):
         return self.codigo
 
 
-
+# --- PERFIL DE USUARIO (Extensión del usuario de Django) ---
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     whatsapp = models.CharField(max_length=20, null=True, blank=True, verbose_name="Número de WhatsApp")
@@ -176,12 +189,15 @@ class Profile(models.Model):
     def __str__(self):
         return f"Perfil de {self.user.email}"
 
+
+# --- SEGURIDAD (Códigos OTP para login) ---
 class UserOTP(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    otp_code = models.CharField(max_length=4, blank=True, null=True)
+    otp_code = models.CharField(max_length=4, blank=True, null=True) # El código de 4 números
     created_at = models.DateTimeField(auto_now_add=True)
 
     def generate_code(self):
+        # Función para crear un número al azar entre 1000 y 9999
         self.otp_code = str(random.randint(1000, 9999))
         self.save()
 

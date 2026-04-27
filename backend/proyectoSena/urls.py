@@ -1,39 +1,30 @@
-"""
-URL Configuration para proyectoSena
+from django.contrib import admin  # Traigo la herramienta para el panel de control
+from django.urls import path, include  # 'path' para rutas fijas e 'include' para traer rutas de otras apps
+from django.conf import settings  # Para poder leer lo que configuramos en settings.py
+from django.conf.urls.static import static  # Para que Django sepa mostrar las fotos de los productos
 
-Este archivo centraliza todas las rutas del proyecto. 
-Se utiliza el prefijo 'api/' para separar los endpoints del backend 
-de la interfaz administrativa.
-"""
-from django.contrib import admin
-from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-
-# Definición de las rutas principales
+# Aquí dibujo el mapa principal de mi web
 urlpatterns = [
-    # Interfaz de administración de Django
+    # Si escribo /admin, entro al panel de control de Jazzmin que ya configuramos
     path('admin/', admin.site.urls),
-    
-    # Endpoints de la API: Incluye las rutas de la aplicación 'tienda'
-    # Se recomienda el uso de versiones (ej: 'api/v1/') para proyectos escalables
+
+    # Si la petición empieza con /api/, le paso la bola a las URLs de mi app 'tienda'
+    # Es como decirle: "Si buscan comida, hablen con el chef de la sección Tienda"
     path('api/', include('tienda.urls')),
 ]
 
-# Configuración para servir archivos multimedia (imágenes, documentos)
-# IMPORTANTE: Esto solo funciona cuando DEBUG=True. 
-# En producción, los archivos media deben ser servidos por Nginx, Apache o un CDN.
+# --- MANEJO DE FOTOS (SOLO PARA MI COMPU) ---
+# Si estoy trabajando en mi PC (DEBUG=True), dejo que Django se encargue de mostrar las imágenes
+# En una web real, esto lo haría un servidor de archivos más potente
 if settings.DEBUG:
+    # Ruta para las fotos de los mariscos (Media)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    
-    # Opcional: También servir archivos estáticos (CSS, JS) en desarrollo si es necesario
+
+    # Ruta para el diseño, CSS y logos (Static)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-# Configuración del título del panel administrativo (Personalización de marca)
+# --- PERSONALIZACIÓN DEL PANEL ---
+# Aquí cambio los textos por defecto de Django por el nombre de mi marca: EXPOMARKET
 admin.site.site_header = "Panel Administrativo EXPOMARKET"
 admin.site.site_title = "EXPOMARKET Admin"
 admin.site.index_title = "Bienvenido a la gestión de EXPOMARKET"
-
-
-
-

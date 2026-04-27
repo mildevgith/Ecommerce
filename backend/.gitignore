@@ -1,6 +1,19 @@
-.env
-venv/
-*.pyc
-__pycache__/
-db.sqlite3
-media/
+# --- LLAVES Y SECRETOS ---
+.env            # ¡EL MÁS IMPORTANTE! Aquí están tus contraseñas y la llave de Django.
+                # Si lo subes, cualquiera puede entrar a tu base de datos o usar tu Gmail.
+
+# --- ENTORNO VIRTUAL ---
+venv/           # Es tu maletín de herramientas local. Pesa mucho y no se sube a GitHub;
+                # cada programador crea el suyo propio al descargar el proyecto.
+
+# --- BASURA DE PYTHON ---
+*.pyc           # Archivos temporales que crea Python para correr más rápido.
+__pycache__/    # Carpetas que Python usa para guardar traducciones internas. No sirven en GitHub.
+
+# --- BASES DE DATOS ---
+db.sqlite3      # Si usas SQLite para pruebas, no quieres subir tus datos reales.
+                # (Como tú usas PostgreSQL, esto evita que se suban archivos de prueba).
+
+# --- ARCHIVOS DE USUARIO ---
+media/          # Aquí están las fotos de los pescados que subes.
+                # Normalmente no se suben a Git porque el servidor real tendrá sus propias fotos.
