@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Clock, MessageSquare, ShieldCheck, Truck, Search } from "lucide-react";
+import { Clock, MessageSquare, ShieldCheck, ShoppingCart, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom"; // Añadido useSearchParams
+import { Link, useSearchParams } from "react-router-dom";
+import { useCart } from "../context/CartContext"; // Importación del carrito
 
 // Importamos las imágenes locales para el Hero
 import hero2 from "../assets/camaronprecoHero.jpg";
@@ -14,9 +15,9 @@ export default function Home() {
   const [index, setIndex] = useState(0);
   const [categories, setCategories] = useState([]);
   const [productosDestacados, setProductosDestacados] = useState([]);
-  const [searchResults, setSearchResults] = useState([]); // Estado para resultados de búsqueda
-  
-  // Hook para detectar parámetros en la URL
+  const [searchResults, setSearchResults] = useState([]);
+
+  const { addToCart } = useCart(); // Hook del carrito
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("search");
 
@@ -33,23 +34,19 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch de datos iniciales y búsqueda reactiva
+  // Fetch de datos iniciales
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Cargar Categorías
         const resCat = await fetch(`${API_URL}/categorias/`);
         const dataCat = await resCat.json();
         setCategories(dataCat);
 
-        // 2. Lógica de Búsqueda vs Destacados
         if (searchTerm) {
-          // Si hay búsqueda, pedimos productos filtrados al backend
           const resSearch = await fetch(`${API_URL}/productos/?search=${searchTerm}`);
           const dataSearch = await resSearch.json();
           setSearchResults(dataSearch);
         } else {
-          // Si no hay búsqueda, cargamos los destacados habituales
           const resProd = await fetch(`${API_URL}/productos/`);
           const dataProd = await resProd.json();
           const destacados = dataProd.filter(p => p.es_destacado === true);
@@ -60,7 +57,7 @@ export default function Home() {
       }
     };
     fetchData();
-  }, [API_URL, searchTerm]); // Se dispara cada vez que cambia el término de búsqueda
+  }, [API_URL, searchTerm]);
 
   const getImageUrl = (url) => {
     if (!url) return "https://via.placeholder.com/400x300?text=Expomarket";
@@ -69,9 +66,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50/50 selection:bg-orange-200">
-      
-      {/* --- SECCIÓN 1: HERO (CONDICIONAL) --- */}
-      {/* Solo se muestra si NO hay una búsqueda activa */}
       {!searchTerm && (
         <section className="relative h-[95vh] w-full overflow-hidden bg-black">
           <AnimatePresence mode="wait">
@@ -117,7 +111,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* --- SECCIÓN 2: STATS (OCULTO EN BÚSQUEDA PARA LIMPIEZA VISUAL) --- */}
       {!searchTerm && (
         <section className="bg-white py-12 border-b">
           <div className="mx-auto max-w-7xl px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
@@ -140,14 +133,12 @@ export default function Home() {
         </section>
       )}
 
-      {/* --- SECCIÓN 3: RESULTADOS DE BÚSQUEDA O PRODUCTOS DESTACADOS --- */}
       <section className="mx-auto max-w-7xl px-6 py-16">
         <div className="flex items-center justify-between mb-10">
           <div>
             <h2 className="text-3xl font-black text-slate-900">
               {searchTerm ? `Resultados para: "${searchTerm}"` : "Nuestros Recomendados"}
             </h2>
-            {searchTerm && <p className="text-slate-500 mt-2">Hemos encontrado {searchResults.length} productos para ti.</p>}
           </div>
           {searchTerm && (
             <Link to="/" className="text-orange-500 font-bold hover:underline flex items-center gap-2">
@@ -157,7 +148,6 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Muestra searchResults si hay búsqueda, de lo contrario muestra productosDestacados */}
           {(searchTerm ? searchResults : productosDestacados).map((producto) => (
             <div key={producto.id} className="group relative rounded-2xl bg-white p-3 border shadow-sm hover:shadow-md transition-all">
               <div className="relative overflow-hidden rounded-xl h-64">
@@ -168,25 +158,20 @@ export default function Home() {
                 <p className="mt-1 text-orange-500 font-bold text-xl">
                   ${Number(producto.precio).toLocaleString('es-CO')} <span className="text-xs text-slate-400">/ Kg</span>
                 </p>
-                <button className="mt-4 w-full rounded-xl bg-slate-900 py-3 font-bold text-white hover:bg-orange-500 transition-colors">
-                  Añadir al carrito
+                {/* BOTÓN CONECTADO AL CARRITO */}
+                <button
+                  onClick={() => addToCart(producto)}
+                  className="mt-4 w-full rounded-xl bg-slate-900 py-3 font-bold text-white hover:bg-orange-500 transition-colors flex items-center justify-center gap-2"
+                >
+                  <ShoppingCart size={18} /> Añadir al carrito
                 </button>
               </div>
             </div>
           ))}
         </div>
-
-        {/* Mensaje si no hay resultados */}
-        {searchTerm && searchResults.length === 0 && (
-          <div className="text-center py-20">
-            <Search size={48} className="mx-auto text-slate-300 mb-4" />
-            <h3 className="text-xl font-bold text-slate-800">No encontramos lo que buscas</h3>
-            <p className="text-slate-500">Intenta con otros términos o explora nuestras categorías.</p>
-          </div>
-        )}
       </section>
 
-      {/* --- SECCIÓN 4: CATEGORÍAS (OCULTO DURANTE BÚSQUEDA PARA MEJORAR UX) --- */}
+      {/* Resto de secciones (Categorías, Banner) se mantienen igual... */}
       {!searchTerm && (
         <section className="mx-auto max-w-7xl px-6 py-12 border-t">
           <h2 className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-2">Categorías</h2>
@@ -207,7 +192,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* --- SECCIÓN 5: BANNER MAYORISTAS --- */}
       <section className="mx-auto max-w-7xl px-6 pb-24 pt-12">
         <div className="bg-slate-900 rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row items-center gap-10 overflow-hidden relative">
           <div className="flex-1 z-10">

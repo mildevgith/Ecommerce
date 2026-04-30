@@ -2,8 +2,8 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { ArrowRight, Flame, Loader2, ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useCart } from "../context/CartContext"; // Importación del carrito
 
-// Configuración de Axios
 const api = axios.create({
   baseURL: "http://localhost:8000/api",
 });
@@ -11,6 +11,7 @@ const api = axios.create({
 export default function Ofertas() {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart(); // Hook del carrito
 
   const BASE_URL = "http://localhost:8000";
 
@@ -18,13 +19,12 @@ export default function Ofertas() {
     const fetchOfertas = async () => {
       try {
         const res = await api.get("/productos/");
-        // Filtramos solo productos que tienen un precio_oferta válido en tu BD
         const soloOfertas = res.data.filter(
           (p) => p.precio_oferta && Number(p.precio_oferta) < Number(p.precio)
         );
         setProductos(soloOfertas);
       } catch (err) {
-        console.error("Error cargando productos de PostgreSQL:", err);
+        console.error("Error cargando productos:", err);
       } finally {
         setLoading(false);
       }
@@ -32,17 +32,13 @@ export default function Ofertas() {
     fetchOfertas();
   }, []);
 
-  // Función clave: Transforma la ruta relativa de la BD en una URL completa
   const getImageUrl = (url) => {
     if (!url) return "https://via.placeholder.com/600x400?text=Expomarket+Cali";
-    // Si la URL ya es completa la deja así, si no, le pega el dominio de Django
     return url.startsWith("http") ? url : `${BASE_URL}${url}`;
   };
 
   return (
     <main className="min-h-screen bg-slate-950 text-white pt-24 selection:bg-orange-500/30">
-
-      {/* --- HEADER DINÁMICO --- */}
       <section className="px-6 py-12 max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -63,12 +59,10 @@ export default function Ofertas() {
           </div>
           <p className="max-w-xs text-slate-400 text-sm md:text-base leading-relaxed">
             Precios exclusivos de Expomarket para productos seleccionados de nuestra última pesca.
-            Sujeto a disponibilidad diaria.
           </p>
         </motion.div>
       </section>
 
-      {/* --- GRILLA DE OFERTAS REALES --- */}
       <section className="max-w-7xl mx-auto px-6 pb-24">
         {loading ? (
           <div className="flex flex-col items-center py-24">
@@ -86,24 +80,17 @@ export default function Ofertas() {
                 viewport={{ once: true }}
                 className="group"
               >
-                {/* Contenedor de Imagen de la BD */}
                 <div className="relative aspect-square overflow-hidden rounded-[2.5rem] bg-slate-900 border border-white/5 shadow-2xl">
                   <img
                     src={getImageUrl(prod.imagen)}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     alt={prod.nombre}
                   />
-
-                  {/* Badge de Ahorro calculado al vuelo */}
                   <div className="absolute top-6 left-6 bg-white text-black font-black px-4 py-2 rounded-2xl text-sm shadow-xl z-10">
                     -{Math.round(((prod.precio - prod.precio_oferta) / prod.precio) * 100)}%
                   </div>
-
-                  {/* Overlay al hacer hover */}
-                  <div className="absolute inset-0 bg-orange-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
 
-                {/* Info del Producto */}
                 <div className="mt-8 px-2">
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-2xl font-black text-white group-hover:text-orange-400 transition-colors uppercase">
@@ -123,7 +110,11 @@ export default function Ofertas() {
                     {prod.descripcion || "Calidad premium seleccionada para pescaderías y hogares en Cali."}
                   </p>
 
-                  <button className="w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-2xl font-black hover:bg-orange-500 hover:text-white transition-all transform active:scale-95">
+                  {/* BOTÓN CONECTADO AL CARRITO */}
+                  <button
+                    onClick={() => addToCart(prod)}
+                    className="w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-2xl font-black hover:bg-orange-500 hover:text-white transition-all transform active:scale-95"
+                  >
                     <ShoppingCart size={20} />
                     AÑADIR AL PEDIDO
                   </button>
@@ -133,12 +124,12 @@ export default function Ofertas() {
           </div>
         ) : (
           <div className="text-center py-24 border-2 border-dashed border-white/10 rounded-[3rem]">
-            <p className="text-slate-500 text-xl">No hay productos en oferta registrados en el sistema.</p>
+            <p className="text-slate-500 text-xl">No hay productos en oferta registrados.</p>
           </div>
         )}
       </section>
 
-      {/* --- BANNER DE CIERRE MODERNO --- */}
+      {/* Banner final se mantiene igual... */}
       <section className="px-6 pb-24">
         <div className="max-w-7xl mx-auto bg-linear-to-r from-orange-600 to-amber-500 rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
@@ -150,11 +141,9 @@ export default function Ofertas() {
               <ArrowRight className="group-hover:translate-x-2 transition-transform" />
             </button>
           </div>
-          {/* Decoración abstracta */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
         </div>
       </section>
-
     </main>
   );
 }

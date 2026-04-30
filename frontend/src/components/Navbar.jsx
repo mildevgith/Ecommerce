@@ -1,185 +1,106 @@
-import {
-  ChevronDown, Home, Menu, Search, ShoppingCart, Tag, User as UserIcon, X,
-} from "lucide-react";
-import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-// Importamos el logo del sello de calidad
-import grupoGRB from "../assets/slogan.png";
+import { useState, useEffect } from "react";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
-  // Estado para saber quién está logueado. Leemos del localStorage al cargar.
-  const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail"));
+  const [user, setUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { cart } = useCart();
   const navigate = useNavigate();
 
-  // --- ESCUCHADORES DE EVENTOS ---
   useEffect(() => {
-    const updateNavbar = () => {
-      setUserEmail(localStorage.getItem("userEmail"));
-    };
-    // 'userLogin' es un evento personalizado que disparas desde el login
-    window.addEventListener("userLogin", updateNavbar);
-    // 'storage' detecta cambios si el usuario abre la web en otra pestaña
-    window.addEventListener("storage", updateNavbar);
-
-    return () => {
-      window.removeEventListener("userLogin", updateNavbar);
-      window.removeEventListener("storage", updateNavbar);
-    };
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
-  // --- LÓGICA DE SALIDA ---
-  const handleLogout = () => {
-    localStorage.clear(); // Limpiamos correos, tokens y datos
-    setUserEmail(null);
-    window.dispatchEvent(new Event("userLogin")); // Avisamos a otros componentes que ya no hay usuario
-    setIsMenuOpen(false);
-    navigate("/");
-  };
-
-  // --- LÓGICA DEL BUSCADOR ---
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      // Redirigimos al inicio pasando la búsqueda por la URL (?search=Pescado)
-      navigate(`/?search=${searchTerm.trim()}`);
-      setIsMenuOpen(false);
+      navigate(`/productos?search=${encodeURIComponent(searchTerm)}`);
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setUser(null);
+    navigate("/auth");
+    window.location.reload();
+  };
+
+  const cartCount = cart?.reduce((total, item) => total + item.cantidad, 0) || 0;
+
   return (
-    // 'sticky top-0' mantiene el menú siempre arriba mientras bajas la página
-    <nav className="bg-white border-b border-slate-100 shadow-sm sticky top-0 z-[100]">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-20 gap-4">
+    <header className="bg-white py-3 px-8 flex items-center justify-between shadow-sm sticky top-0 z-50">
 
-          {/* SECCIÓN LOGOS: Expomarket + Grupo GRB */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-4 flex-shrink-0 group">
-            <img
-              src="/src/assets/logo.png"
-              alt="EXPOMARKET"
-              className="h-8 sm:h-10 w-auto object-contain transition-transform group-hover:scale-105"
-            />
-            {/* Divisor vertical estético */}
-            <div className="h-8 w-[1px] bg-slate-200 hidden md:block"></div>
-            <div className="hidden xs:flex flex-col">
-              <img src={grupoGRB} alt="GRUPO GRB" className="h-5 sm:h-7 w-auto object-contain opacity-80" />
-              <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 tracking-[0.2em] uppercase leading-none mt-1">
-                Sello de Calidad
-              </span>
-            </div>
-          </Link>
+      {/* LOGO MIXTURA */}
+      <Link to="/" className="flex items-center">
+        <img src="/logo.png" alt="Mixtura" className="h-10 w-auto" />
+      </Link>
 
-          {/* BUSCADOR DE ESCRITORIO */}
-          <form onSubmit={handleSearch} className="hidden lg:flex flex-1 max-w-xl relative items-center">
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-full py-2 px-6 focus:outline-none focus:border-orange-500 text-sm transition-all"
-            />
-            <button type="submit" className="absolute right-1.5 p-2 bg-orange-500 rounded-full text-white hover:bg-orange-600">
-              <Search size={16} />
+      {/* BUSCADOR (Píldora con botón naranja a la derecha) */}
+      <form onSubmit={handleSearch} className="flex-grow max-w-2xl mx-10 relative flex items-center bg-[#f1f3f5] rounded-full px-1 border border-transparent focus-within:border-gray-200">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Buscar productos..."
+          className="w-full bg-transparent py-2 px-6 outline-none text-sm text-gray-600"
+        />
+        <button
+          type="submit"
+          className="bg-[#de6e28] text-white px-5 py-1.5 rounded-full text-xs font-bold uppercase hover:bg-[#c55d1f] transition-all"
+        >
+          search
+        </button>
+      </form>
+
+      {/* NAVEGACIÓN Y ACCIONES */}
+      <div className="flex items-center gap-8 text-[#242a57]">
+
+        <Link to="/" className="flex items-center gap-1 hover:text-[#de6e28] transition-colors">
+          <span className="material-icons">home</span>
+          <span className="text-sm font-semibold">Inicio</span>
+        </Link>
+
+        <Link to="/ofertas" className="flex items-center gap-1 hover:text-[#de6e28] transition-colors">
+          <span className="material-icons">sell</span>
+          <span className="text-sm font-semibold">Ofertas</span>
+        </Link>
+
+        {/* SEPARADOR VERTICAL */}
+        <div className="h-6 w-[1px] bg-gray-200 mx-2"></div>
+
+        {/* USUARIO Y CARRITO */}
+        <div className="flex items-center gap-6">
+          <div
+            className="flex items-center gap-1 cursor-pointer hover:text-[#de6e28]"
+            onClick={() => !user && navigate("/auth")}
+          >
+            <span className="material-icons">person</span>
+            <span className="text-sm font-bold">
+              {user ? (user.first_name || "Carlos Ruiz") : "Mi Cuenta"}
+            </span>
+          </div>
+
+          {user && (
+            <button onClick={handleLogout} className="text-red-500 font-bold text-[10px] uppercase hover:underline">
+              logout
             </button>
-          </form>
+          )}
 
-          {/* MENÚ DE ACCIONES */}
-          <div className="flex items-center gap-2 sm:gap-6">
-            {/* Links de navegación */}
-            <div className="hidden md:flex items-center gap-6 text-slate-600 font-bold text-sm">
-              <Link to="/" className="hover:text-orange-500 flex items-center gap-2">
-                <Home size={18} /> <span className="hidden lg:inline">Inicio</span>
-              </Link>
-              <Link to="/ofertas" className="hover:text-orange-500 flex items-center gap-2">
-                <Tag size={18} /> <span className="hidden lg:inline">Ofertas</span>
-              </Link>
-            </div>
-
-            {/* Gestión del Usuario Logueado */}
-            <div className="flex items-center gap-2 sm:gap-4 md:border-l md:border-slate-200 md:pl-6">
-              {userEmail ? (
-                <div className="relative group hidden sm:block">
-                  <button className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
-                    <div className="w-7 h-7 bg-slate-900 text-white rounded-full flex items-center justify-center font-bold text-[10px]">
-                      {userEmail[0].toUpperCase()} {/* Primera letra del correo */}
-                    </div>
-                    <span className="text-xs font-bold text-slate-700 hidden lg:inline">
-                      {userEmail.split("@")[0]} {/* Nombre antes del @ */}
-                    </span>
-                    <ChevronDown size={14} className="text-slate-400 group-hover:rotate-180 transition-transform" />
-                  </button>
-                  {/* Menú desplegable al pasar el mouse (hover) */}
-                  <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-                    <Link to="/cuenta" className="block px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-t-xl">Mi Perfil</Link>
-                    <button onClick={handleLogout} className="w-full text-left px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 rounded-b-xl">Cerrar Sesión</button>
-                  </div>
-                </div>
-              ) : (
-                <Link to="/cuenta" className="hidden sm:flex items-center gap-2 text-slate-600 hover:text-orange-500 font-bold text-sm transition-colors">
-                  <UserIcon size={18} /> <span className="hidden lg:inline">Mi Cuenta</span>
-                </Link>
-              )}
-
-              {/* Carrito de compras */}
-              <button className="text-slate-600 hover:text-orange-500 transition-colors p-2 relative">
-                <ShoppingCart size={24} />
-              </button>
-
-              {/* Botón menú móvil */}
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
-                {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* --- VISTA MÓVIL --- */}
-        {isMenuOpen && (
-          <div className="lg:hidden pb-6 pt-2 space-y-4 animate-in slide-in-from-top duration-300">
-            {/* Buscador móvil duplicado */}
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                placeholder="¿Qué buscas hoy?"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-100 border-none rounded-xl py-3 px-5 text-sm focus:ring-2 focus:ring-orange-500"
-              />
-              <button type="submit" className="absolute right-3 top-3 text-slate-400">
-                <Search size={20} />
-              </button>
-            </form>
-
-            <div className="grid grid-cols-2 gap-3">
-              <Link onClick={() => setIsMenuOpen(false)} to="/" className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl gap-2 font-bold text-slate-600">
-                <Home size={24} className="text-orange-500" /> <span>Inicio</span>
-              </Link>
-              <Link onClick={() => setIsMenuOpen(false)} to="/ofertas" className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl gap-2 font-bold text-slate-600">
-                <Tag size={24} className="text-orange-500" /> <span>Ofertas</span>
-              </Link>
-            </div>
-
-            {/* Botón de Perfil o Login en móvil */}
-            {userEmail ? (
-              <div className="space-y-2">
-                <Link onClick={() => setIsMenuOpen(false)} to="/cuenta" className="block w-full p-4 bg-slate-900 text-white rounded-2xl font-bold text-center">
-                  Mi Perfil ({userEmail.split("@")[0]})
-                </Link>
-                <button onClick={handleLogout} className="w-full p-4 text-red-500 font-bold border border-red-100 rounded-2xl italic">
-                  Cerrar Sesión
-                </button>
-              </div>
-            ) : (
-              <Link onClick={() => setIsMenuOpen(false)} to="/cuenta" className="block w-full p-4 bg-orange-500 text-white rounded-2xl font-bold text-center">
-                Iniciar Sesión / Registro
-              </Link>
+          <Link to="/carrito" className="relative flex items-center group">
+            <span className="material-icons text-[26px]">shopping_cart</span>
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-[#de6e28] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-sm">
+                {cartCount}
+              </span>
             )}
-          </div>
-        )}
+          </Link>
+        </div>
       </div>
-    </nav>
+    </header>
   );
 }
