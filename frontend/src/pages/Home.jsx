@@ -5,7 +5,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useCart } from "../context/CartContext"; // Importación del carrito
 
 // Importamos las imágenes locales para el Hero
-import hero2 from "../assets/camaronprecoHero.jpg";
+import hero2 from "../assets/camaronPrecoHero.jpg";
 import hero3 from "../assets/Hero2.jpg";
 import shirimhero from "../assets/shirimhero.jpg";
 
