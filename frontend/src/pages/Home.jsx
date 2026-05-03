@@ -21,7 +21,7 @@ export default function Home() {
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("search");
 
-  const BASE_URL = "http://localhost:8000";
+  const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
   const API_URL = `${BASE_URL}/api`;
   const whatsappNumber = "573174262521";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("¡Hola Expomarket! Me interesa información para mi negocio.")}`;
