@@ -10,7 +10,6 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SEGURIDAD ---
-# En Railway, la variable se debe llamar igual que en tu .env local
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-default-key-123")
 
 DEBUG = os.getenv("DEBUG", "False").lower() in ('true', '1', 't')
@@ -26,7 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'whitenoise.runserver_nostatic',  # <--- AGREGADO: Ayuda a WhiteNoise en desarrollo
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
@@ -38,7 +37,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # <--- CRÍTICO: Debe ir después de SecurityMiddleware
+    'whitenoise.middleware.WhiteNoiseMiddleware', # CRÍTICO: Debe ir después de SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,10 +65,9 @@ TEMPLATES = [
 ]
 
 # --- BASE DE DATOS ---
-# dj_database_url buscará automáticamente la variable DATABASE_URL de Railway
+# Configuración optimizada para Railway
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -83,28 +81,25 @@ USE_TZ = True
 
 # --- ARCHIVOS ESTÁTICOS Y MEDIA ---
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Usamos BASE_DIR / 'nombre' que es más moderno y seguro en Pathlib
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Configuración de WhiteNoise para comprimir archivos y que la web cargue rápido
+# Configuración de WhiteNoise para producción
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- CONFIGURACIÓN DE CORS Y CSRF ---
-# Agregamos soporte para que acepte tanto local como la futura URL de producción
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
 CORS_ALLOW_CREDENTIALS = True
 
-# --- CONFIGURACIÓN DE SEGURIDAD ---
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://serene-peace-production-62ee.up.railway.app"  # <--- AGREGA ESTA LÍNEA
+    "https://serene-peace-production-62ee.up.railway.app"
 ]
 
 # --- DJANGO REST FRAMEWORK ---
