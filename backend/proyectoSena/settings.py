@@ -79,16 +79,23 @@ TIME_ZONE = 'America/Bogota'
 USE_I18N = True
 USE_TZ = True
 
+
+
+
 # --- ARCHIVOS ESTÁTICOS Y MEDIA ---
-# --- ARCHIVOS ESTÁTICOS Y MEDIA ---
-# Forzamos rutas que Railway siempre encuentra
 STATIC_URL = '/static/'
+
+# Esta configuración asegura que la carpeta exista sí o sí antes de que Django la valide
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Usamos la configuración de WhiteNoise más compatible
+# Forzamos la creación manual de la carpeta si Railway no la encuentra al arrancar
+if not os.path.exists(STATIC_ROOT):
+    os.makedirs(STATIC_ROOT)
+
+# Usamos la versión de WhiteNoise que no valida el directorio estrictamente al inicio
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-# Esto ayuda a Django a encontrar tus archivos locales antes de subirlos
+# Esto es para tus archivos locales
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
@@ -97,6 +104,11 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+
 
 # --- CONFIGURACIÓN DE CORS Y CSRF ---
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
