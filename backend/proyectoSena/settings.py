@@ -80,15 +80,21 @@ USE_I18N = True
 USE_TZ = True
 
 # --- ARCHIVOS ESTÁTICOS Y MEDIA ---
-STATIC_URL = 'static/'
-# Usamos BASE_DIR / 'nombre' que es más moderno y seguro en Pathlib
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+# --- ARCHIVOS ESTÁTICOS Y MEDIA ---
+# Forzamos rutas que Railway siempre encuentra
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Configuración de WhiteNoise para producción
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Usamos la configuración de WhiteNoise más compatible
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# Esto ayuda a Django a encontrar tus archivos locales antes de subirlos
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
