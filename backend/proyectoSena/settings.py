@@ -98,7 +98,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # --- CONFIGURACIÓN DE CORS Y CSRF ---
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+CORS_ALLOWED_ORIGINS = [
+  "https://expomarket-pescados-mariscos.netlify.app",
+  "http://localhost:5173",  # Para que puedas seguir probando en tu PC
+]
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
