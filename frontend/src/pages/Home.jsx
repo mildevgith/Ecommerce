@@ -5,7 +5,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useCart } from "../context/CartContext"; // Importación del carrito
 
 // Importamos las imágenes locales para el Hero
-import hero2 from "../assets/camaronprecoHero.jpg";
+import hero2 from "../assets/camaronPrecoHero.jpg";
 import hero3 from "../assets/Hero2.jpg";
 import shirimhero from "../assets/shirimhero.jpg";
 
@@ -21,7 +21,7 @@ export default function Home() {
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("search");
 
-  const BASE_URL = "http://localhost:8000";
+  const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
   const API_URL = `${BASE_URL}/api`;
   const whatsappNumber = "573174262521";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("¡Hola Expomarket! Me interesa información para mi negocio.")}`;
