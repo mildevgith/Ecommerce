@@ -73,30 +73,25 @@ DATABASES = {
     )
 }
 
-# --- LOCALIZACIÓN ---
-LANGUAGE_CODE = 'es-co'
-TIME_ZONE = 'America/Bogota'
-USE_I18N = True
-USE_TZ = True
-
-
-
-
+# --- ARCHIVOS ESTÁTICOS Y MEDIA ---
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Con WhiteNoise 6.x, esta es la forma más estable
+# Usamos el almacenamiento más robusto para evitar errores de directorio
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-# Evita que la app se detenga si no encuentra la carpeta local 'static'
+# Evitamos el error naranja (W004) validando la carpeta 'static' local
 STATICFILES_DIRS = []
 local_static = BASE_DIR / 'static'
 if local_static.exists():
     STATICFILES_DIRS.append(str(local_static))
 
-# Crear el directorio automáticamente si Railway lo borra
+# FORZAR CREACIÓN: Esto elimina el error "No directory at: /app/staticfiles/"
 if not STATIC_ROOT.exists():
     STATIC_ROOT.mkdir(parents=True, exist_ok=True)
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 
