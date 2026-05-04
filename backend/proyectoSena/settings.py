@@ -82,27 +82,21 @@ USE_TZ = True
 
 
 
-# --- ARCHIVOS ESTÁTICOS Y MEDIA ---
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Forzamos la creación del directorio para que Railway no se queje
-if not os.path.exists(STATIC_ROOT):
-    os.makedirs(STATIC_ROOT)
-
+# Con WhiteNoise 6.x, esta es la forma más estable
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-# ESTO ES LO QUE SOLUCIONA TU ERROR:
-# Solo agregamos la carpeta a la lista si realmente existe en el sistema
+# Evita que la app se detenga si no encuentra la carpeta local 'static'
 STATICFILES_DIRS = []
-local_static_path = os.path.join(BASE_DIR, 'static')
-if os.path.exists(local_static_path):
-    STATICFILES_DIRS.append(local_static_path)
+local_static = BASE_DIR / 'static'
+if local_static.exists():
+    STATICFILES_DIRS.append(str(local_static))
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Crear el directorio automáticamente si Railway lo borra
+if not STATIC_ROOT.exists():
+    STATIC_ROOT.mkdir(parents=True, exist_ok=True)
 
 
 
