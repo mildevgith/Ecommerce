@@ -98,7 +98,7 @@ class AuthVerifyView(APIView):
 class ProductCatalogViewSet(viewsets.ModelViewSet):
     queryset = TiendaProducto.objects.all().order_by('-id')
     serializer_class = TiendaProductoSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         queryset = self.queryset
