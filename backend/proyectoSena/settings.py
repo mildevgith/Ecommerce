@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'django.contrib.postgres',
+    'cloudinary',
     'tienda',
 ]
 
@@ -171,3 +172,13 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success"
     }
 }
+
+# Cloudinary Config
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('Root'),
+    'API_KEY': os.getenv('176726722615111'),
+    'API_SECRET': os.getenv('*********************************'),
+}
+
+# Esto le dice a Django que use Cloudinary para los archivos MEDIA
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
