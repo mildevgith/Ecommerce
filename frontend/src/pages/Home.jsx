@@ -57,7 +57,7 @@ export default function Home() {
         } else {
           const resProd = await fetch(`${API_URL}/productos/`);
           const dataProd = await resProd.json();
-          const destacados = dataProd.filter((p) => p.es_destacado === true);
+          setProductosDestacados(dataProd.slice(0, 8));
           setProductosDestacados(
             destacados.length > 0
               ? destacados.slice(0, 8)
