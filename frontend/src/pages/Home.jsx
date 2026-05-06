@@ -60,8 +60,8 @@ export default function Home() {
           const destacados = dataProd.filter((p) => p.es_destacado === true);
           setProductosDestacados(
             destacados.length > 0
-              ? destacados.slice(0, 4)
-              : dataProd.slice(0, 4),
+              ? destacados.slice(0, 8)
+              : dataProd.slice(0, 8),
           );
         }
       } catch (error) {
