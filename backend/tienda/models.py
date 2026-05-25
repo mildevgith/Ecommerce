@@ -203,3 +203,17 @@ class UserOTP(models.Model):
 
     def __str__(self):
         return f"Código OTP de {self.user.email}"
+
+
+# --- NUEVO: SISTEMA DE SUSCRIPCIONES (Boletín de Noticias) ---
+class TiendaSuscripcion(models.Model):
+    email = models.EmailField(unique=True, max_length=254, verbose_name="Correo Electrónico")
+    fecha_suscripcion = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Suscripción")
+
+    class Meta:
+        db_table = 'tienda_suscripcion'
+        verbose_name = "Suscripción"
+        verbose_name_plural = "Suscripciones"
+
+    def __str__(self):
+        return self.email

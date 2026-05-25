@@ -174,10 +174,11 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # Cloudinary Config
+# Cloudinary Config (Corregido para leer variables del .env)
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('Root'),
-    'API_KEY': os.getenv('176726722615111'),
-    'API_SECRET': os.getenv('*********************************'),
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 }
 
 # Esto le dice a Django que use Cloudinary para los archivos MEDIA

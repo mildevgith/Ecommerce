@@ -51,13 +51,10 @@ export default function Navbar() {
 
         {/* LOGO & BRANDING */}
         <Link to="/" className="flex items-center gap-3 flex-shrink-0 transition-transform hover:scale-[1.02]">
-          <img src={logoImg} alt="Mixtura" className="h-9 md:h-11 w-auto object-contain" />
+          <img src={logoImg} alt="Mixtura" className="h-12 md:h-11 w-auto object-contain" />
           <div className="hidden lg:block h-8 w-[1px] bg-gray-200"></div>
           <div className="hidden lg:flex flex-col justify-center leading-none">
-            <img src={sloganImg} alt="Sello de Calidad" className="h-4 w-auto object-contain opacity-80" />
-            <span className="text-[8px] font-black text-gray-400 tracking-[0.2em] uppercase mt-1">
-              Grupo GRB
-            </span>
+            <img src={sloganImg} alt="Sello de Calidad" className="h-9 w-auto object-contain opacity-80" />
           </div>
         </Link>
 
@@ -71,7 +68,7 @@ export default function Navbar() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Busca productos, marcas y más..."
+            placeholder="Busca productos acuícolas y Servicios de transporte de alimentos congelados..."
             className="w-full bg-transparent py-2.5 px-3 outline-none text-[13px] text-gray-700 font-medium"
           />
           <button
