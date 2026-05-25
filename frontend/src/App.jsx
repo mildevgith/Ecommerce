@@ -8,6 +8,7 @@ import Confirmacion from "./pages/Confirmacion";
 import Home from "./pages/Home";
 import Ofertas from "./pages/Ofertas";
 import Productos from "./pages/Productos";
+import CategoriaProductos from "./pages/CategoriaProductos";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -24,6 +25,8 @@ function App() {
           <Route path="ofertas" element={<Ofertas />} />
           <Route path="carrito" element={<Carrito />} />
           <Route path="confirmacion" element={<Confirmacion />} />
+
+          <Route path="categoria/:id" element={<CategoriaProductos />} />
 
           {/* Rutas de Autenticación Unificadas */}
           <Route path="auth" element={<AuthPage />} />

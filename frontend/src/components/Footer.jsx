@@ -1,4 +1,5 @@
-import { Facebook, Instagram, Mail, Phone, MapPin, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { Facebook, Instagram, Mail, Phone, MapPin, ExternalLink, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Importación de imágenes locales para el branding
@@ -6,6 +7,49 @@ import logo from "../assets/logo.png";
 import slogan from "../assets/slogan.png";
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [statusMsg, setStatusMsg] = useState({ type: "", text: "" });
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setLoading(true);
+    setStatusMsg({ type: "", text: "" });
+
+    try {
+      // Ajustamos la URL a tu puerto local habitual 8000
+      const response = await fetch("http://localhost:8000/api/suscripciones/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.success) {
+          setStatusMsg({ type: "success", text: data.success });
+          setEmail(""); // Limpiar campo
+        } else {
+          // Si entra aquí es porque ya estaba registrado (200 OK con message)
+          setStatusMsg({ type: "info", text: data.message });
+        }
+      } else {
+        setStatusMsg({ type: "error", text: data.error || "Algo salió mal." });
+      }
+    } catch (error) {
+      setStatusMsg({ type: "error", text: "No se pudo conectar con el servidor." });
+    } finally {
+      setLoading(false);
+      // Desvanecer el mensaje automáticamente tras 4 segundos
+      setTimeout(() => setStatusMsg({ type: "", text: "" }), 4000);
+    }
+  };
+
   return (
     <footer className="bg-slate-950 text-white pt-20 pb-10 font-sans">
       <div className="max-w-7xl mx-auto px-6">
@@ -81,16 +125,36 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-black mb-6 uppercase text-xs tracking-widest border-b border-slate-800 pb-2 inline-block">Suscripción</h3>
             <p className="text-sm font-medium text-slate-400 mb-4">Entérate de nuestras ofertas premium.</p>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Tu email"
-                className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm font-medium w-full focus:outline-none focus:border-orange-500 transition-colors"
-              />
-              <button className="bg-orange-500 hover:bg-orange-600 px-3 rounded-xl transition-colors shadow-lg shadow-orange-500/20">
-                <ExternalLink size={18} />
-              </button>
-            </div>
+            <form onSubmit={handleSubscribe} className="space-y-2">
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Tu email"
+                  disabled={loading}
+                  className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm font-medium w-full focus:outline-none focus:border-orange-500 transition-colors disabled:opacity-50"
+                />
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="bg-orange-500 hover:bg-orange-600 px-3 rounded-xl transition-colors shadow-lg shadow-orange-500/20 flex items-center justify-center disabled:bg-slate-800"
+                >
+                  {loading ? <Loader2 className="animate-spin" size={18} /> : <ExternalLink size={18} />}
+                </button>
+              </div>
+              
+              {/* Notificación sutil e integrada debajo de la barra */}
+              {statusMsg.text && (
+                <p className={`text-xs font-semibold mt-2 transition-all ${
+                  statusMsg.type === "success" ? "text-emerald-400" :
+                  statusMsg.type === "info" ? "text-amber-400" : "text-rose-400"
+                }`}>
+                  {statusMsg.text}
+                </p>
+              )}
+            </form>
           </div>
 
         </div>

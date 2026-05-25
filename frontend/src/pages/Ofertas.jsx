@@ -1,149 +1,129 @@
-import axios from "axios";
-import { motion } from "framer-motion";
-import { ArrowRight, Flame, Loader2, ShoppingCart } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useCart } from "../context/CartContext"; // Importación del carrito
+import React, { useEffect, useState } from 'react';
+import { ShoppingCart, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
-const api = axios.create({
-  baseURL: "http://localhost:8000/api",
-});
+const BASE_URL = "http://localhost:8000";
+
+const getImageUrl = (url) => {
+    if (!url) return "https://via.placeholder.com/400x300?text=Expomarket";
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
+    return `${BASE_URL}${url}`;
+};
 
 export default function Ofertas() {
-  const [productos, setProductos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { addToCart } = useCart(); // Hook del carrito
+    const [ofertas, setOfertas] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { addToCart } = useCart();
 
-  const BASE_URL = "http://localhost:8000";
+    useEffect(() => {
+        const fetchTodasLasOfertas = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch(`${BASE_URL}/api/productos/`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const lista = data.results || [];
+                    // Filtra dinámicamente usando el campo real de tu base de datos
+                    const filtrados = lista.filter(p => p.en_oferta === true);
+                    setOfertas(filtrados);
+                }
+            } catch (error) {
+                console.error("Error al cargar la página de ofertas:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTodasLasOfertas();
+    }, []);
 
-  useEffect(() => {
-    const fetchOfertas = async () => {
-      try {
-        const res = await api.get("/productos/");
-        const soloOfertas = res.data.filter(
-          (p) => p.precio_oferta && Number(p.precio_oferta) < Number(p.precio)
-        );
-        setProductos(soloOfertas);
-      } catch (err) {
-        console.error("Error cargando productos:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOfertas();
-  }, []);
-
-  const getImageUrl = (url) => {
-    if (!url) return "https://via.placeholder.com/600x400?text=Expomarket+Cali";
-    return url.startsWith("http") ? url : `${BASE_URL}${url}`;
-  };
-
-  return (
-    <main className="min-h-screen bg-slate-950 text-white pt-24 selection:bg-orange-500/30">
-      <section className="px-6 py-12 max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-12"
-        >
-          <div>
-            <div className="flex items-center gap-2 text-orange-500 mb-4">
-              <Flame size={24} fill="currentColor" />
-              <span className="font-black uppercase tracking-tighter">Hot Deals Cali</span>
+    if (loading) {
+        return (
+            <div className="text-center p-10 font-bold text-slate-600 bg-white min-h-screen flex items-center justify-center">
+                Cargando el listado de ofertas...
             </div>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter">
-              OFERTAS <br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-amber-600">
-                IMPERDIBLES
-              </span>
-            </h1>
-          </div>
-          <p className="max-w-xs text-slate-400 text-sm md:text-base leading-relaxed">
-            Precios exclusivos de Expomarket para productos seleccionados de nuestra última pesca.
-          </p>
-        </motion.div>
-      </section>
+        );
+    }
 
-      <section className="max-w-7xl mx-auto px-6 pb-24">
-        {loading ? (
-          <div className="flex flex-col items-center py-24">
-            <Loader2 className="animate-spin text-orange-500" size={50} />
-            <p className="mt-4 text-slate-500 animate-pulse">Consultando base de datos...</p>
-          </div>
-        ) : productos.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {productos.map((prod, idx) => (
-              <motion.div
-                key={prod.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                viewport={{ once: true }}
-                className="group"
-              >
-                <div className="relative aspect-square overflow-hidden rounded-[2.5rem] bg-slate-900 border border-white/5 shadow-2xl">
-                  <img
-                    src={getImageUrl(prod.imagen)}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    alt={prod.nombre}
-                  />
-                  <div className="absolute top-6 left-6 bg-white text-black font-black px-4 py-2 rounded-2xl text-sm shadow-xl z-10">
-                    -{Math.round(((prod.precio - prod.precio_oferta) / prod.precio) * 100)}%
-                  </div>
+    return (
+        <div className="bg-white min-h-screen text-slate-900 pb-12">
+            <div className="container mx-auto px-4 pt-8">
+                {/* Botón de retorno coherente */}
+                <Link to="/" className="inline-flex items-center text-orange-500 hover:underline mb-6 gap-2 text-sm font-medium">
+                    <ArrowLeft size={16} /> Volver al Inicio
+                </Link>
+                
+                {/* Encabezado con los mismos textos del Home */}
+                <div className="mb-8">
+                    <span className="text-xs font-bold text-orange-500 tracking-wider uppercase block mb-1">
+                        AHORRA HOY
+                    </span>
+                    <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-2">
+                        Ofertas Imperdibles 🔥
+                    </h1>
+                    <p className="text-slate-500 text-sm mt-2 max-w-xl">
+                        Listado completo de nuestros productos seleccionados con precios especiales directamente desde la base de datos.
+                    </p>
                 </div>
+                <hr className="border-slate-100 mb-8" />
+            </div>
 
-                <div className="mt-8 px-2">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-2xl font-black text-white group-hover:text-orange-400 transition-colors uppercase">
-                      {prod.nombre}
-                    </h3>
-                    <div className="flex flex-col items-end">
-                      <span className="text-3xl font-black text-orange-500">
-                        ${Number(prod.precio_oferta).toLocaleString('es-CO')}
-                      </span>
-                      <span className="text-sm text-slate-500 line-through">
-                        ${Number(prod.precio).toLocaleString('es-CO')}
-                      </span>
+            {/* Contenedor de Productos en Rejilla Limpia */}
+            <div className="container mx-auto px-4">
+                {ofertas.length === 0 ? (
+                    <div className="border border-dashed border-slate-200 rounded-2xl p-16 text-center bg-slate-50">
+                        <p className="text-slate-400 font-medium">No hay productos en promoción activos en el Admin de Django.</p>
                     </div>
-                  </div>
+                ) : (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                        {ofertas.map((producto) => (
+                            <div 
+                                key={producto.id} 
+                                className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                            >
+                                <div>
+                                    {/* Contenedor Imagen con el Tag Naranja exacto */}
+                                    <div className="relative overflow-hidden rounded-xl h-48 bg-slate-50 mb-4">
+                                        <span className="absolute top-3 left-3 z-10 bg-orange-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
+                                            OFERTA
+                                        </span>
+                                        <img 
+                                            src={getImageUrl(producto.imagen)} 
+                                            className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" 
+                                            alt={producto.nombre} 
+                                        />
+                                    </div>
 
-                  <p className="text-slate-500 text-sm mb-6 line-clamp-2">
-                    {prod.descripcion || "Calidad premium seleccionada para pescaderías y hogares en Cali."}
-                  </p>
-
-                  {/* BOTÓN CONECTADO AL CARRITO */}
-                  <button
-                    onClick={() => addToCart(prod)}
-                    className="w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-2xl font-black hover:bg-orange-500 hover:text-white transition-all transform active:scale-95"
-                  >
-                    <ShoppingCart size={20} />
-                    AÑADIR AL PEDIDO
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-24 border-2 border-dashed border-white/10 rounded-[3rem]">
-            <p className="text-slate-500 text-xl">No hay productos en oferta registrados.</p>
-          </div>
-        )}
-      </section>
-
-      {/* Banner final se mantiene igual... */}
-      <section className="px-6 pb-24">
-        <div className="max-w-7xl mx-auto bg-linear-to-r from-orange-600 to-amber-500 rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
-            <h2 className="text-4xl md:text-6xl font-black text-white leading-none">
-              ¿MAYORISTA? <br /> <span className="text-slate-900">PRECIOS VIP</span>
-            </h2>
-            <button className="bg-slate-950 text-white px-10 py-5 rounded-full font-black flex items-center gap-4 hover:bg-white hover:text-black transition-all group">
-              HABLAR CON ASESOR
-              <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-            </button>
-          </div>
-          <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+                                    {/* Textos e Información */}
+                                    <div className="text-center">
+                                        <h3 className="text-base font-bold text-slate-800">{producto.nombre}</h3>
+                                        <p className="text-slate-500 text-xs mt-1 line-clamp-2 min-h-[32px]">{producto.descripcion}</p>
+                                        
+                                        {/* Precios: Antes y Ahora formateados */}
+                                        <div className="mt-3 flex items-center justify-center gap-2 text-xs">
+                                            <span className="text-slate-400 line-through">
+                                                ${producto.precio ? Number(producto.precio).toLocaleString("es-CO") : "0"}
+                                            </span>
+                                            <span className="text-orange-500 font-extrabold text-base">
+                                                ${producto.precio_oferta ? Number(producto.precio_oferta).toLocaleString("es-CO") : "0"}
+                                            </span>
+                                            <span className="text-slate-400">/ Kg</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* Botón de compra oscuro idéntico al Home */}
+                                <button
+                                    onClick={() => addToCart(producto)}
+                                    className="mt-5 w-full rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-white hover:bg-orange-500 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <ShoppingCart size={14} /> Añadir al carrito
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
-      </section>
-    </main>
-  );
+    );
 }
