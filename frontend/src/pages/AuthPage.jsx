@@ -32,7 +32,7 @@ export default function AuthPage() {
         localStorage.setItem("user", JSON.stringify(data.user));
 
         // 2. Forzamos la redirección al inicio o al checkout si venía de allá
-        navigate("/", { replace: true });
+        navigate("/checkout", { replace: true });
 
         // 3. RECARGA NECESARIA: Para que el Navbar lea el nuevo localStorage
         window.location.reload();

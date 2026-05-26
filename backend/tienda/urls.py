@@ -19,6 +19,7 @@ router.register(r'productos', ProductCatalogViewSet, basename='producto')
 router.register(r'categorias', CategoryViewSet, basename='categoria')
 router.register(r'pedidos', OrderViewSet, basename='pedido')
 
+
 # --- VISTA RÁPIDA PARA PROCESAR LA SUSCRIPCIÓN ---
 class SuscribirNewsletterView(APIView):
     def post(self, request):
@@ -39,14 +40,9 @@ class SuscribirNewsletterView(APIView):
 
 
 urlpatterns = [
-    # Rutas del router (maneja /api/productos/ y /api/productos/recomendados/)
     path('', include(router.urls)),
-    
-    # Rutas basadas en APIViews normales
     path('auth/register/', AuthRegisterView.as_view(), name='auth_register'),
-    path('auth/verify/', AuthVerifyView.as_view(), name='auth_verify'),
-    path('crear-pedido/', CrearPedidoView.as_view(), name='crear_pedido'),
-    
-    # Nueva ruta para suscripciones
+    path('auth/login/', AuthVerifyView.as_view(), name='auth_login'), 
     path('suscripciones/', SuscribirNewsletterView.as_view(), name='suscribir_newsletter'),
+    # Ya no necesitas 'crear-pedido/' porque el router /api/pedidos/ ya lo hace.
 ]
