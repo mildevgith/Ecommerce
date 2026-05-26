@@ -4,8 +4,21 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import TiendaSuscripcion
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import TiendaSuscripcion
 from .views import (
     AuthRegisterView,
+    AuthVerifyView,
+    ProductCatalogViewSet,
+    CrearPedidoView,
+    CategoryViewSet,
+    OrderViewSet
+)
+
+# Configuración del Router automático de DRF
+(   AuthRegisterView,
     AuthVerifyView,
     ProductCatalogViewSet,
     CrearPedidoView,
@@ -40,7 +53,10 @@ class SuscribirNewsletterView(APIView):
 
 
 urlpatterns = [
+    # Rutas del router (maneja /api/productos/ y /api/productos/recomendados/)
     path('', include(router.urls)),
+    
+    # Rutas basadas en APIViews normales
     path('auth/register/', AuthRegisterView.as_view(), name='auth_register'),
     path('auth/login/', AuthVerifyView.as_view(), name='auth_login'), 
     path('suscripciones/', SuscribirNewsletterView.as_view(), name='suscribir_newsletter'),

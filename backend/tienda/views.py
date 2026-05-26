@@ -12,7 +12,9 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.pagination import PageNumberPagination
 
 from .models import (
@@ -41,6 +43,19 @@ class CatalogoPagination(PageNumberPagination):
     max_page_size = 100
 
 
+
+# --- CLASE DE PAGINACIÓN PERSONALIZADA ---
+
+class CatalogoPagination(PageNumberPagination):
+    """
+    Configuración de paginación para el catálogo de productos.
+    Divide los resultados devueltos en bloques de 8 elementos.
+    """
+    page_size = 8
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
 # --- AUTENTICACIÓN REAL ---
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -51,6 +66,8 @@ class AuthRegisterView(APIView):
         data = request.data
         email = data.get('email', '').lower().strip()
         password = data.get('password')
+        nombre = data.get('nombre')  
+        whatsapp = data.get('whatsapp', '') 
         nombre = data.get('nombre')  
         whatsapp = data.get('whatsapp', '') 
 
@@ -104,6 +121,7 @@ class AuthVerifyView(APIView):
         return Response({"error": "Credenciales inválidas"}, status=401)
 
 
+
 # --- CATÁLOGO ---
 
 class ProductCatalogViewSet(viewsets.ModelViewSet):
@@ -111,12 +129,15 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
     serializer_class = TiendaProductoSerializer
     permission_classes = [AllowAny]
     pagination_class = CatalogoPagination  
+    pagination_class = CatalogoPagination  
 
     def get_queryset(self):
         queryset = self.queryset
         
+        
         search = self.request.query_params.get('search', None)
         if search:
+            self.pagination_class = None
             self.pagination_class = None
             st = eliminar_tildes(search)
             queryset = queryset.filter(Q(nombre__icontains=search) | Q(nombre__icontains=st))
@@ -198,6 +219,7 @@ class CrearPedidoView(APIView):
             return Response({"error": f"Falta el campo: {str(e)}"}, status=400)
         except Exception as e:
             return Response({"error": str(e)}, status=400)
+
 
 
 # --- VIEWSETS RESTANTES ---

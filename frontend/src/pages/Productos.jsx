@@ -2,18 +2,15 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import mix from "../assets/mix.jpeg";
-// 1. IMPORTAMOS EL HOOK DEL CARRITO
 import { useCart } from "../context/CartContext";
 
 export default function Productos() {
-  const [productos, setProductos] = useState([]);
+  const [productos, setProductos] = useState([]); // Siempre inicializa como array vacío
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 6;
 
-  // 2. EXTRAEMOS LA FUNCIÓN addToCart
   const { addToCart } = useCart();
-
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const searchTerm = queryParams.get("search") || "";
@@ -22,16 +19,23 @@ export default function Productos() {
     const obtenerProductos = async () => {
       setLoading(true);
       try {
-        const base_url = "http://localhost:8000/api/productos/";
+        // 1. CORRECCIÓN: URL de Railway para que funcione en Netlify
+        const base_url = "https://serene-peace-production-62ee.up.railway.app/api/productos/";
         const url = searchTerm
           ? `${base_url}?search=${encodeURIComponent(searchTerm)}`
           : base_url;
 
         const response = await axios.get(url);
-        setProductos(response.data);
+        
+        // 2. CORRECCIÓN: Acceder a .results porque tu API está paginada
+        // Si response.data tiene .results, usamos eso. Si no, usamos el data directo.
+        const dataFinal = response.data.results ? response.data.results : response.data;
+        
+        setProductos(Array.isArray(dataFinal) ? dataFinal : []);
         setCurrentPage(1);
       } catch (error) {
         console.error("Error al conectar con la base de datos:", error);
+        setProductos([]); // Evita que el error rompa el .slice()
       } finally {
         setLoading(false);
       }
@@ -39,8 +43,11 @@ export default function Productos() {
     obtenerProductos();
   }, [searchTerm]);
 
+  // Lógica de paginación segura
   const indexOfLast = currentPage * productsPerPage;
   const indexOfFirst = indexOfLast - productsPerPage;
+  
+  // 3. CORRECCIÓN: productos ahora siempre es un array, evitando el error de slice()
   const currentProducts = productos.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(productos.length / productsPerPage);
 
@@ -65,43 +72,61 @@ export default function Productos() {
         </h2>
 
         {loading ? (
-          <div className="text-center py-10">Cargando productos...</div>
+          <div className="flex flex-col items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-900"></div>
+            <p className="mt-4 text-gray-500 font-medium">Cargando delicias del mar...</p>
+          </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {currentProducts.map((producto) => (
-                <div key={producto.id} className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-all group">
-                  <img src={producto.imagen} alt={producto.nombre} className="w-full h-56 object-cover" />
-                  <div className="p-5">
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{producto.nombre}</h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{producto.descripcion}</p>
-                    <p className="text-blue-900 text-lg font-semibold mb-4">${producto.precio.toLocaleString("es-CO")}</p>
-
-                    <div className="flex justify-between gap-2">
-                      {/* 3. CAMBIAMOS EL Link POR UN button CON addToCart */}
-                      <button
-                        onClick={() => addToCart(producto)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-orange-500 transition-colors flex-1"
-                      >
-                        Añadir al carrito
-                      </button>
-
-                      <Link to={`/productoDetalle/${producto.id}`} className="border border-blue-600 text-blue-600 px-4 py-2 rounded-full text-xs hover:bg-blue-600 hover:text-white transition">
-                        Detalles
-                      </Link>
-                    </div>
-                  </div>
+            {productos.length === 0 ? (
+                <div className="text-center py-20 text-gray-500">
+                    No se encontraron productos disponibles.
                 </div>
-              ))}
-            </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {currentProducts.map((producto) => (
+                    <div key={producto.id} className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-all group">
+                    <img 
+                        src={producto.imagen} 
+                        alt={producto.nombre} 
+                        className="w-full h-56 object-cover"
+                        onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=Imagen+No+Disponible'; }} 
+                    />
+                    <div className="p-5">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">{producto.nombre}</h3>
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{producto.descripcion}</p>
+                        <p className="text-blue-900 text-lg font-semibold mb-4">
+                            ${Number(producto.precio).toLocaleString("es-CO")}
+                        </p>
+
+                        <div className="flex justify-between gap-2">
+                        <button
+                            onClick={() => addToCart(producto)}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-orange-500 transition-colors flex-1"
+                        >
+                            Añadir al carrito
+                        </button>
+
+                        <Link to={`/productoDetalle/${producto.id}`} className="border border-blue-600 text-blue-600 px-4 py-2 rounded-full text-xs hover:bg-blue-600 hover:text-white transition">
+                            Detalles
+                        </Link>
+                        </div>
+                    </div>
+                    </div>
+                ))}
+                </div>
+            )}
 
             {totalPages > 1 && (
               <div className="flex justify-center items-center gap-3 mt-10">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
                   <button
                     key={num}
-                    onClick={() => setCurrentPage(num)}
-                    className={`px-4 py-2 rounded-full border border-blue-600 ${currentPage === num ? "bg-blue-600 text-white" : "text-blue-600"}`}
+                    onClick={() => {
+                        setCurrentPage(num);
+                        window.scrollTo({ top: 500, behavior: 'smooth' });
+                    }}
+                    className={`px-4 py-2 rounded-full border border-blue-600 transition-colors ${currentPage === num ? "bg-blue-600 text-white" : "text-blue-600 hover:bg-blue-50"}`}
                   >
                     {num}
                   </button>

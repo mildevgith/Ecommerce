@@ -67,6 +67,19 @@ export default function Home() {
             setSearchResults(Array.isArray(dataSearch) ? dataSearch : (dataSearch.results || []));
           }
         } else {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+          const resProd = await fetch(`${API_URL}/productos/`);
+          const dataProd = await resProd.json();
+          setProductosDestacados(dataProd.slice(0, 8));
+          setProductosDestacados(
+            destacados.length > 0
+              ? destacados.slice(0, 8)
+              : dataProd.slice(0, 8),
+          );
+=======
+>>>>>>> 1a6e346141cb96a3cb075a6e2c37d5ad4322b2dd
           const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
 
           // URL para recomendados
@@ -101,6 +114,10 @@ export default function Home() {
             );
             setProductosOferta(ofertas.slice(0, 4));
           }
+<<<<<<< HEAD
+=======
+>>>>>>> 7fbfd23 (optmizando navegación del ecommerce)
+>>>>>>> 1a6e346141cb96a3cb075a6e2c37d5ad4322b2dd
         }
       } catch (error) {
         console.error("Error conectando con Django:", error);
