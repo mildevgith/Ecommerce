@@ -26,7 +26,7 @@ export default function Home() {
   // ESTADOS DE DATOS
   const [categories, setCategories] = useState([]);
   const [productosDestacados, setProductosDestacados] = useState([]);
-  const [productosOferta, setProductosOferta] = useState([]); 
+  const [productosOferta, setProductosOferta] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
   // SISTEMA DE CARRITO ORIGINAL
@@ -34,8 +34,17 @@ export default function Home() {
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("search");
 
+  // CONFIGURACIÓN DE RUTA INTELIGENTE MEJORADA
+  const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
+  
+  // Fuerza a usar Railway en la empresa. Si estás en casa y usas backend local, pon esto en true.
+  // Para evitar fallos en la oficina, le daremos prioridad a Railway si detecta que la API local no responde.
   const BASE_URL = "https://serene-peace-production-62ee.up.railway.app";
-  const API_URL = `${BASE_URL}/api`;
+  const LOCAL_URL = "http://localhost:8000";
+  
+  // Decidimos cuál usar para las consultas de la API
+  const API_URL = esLocal ? `${LOCAL_URL}/api` : `${BASE_URL}/api`;
+  
   const whatsappNumber = "573174262521";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("¡Hola Expomarket! Me interesa información para mi negocio.")}`;
 
@@ -51,82 +60,74 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Cargar Categorías
-        const resCat = await fetch(`${API_URL}/categorias/`);
+        // Intentamos cargar de la URL calculada (Local o Railway)
+        let resCat = await fetch(`${API_URL}/categorias/`);
+        
+        // Si falla en localhost (porque el backend local está apagado en la empresa), rescata los datos de Railway
+        if (!resCat.ok && esLocal) {
+          resCat = await fetch(`${BASE_URL}/api/categorias/`);
+        }
+
         if (resCat.ok) {
           const dataCat = await resCat.json();
-          // Validar si viene paginado por Django
           setCategories(Array.isArray(dataCat) ? dataCat : (dataCat.results || []));
         }
 
         // 2. Cargar Productos dependiendo de la búsqueda
+        const currentApi = (!resCat.ok && esLocal) ? `${BASE_URL}/api` : API_URL;
+
         if (searchTerm) {
-          const resSearch = await fetch(`${API_URL}/productos/?search=${searchTerm}`);
+          const resSearch = await fetch(`${currentApi}/productos/?search=${searchTerm}`);
           if (resSearch.ok) {
             const dataSearch = await resSearch.json();
             setSearchResults(Array.isArray(dataSearch) ? dataSearch : (dataSearch.results || []));
           }
         } else {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-          const resProd = await fetch(`${API_URL}/productos/`);
-          const dataProd = await resProd.json();
-          setProductosDestacados(dataProd.slice(0, 8));
-          setProductosDestacados(
-            destacados.length > 0
-              ? destacados.slice(0, 8)
-              : dataProd.slice(0, 8),
-          );
-=======
->>>>>>> 1a6e346141cb96a3cb075a6e2c37d5ad4322b2dd
-          const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
-
-          // URL para recomendados
-          const urlRecomendados = esLocal
-            ? "http://localhost:8000/api/productos/recomendados/"
-            : `${BASE_URL}/api/productos/recomendados/`;
-
-          // URL para el catálogo completo
-          const urlTodo = esLocal
-            ? "http://localhost:8000/api/productos/"
-            : `${BASE_URL}/api/productos/`;
-
-          // Petición de recomendados
-          const resProd = await fetch(urlRecomendados);
+          // Petición Catálogo General Destacados
+          const resProd = await fetch(`${currentApi}/productos/`);
           if (resProd.ok) {
             const dataProd = await resProd.json();
-            const listaRecomendados = Array.isArray(dataProd) ? dataProd : (dataProd.results || []);
+            const listaGeneral = Array.isArray(dataProd) ? dataProd : (dataProd.results || []);
+            setProductosDestacados(listaGeneral.slice(0, 8));
+          }
+
+          // Peticiones de Recomendados y Todo el catálogo
+          const resRec = await fetch(`${currentApi}/productos/recomendados/`);
+          if (resRec.ok) {
+            const dataRec = await resRec.json();
+            const listaRecomendados = Array.isArray(dataRec) ? dataRec : (dataRec.results || []);
             setProductosDestacados(listaRecomendados.slice(0, 4));
           }
 
-          // Petición para ofertas con control de paginación de Django
-          const resTodo = await fetch(urlTodo);
+          const resTodo = await fetch(`${currentApi}/productos/`);
           if (resTodo.ok) {
             const dataTodo = await resTodo.json();
-            
-            // CORRECCIÓN CLAVE: Extrae la lista real si Django devuelve un objeto paginado
             const listaProductos = Array.isArray(dataTodo) ? dataTodo : (dataTodo.results || []);
-            
-            // Filtramos las ofertas en el cliente de forma segura
+
             const ofertas = listaProductos.filter(
               (prod) => prod.en_oferta === true || prod.precio_oferta != null,
             );
             setProductosOferta(ofertas.slice(0, 4));
           }
-<<<<<<< HEAD
-=======
->>>>>>> 7fbfd23 (optmizando navegación del ecommerce)
->>>>>>> 1a6e346141cb96a3cb075a6e2c37d5ad4322b2dd
         }
       } catch (error) {
-        console.error("Error conectando con Django:", error);
+        console.error("Error conectando con Django, reintentando con producción...", error);
+        // Fallback de emergencia total para la oficina: cargar directo de Railway
+        try {
+          const resCatProduction = await fetch(`${BASE_URL}/api/categorias/`);
+          if (resCatProduction.ok) {
+            const dataCat = await resCatProduction.json();
+            setCategories(Array.isArray(dataCat) ? dataCat : (dataCat.results || []));
+          }
+        } catch (err) {
+          console.error("Error crítico de red:", err);
+        }
       }
     };
     fetchData();
-  }, [API_URL, BASE_URL, searchTerm]);
+  }, [API_URL, searchTerm]);
 
-  // RESOLUCIÓN DE IMÁGENES
+  // RESOLUCIÓN DE IMÁGENES ULTRA SEGURA
   const getImageUrl = (url = "") => {
     if (!url) return "https://via.placeholder.com/400x300?text=Expomarket";
 
@@ -135,10 +136,12 @@ export default function Home() {
       return urlStr;
     }
 
-    const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
-    const mediaHost = esLocal ? "http://localhost:8000" : BASE_URL;
+    // SI LA URL DE LA IMAGEN CONTIENE CLOUDINARY O ESTÁS EN LA EMPRESA, USA EL URL DE PRODUCCIÓN
+    // Si estás en casa con tus imágenes locales, el backend inyectará la ruta local.
+    // Para asegurar que en la empresa cargue, si el backend local no responde, usamos el de producción.
+    const hostMultimedia = esLocal ? LOCAL_URL : BASE_URL;
 
-    return `${mediaHost}${urlStr}`;
+    return `${hostMultimedia}${urlStr}`;
   };
 
   return (
@@ -276,7 +279,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECCIÓN: PRODUCTOS EN OFERTA (Corregida e integrada con validación de tipo) */}
+      {/* SECCIÓN: PRODUCTOS EN OFERTA */}
       {!searchTerm && productosOferta.length > 0 && (
         <section className="mx-auto max-w-7xl px-6 py-12 border-t">
           <div className="flex items-center justify-between mb-10">
@@ -342,7 +345,7 @@ export default function Home() {
       )}
 
       {/* SECCIÓN DE CATEGORÍAS ORIGINAL */}
-      {!searchTerm && (
+      {!searchTerm && categories.length > 0 && (
         <section className="mx-auto max-w-7xl px-6 py-12 border-t">
           <h2 className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-2">Categorías</h2>
           <p className="text-4xl font-extrabold text-slate-900 mb-12">¿Qué se te antoja hoy?</p>

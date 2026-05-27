@@ -1,0 +1,79 @@
+/* Importación de Tipografía Premium */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+/* Configuración de fondo base Océano */
+body, .wrapper, .content-wrapper, .main-footer {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    background-color: #0b1426 !important; /* Azul Marino Abisal */
+    color: #e2e8f0 !important;
+}
+
+/* Modificación de la barra lateral (Sidebar) */
+.main-sidebar {
+    background-color: #111c36 !important; /* Azul Océano Medio */
+    border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Cambiar el avatar o la letra estática "A" del Header por tu marca */
+.brand-link .brand-image {
+    display: none !important; /* Esconde el círculo por defecto */
+}
+.brand-link .brand-text {
+    font-weight: 800 !important;
+    color: #ff6b35 !important; /* Color Naranja Crustáceo */
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+/* Añade un sutil subtítulo debajo de la marca mediante CSS */
+.brand-link::after {
+    content: "PESCADOS Y MARISCOS";
+    display: block;
+    font-size: 9px;
+    color: #94a3b8;
+    letter-spacing: 2px;
+    margin-left: 0.5rem;
+    margin-top: -2px;
+}
+
+/* DARLE COLOR Y DISEÑO A LOS ICONOS DE LA BARRA LATERAL */
+.nav-sidebar .nav-icon {
+    color: #38bdf8 !important; /* Azul brillante agua para los iconos por defecto */
+    font-size: 1.1rem !important;
+    transition: transform 0.2s ease;
+}
+
+/* Resaltado específico para el icono de Productos (Pescado) */
+.fa-fish {
+    color: #ff9f1c !important; /* Dorado/Naranja Marino */
+}
+/* Resaltado específico para Pedidos y Carritos */
+.fa-shopping-cart, .fa-cart-plus, .fa-truck-loading {
+    color: #4ade80 !important; /* Verde Alga */
+}
+
+/* Efecto hover moderno al seleccionar filas o menús */
+.nav-sidebar .nav-link.active {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%) !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+}
+
+.nav-sidebar .nav-link:hover .nav-icon {
+    transform: scale(1.2);
+}
+
+/* Estilizado de las Tablas e Inputs */
+.card {
+    background-color: #111c36 !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 14px !important;
+}
+
+.btn-expomarket, .btn-primary, input[type=submit] {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%) !important;
+    border: none !important;
+    border-radius: 20px !important;
+    font-weight: 700 !important;
+    color: white !important;
+}

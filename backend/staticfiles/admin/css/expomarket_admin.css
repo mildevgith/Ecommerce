@@ -1,0 +1,46 @@
+/* ==========================================================================
+   ALINEACIÓN Y AJUSTE DE LOGOS EN LA ESQUINA SUPERIOR IZQUIERDA
+   ========================================================================== */
+
+/* Contenedor principal de la marca en el sidebar */
+.brand-link {
+    display: flex !important;
+    align-items: center !important;
+    padding: 10px 12px !important;
+    height: 56px !important; 
+    overflow: hidden !important;
+}
+
+/* Ajuste del Logo Circular */
+.brand-link .brand-image {
+    max-height: 38px !important;
+    width: 38px !important;
+    margin-left: 2px !important;
+    margin-right: 0 !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* Inyección de la imagen de texto (EXPOMAR GRUPO GRB) */
+.brand-link .brand-text {
+    background-image: url('../img/logo_texto.png') !important; /* Sube un nivel y entra a img */
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: left center !important;
+    
+    /* Dimensiones en píxeles para que no se deforme */
+    width: 145px !important; 
+    height: 34px !important;
+    margin-left: 8px !important;
+    display: inline-block !important;
+    
+    /* Oculta el texto "EXPOMAR" de Django */
+    text-indent: -9999px !important; 
+    overflow: hidden !important;
+}
+
+/* Ocultar texto al colapsar el menú */
+.sidebar-collapse .brand-text {
+    display: none !important;
+}

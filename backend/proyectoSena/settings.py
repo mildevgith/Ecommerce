@@ -10,7 +10,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SEGURIDAD ---
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-default-key-123")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "m4lmxu#if!t&mc=^(&y+7a8ojrt3%!qmw7edgc=a6#$+f%h_v")
 
 DEBUG = os.getenv("DEBUG", "False").lower() in ('true', '1', 't')
 
@@ -131,47 +131,100 @@ EMAIL_HOST_USER = os.getenv("EMAIL_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS")
 DEFAULT_FROM_EMAIL = f'EXPOMARKET <{EMAIL_HOST_USER}>'
 
-# --- JAZZMIN SETTINGS ---
+
+
+
+# ==========================================
+# CONFIGURACIÓN PRINCIPAL DE JAZZMIN
+# ==========================================
 JAZZMIN_SETTINGS = {
-    "site_title": "EXPOMARKET Admin",
-    "site_header": "EXPOMARKET",
-    "site_brand": "EXPOMARKET",
-    "site_logo": "tienda/img/logo.png",
-    "site_logo_classes": "img-circle",
-    "welcome_sign": "Gestión EXPOMARKET",
-    "copyright": "EXPOMARKET S.A.S 2026",
-    "show_sidebar": True,
-    "navigation_expanded": False,
-    "compact_view": True,
-    "icons_sidebar": True,
-    "search_model": ["tienda.TiendaProducto"],
+
+    
+    # --- RUTAS DE IMÁGENES CORREGIDAS ---
+    "site_logo": "admin/img/logo.png",        # Apunta a la carpeta de imágenes, NO a css
+    "login_logo": "admin/img/slogan.png",       
+    
+    # Texto que el CSS va a ocultar para inyectar el logo de texto
+    "site_brand": "EXPOMAR",                           
+    
+    # Tu archivo CSS que sí está en admin/css/
+    "custom_css": "admin/css/expomarket_admin.css",                           # Texto base obligatorio que el CSS cambiará por el logo de texto
+    
+    # --- Títulos del Panel ---
+    "site_title": "Expomarket | Operaciones",          # Título de la pestaña de navegación
+    "site_header": "Expomarket",                       # Encabezado estándar
+    "welcome_sign": "Pescados y Mariscos Premium",     # Eslogan en la pantalla de acceso
+    "copyright": "Expomarket Grupo GRB",               # Derechos de autor en el pie de página
+    "search_model": ["tienda.Producto"],               # Buscador global en el panel superior
+
+    # --- Menú Superior (Navbar) ---
     "topmenu_links": [
-        {"name": "Inicio", "url": "admin:index"},
-        {"name": "Web", "url": "http://localhost:5173", "new_window": True},
+        {"name": "Panel Principal", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Ver Tienda Virtual 🛒", "url": "http://localhost:5173", "new_window": True},
     ],
+    
+    # --- Comportamiento Barra Lateral ---
+    "show_sidebar": True,                              # Muestra la barra de navegación lateral
+    "navigation_expanded": True,                       # Aplicaciones desplegadas por defecto
+
+    # --- Iconografía de Modelos (Font Awesome) ---
     "icons": {
-        "auth": "fas fa-users-cog",
-        "auth.user": "fas fa-user-shield",
-        "tienda.TiendaProducto": "fas fa-box",
-        "tienda.TiendaCategorias": "fas fa-tags",
+        "auth": "fas fa-shield-alt",
+        "auth.user": "fas fa-user-lock",
+        "auth.Group": "fas fa-users",
+        
+        "tienda.profile": "fas fa-user-circle",
+        "tienda.tiendacarrito": "fas fa-shopping-cart",
+        "tienda.tiendacategoria": "fas fa-th-large",
+        "tienda.tiendacliente": "fas fa-user-check",
+        "tienda.tiendacupondescuento": "fas fa-ticket-alt",
+        "tienda.tiendadetallepedido": "fas fa-search-plus",
+        "tienda.tiendadetalleproducto": "fas fa-list-alt",
+        "tienda.tiendahistorialestadopedido": "fas fa-route",
+        "tienda.tiendainventario": "fas fa-boxes",
+        "tienda.tiendaitemcarrito": "fas fa-cart-plus",
+        "tienda.tiendametodopago": "fas fa-credit-card",
+        "tienda.tiendapago": "fas fa-check-circle",
+        "tienda.tiendapedido": "fas fa-truck-loading",
+        "tienda.tiendaproducto": "fas fa-fish",          # Icono de pescado para tus productos marinos
+        "tienda.tiendaresenaproducto": "fas fa-comments-dollar",
     },
+    
+    # --- Interfaz de Formularios ---
+    "changeform_format": "horizontal_tabs",            # Formularios extensos ordenados en pestañas hórreos
+    
+    # --- Archivo de Diseño Vinculado ---
+    "custom_css": "admin/css/expomarket_admin.css",    # Enlace directo a tus estilos del océano
 }
 
+# ==========================================
+# RETOQUES VISUALES Y COLORES (UI TWEAKS)
+# ==========================================
 JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": True,
+    "navbar_small_text": False,
     "footer_small_text": True,
-    "body_small_text": True,
+    "body_small_text": False,
     "brand_small_text": False,
-    "sidebar_nav_small_text": True,
-    "navbar": "navbar-dark",
-    "sidebar": "sidebar-dark-primary",
-    "sidebar_nav_flat_style": True,
-    "theme": "flatly",
+
+    "navbar": "navbar-dark bg-dark",                   # Encabezado superior oscuro
+    "no_navbar_border": True,
+    "navbar_fixed": True,
+    "sidebar_fixed": True,
+
+    "sidebar": "sidebar-dark-primary",                 # Menú izquierdo oscuro
+    "sidebar_nav_small_text": False,
+    "sidebar_nav_flat_style": True,                    # Estilo plano sin relieves viejos
+
+    "theme": "navy",                                   # Paleta náutica base
+    "dark_mode_theme": None,
     "button_classes": {
-        "primary": "btn-primary",
-        "success": "btn-success"
-    }
+        "primary": "btn-expomarket",                   # Botones con gradiente naranja
+        "secondary": "btn-outline-light"
+    },
+    
+    "actions_sticky": True                             # Barra de herramientas fija al pie de página
 }
+
 
 
 

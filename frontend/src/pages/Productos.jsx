@@ -5,7 +5,7 @@ import mix from "../assets/mix.jpeg";
 import { useCart } from "../context/CartContext";
 
 export default function Productos() {
-  const [productos, setProductos] = useState([]); // Siempre inicializa como array vacío
+  const [productos, setProductos] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 6;
@@ -15,41 +15,56 @@ export default function Productos() {
   const queryParams = new URLSearchParams(location.search);
   const searchTerm = queryParams.get("search") || "";
 
+  // DETECCIÓN AUTOMÁTICA DE ENTORNO (Casa vs Empresa)
+  const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
+  
+  const BASE_URL = esLocal 
+    ? "http://localhost:8000" 
+    : "https://serene-peace-production-62ee.up.railway.app";
+
   useEffect(() => {
     const obtenerProductos = async () => {
       setLoading(true);
       try {
-        // 1. CORRECCIÓN: URL de Railway para que funcione en Netlify
-        const base_url = "https://serene-peace-production-62ee.up.railway.app/api/productos/";
+        // Renderiza dinámicamente según el entorno activo sin romper Netlify
+        const base_url = `${BASE_URL}/api/productos/`;
         const url = searchTerm
           ? `${base_url}?search=${encodeURIComponent(searchTerm)}`
           : base_url;
 
         const response = await axios.get(url);
         
-        // 2. CORRECCIÓN: Acceder a .results porque tu API está paginada
-        // Si response.data tiene .results, usamos eso. Si no, usamos el data directo.
         const dataFinal = response.data.results ? response.data.results : response.data;
         
         setProductos(Array.isArray(dataFinal) ? dataFinal : []);
         setCurrentPage(1);
       } catch (error) {
         console.error("Error al conectar con la base de datos:", error);
-        setProductos([]); // Evita que el error rompa el .slice()
+        setProductos([]); 
       } finally {
         setLoading(false);
       }
     };
     obtenerProductos();
-  }, [searchTerm]);
+  }, [searchTerm, BASE_URL]);
 
   // Lógica de paginación segura
   const indexOfLast = currentPage * productsPerPage;
   const indexOfFirst = indexOfLast - productsPerPage;
   
-  // 3. CORRECCIÓN: productos ahora siempre es un array, evitando el error de slice()
   const currentProducts = productos.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(productos.length / productsPerPage);
+
+  // RESOLUCIÓN DE IMÁGENES CONTROLADA
+  const getImageUrl = (url = "") => {
+    if (!url) return "https://via.placeholder.com/400x300?text=Expomarket";
+    
+    const urlStr = String(url);
+    if (urlStr.startsWith("http://") || urlStr.startsWith("https://")) {
+      return urlStr;
+    }
+    return `${BASE_URL}${urlStr}`;
+  };
 
   return (
     <>
@@ -80,14 +95,14 @@ export default function Productos() {
           <>
             {productos.length === 0 ? (
                 <div className="text-center py-20 text-gray-500">
-                    No se encontraron productos disponibles.
+                  No se encontraron productos disponibles.
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {currentProducts.map((producto) => (
                     <div key={producto.id} className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-all group">
                     <img 
-                        src={producto.imagen} 
+                        src={getImageUrl(producto.imagen)} 
                         alt={producto.nombre} 
                         className="w-full h-56 object-cover"
                         onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=Imagen+No+Disponible'; }} 
