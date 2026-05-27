@@ -142,7 +142,8 @@ JAZZMIN_SETTINGS = {
     
     # --- RUTAS DE IMÁGENES CORREGIDAS ---
     "site_logo": "admin/img/logo.png",        # Apunta a la carpeta de imágenes, NO a css
-    "login_logo": "admin/img/slogan.png",       
+    "login_logo": "admin/img/slogan.png", 
+    "site_icon": "admin/img/favicon.jpeg",  # Controla el icono de la pestaña del navegador      
     
     # Texto que el CSS va a ocultar para inyectar el logo de texto
     "site_brand": "EXPOMAR",                           
