@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
+import { useEffect, useState } from "react"; // Importo hooks de estado y ciclo de vida
+import { Link, useNavigate } from "react-router-dom"; // Importo utilidades para navegación
+import { useCart } from "../context/CartContext"; // Importo el contexto del carrito
 import {
   Search,
   ShoppingCart,
@@ -10,16 +10,19 @@ import {
   X,
   ChevronRight
 } from "lucide-react";
-import logoImg from "../assets/logo.png";
-import sloganImg from "../assets/slogan.png";
+
+ // Importo iconos desde lucide-react
+import logoImg from "../assets/logo.png"; // Importo logo
+import sloganImg from "../assets/slogan.png"; // Importo eslogan
 
 export default function Navbar() {
-  const [user, setUser] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { cart } = useCart();
-  const navigate = useNavigate();
+  const [user, setUser] = useState(null); // Estado para almacenar info del usuario logueado
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para el valor del buscador
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para abrir/cerrar menú móvil
+  const { cart } = useCart(); // Obtengo el carrito desde el contexto global
+  const navigate = useNavigate(); // Hook para redirigir entre rutas
 
+  // Efecto al montar el componente para verificar si hay un usuario guardado
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -27,32 +30,36 @@ export default function Navbar() {
     }
   }, []);
 
+  // Función para manejar la búsqueda de productos
   const handleSearch = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Evito el refresco de página
     if (searchTerm.trim()) {
-      navigate(`/productos?search=${encodeURIComponent(searchTerm)}`);
-      setIsMenuOpen(false);
+      navigate(`/productos?search=${encodeURIComponent(searchTerm)}`); // Redirijo a productos con filtro
+      setIsMenuOpen(false); // Cierro el menú si estaba abierto en móvil
     }
   };
 
+  // Función para cerrar sesión y limpiar almacenamiento local
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setUser(null);
     navigate("/auth");
-    window.location.reload();
+    window.location.reload(); // Recargo para limpiar estados globales/contextos
   };
 
+  // Calculo el total de productos en el carrito para el contador
   const cartCount = cart?.reduce((total, item) => total + item.cantidad, 0) || 0;
 
   return (
-    <header className="bg-white sticky top-0 z-[100] border-b border-gray-100 shadow-sm font-sans">
+    // Header fijo en la parte superior con sombra y borde
+    <header className="bg-white sticky top-0 z-100 border-b border-gray-100 shadow-sm font-sans">
       <div className="max-w-[1440px] mx-auto px-4 md:px-10 h-20 flex items-center justify-between gap-4">
 
         {/* LOGO & BRANDING */}
-        <Link to="/" className="flex items-center gap-3 flex-shrink-0 transition-transform hover:scale-[1.02]">
+        <Link to="/" className="flex items-center gap-3 shrink-0 transition-transform hover:scale-[1.02]">
           <img src={logoImg} alt="Mixtura" className="h-12 md:h-11 w-auto object-contain" />
-          <div className="hidden lg:block h-8 w-[1px] bg-gray-200"></div>
+          <div className="hidden lg:block h-8 w-1px bg-gray-200"></div>
           <div className="hidden lg:flex flex-col justify-center leading-none">
             <img src={sloganImg} alt="Sello de Calidad" className="h-9 w-auto object-contain opacity-80" />
           </div>
@@ -61,14 +68,14 @@ export default function Navbar() {
         {/* BUSCADOR (Desktop) */}
         <form
           onSubmit={handleSearch}
-          className="hidden md:flex flex-grow max-w-xl relative items-center bg-gray-50 rounded-full border border-transparent focus-within:border-gray-200 focus-within:bg-white focus-within:shadow-md transition-all duration-300"
+          className="hidden md:flex grow max-w-xl relative items-center bg-gray-50 rounded-full border border-transparent focus-within:border-gray-200 focus-within:bg-white focus-within:shadow-md transition-all duration-300"
         >
           <Search className="text-gray-400 ml-4 w-5 h-5" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Busca productos acuícolas y Servicios de transporte de alimentos congelados..."
+            placeholder="Busca productos acuícolas..."
             className="w-full bg-transparent py-2.5 px-3 outline-none text-[13px] text-gray-700 font-medium"
           />
           <button
@@ -88,7 +95,7 @@ export default function Navbar() {
             <Link to="/ofertas" className="text-[14px] font-bold hover:text-[#DE6E28] transition-colors">Ofertas</Link>
           </nav>
 
-          <div className="hidden md:block h-6 w-[1px] bg-gray-200"></div>
+          <div className="hidden md:block h-6 w-1px bg-gray-200"></div>
 
           {/* PERFIL / LOGOUT */}
           <div className="flex items-center gap-4">
@@ -114,7 +121,7 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* CARRITO (LUCIDE ICON) */}
+            {/* CARRITO */}
             <Link to="/carrito" className="relative p-2.5 bg-gray-100 rounded-full hover:bg-gray-200 transition-all group shadow-sm active:scale-90">
               <ShoppingCart className="w-6 h-6 text-[#242A57]" />
               {cartCount > 0 && (
@@ -135,8 +142,8 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* MENÚ MÓVIL FULL (Overlay) */}
-      <div className={`fixed inset-0 top-20 bg-white z-[90] md:hidden transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      {/* MENÚ MÓVIL (Overlay) */}
+      <div className={`fixed inset-0 top-20 bg-white z-90 md:hidden transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="p-6 space-y-8 h-full flex flex-col overflow-y-auto">
 
           {/* BUSCADOR MÓVIL */}

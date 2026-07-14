@@ -1,5 +1,6 @@
+// src/pages/Productos.jsx
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import mix from "../assets/mix.jpeg";
 import { useCart } from "../context/CartContext";
@@ -9,6 +10,9 @@ export default function Productos() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 6;
+
+  // Estado para controlar el Modal del producto seleccionado
+  const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 
   const { addToCart } = useCart();
   const location = useLocation();
@@ -26,7 +30,6 @@ export default function Productos() {
     const obtenerProductos = async () => {
       setLoading(true);
       try {
-        // Renderiza dinámicamente según el entorno activo sin romper Netlify
         const base_url = `${BASE_URL}/api/productos/`;
         const url = searchTerm
           ? `${base_url}?search=${encodeURIComponent(searchTerm)}`
@@ -122,9 +125,13 @@ export default function Productos() {
                             Añadir al carrito
                         </button>
 
-                        <Link to={`/productoDetalle/${producto.id}`} className="border border-blue-600 text-blue-600 px-4 py-2 rounded-full text-xs hover:bg-blue-600 hover:text-white transition">
+                        {/* Ahora en lugar de un <Link>, abre el modal asignando el producto actual al estado */}
+                        <button 
+                            onClick={() => setProductoSeleccionado(producto)}
+                            className="border border-blue-600 text-blue-600 px-4 py-2 rounded-full text-xs hover:bg-blue-600 hover:text-white transition cursor-pointer"
+                        >
                             Detalles
-                        </Link>
+                        </button>
                         </div>
                     </div>
                     </div>
@@ -151,6 +158,76 @@ export default function Productos() {
           </>
         )}
       </section>
+
+      {/* MODAL DE DETALLE DEL PRODUCTO */}
+      {productoSeleccionado && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+          onClick={() => setProductoSeleccionado(null)} // Cierra al hacer clic fuera
+        >
+          <div 
+            className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate-scale-up"
+            onClick={(e) => e.stopPropagation()} // Evita cerrar si se hace clic dentro del modal
+          >
+            {/* Botón X para cerrar */}
+            <button 
+              onClick={() => setProductoSeleccionado(null)}
+              className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-full w-8 h-8 flex items-center justify-center transition-colors cursor-pointer z-10"
+            >
+              ✕
+            </button>
+
+            <div className="flex flex-col md:flex-row">
+              {/* Imagen en el Modal */}
+              <div className="md:w-1/2 h-64 md:h-auto min-h-[250px] bg-gray-100">
+                <img 
+                  src={getImageUrl(productoSeleccionado.imagen)} 
+                  alt={productoSeleccionado.nombre} 
+                  className="w-full h-full object-cover"
+                  onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=Imagen+No+Disponible'; }}
+                />
+              </div>
+
+              {/* Contenido/Información en el Modal */}
+              <div className="md:w-1/2 p-6 flex flex-col justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800 mb-3">{productoSeleccionado.nombre}</h2>
+                  <p className="text-gray-600 text-sm mb-4 leading-relaxed">{productoSeleccionado.descripcion || "Sin descripción adicional."}</p>
+                  
+                  {/* Stock si viene de tu backend */}
+                  {productoSeleccionado.stock !== undefined && (
+                    <p className="text-xs font-semibold text-gray-500 mb-4">
+                      Disponibles: <span className="text-blue-900">{productoSeleccionado.stock} unidades</span>
+                    </p>
+                  )}
+                  
+                  <p className="text-blue-900 text-2xl font-bold mb-6">
+                    ${Number(productoSeleccionado.precio).toLocaleString("es-CO")}
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      addToCart(productoSeleccionado);
+                      setProductoSeleccionado(null); // Cierra automáticamente tras añadir
+                    }}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-orange-500 transition-colors flex-1"
+                  >
+                    Añadir al carrito
+                  </button>
+                  <button
+                    onClick={() => setProductoSeleccionado(null)}
+                    className="border border-gray-300 text-gray-600 px-4 py-3 rounded-full text-sm font-medium hover:bg-gray-50 transition-colors"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

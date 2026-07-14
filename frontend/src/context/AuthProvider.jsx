@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { AuthContext } from './AuthContext';
+import { useEffect, useState } from 'react'; // Importo hooks para estado y ciclo de vida
+import { AuthContext } from './AuthContext'; // Importo el contexto creado previamente
 
 export const AuthProvider = ({ children }) => {
     // user: Guardará el objeto con nombre, email, etc. (o null si no hay nadie)
@@ -9,8 +9,8 @@ export const AuthProvider = ({ children }) => {
 
     // --- PERSISTENCIA: Al cargar la web, revisamos si ya estaba logueado ---
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const savedUser = localStorage.getItem('userData');
+        const token = localStorage.getItem('token'); // Recupero el token de seguridad
+        const savedUser = localStorage.getItem('userData'); // Recupero los datos del usuario
 
         if (token && savedUser) {
             try {
@@ -26,28 +26,29 @@ export const AuthProvider = ({ children }) => {
 
     // --- FUNCIÓN DE ENTRADA: Se llama desde el formulario de Login ---
     const login = (userData, token) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('userData', JSON.stringify(userData));
-        setUser(userData);
+        localStorage.setItem('token', token); // Guardo el token para sesiones futuras
+        localStorage.setItem('userData', JSON.stringify(userData)); // Guardo datos como texto JSON
+        setUser(userData); // Actualizo el estado global
     };
 
     // --- FUNCIÓN DE SALIDA: Limpia todo y reinicia el estado ---
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
-        setUser(null);
+        localStorage.removeItem('token'); // Elimino el token de autenticación
+        localStorage.removeItem('userData'); // Elimino los datos del usuario
+        setUser(null); // Reseteo el estado de usuario a vacío
     };
 
-    // Objeto con todo lo que los demás componentes pueden usar
+    // Objeto con todo lo que los demás componentes pueden usar (la "radio")
     const value = {
         user,
         login,
         logout,
-        isAuthenticated: !!user, // Truco: convierte el objeto user en un booleano (true/false)
+        isAuthenticated: !!user, // Truco: convierte el objeto user en un booleano (true si hay usuario, false si es null)
         loading
     };
 
     return (
+        // Proveedor del contexto que entrega el objeto 'value' a toda la aplicación
         <AuthContext.Provider value={value}>
             {/* Si está cargando, no mostramos nada para evitar parpadeos de "Iniciar Sesión" */}
             {!loading && children}

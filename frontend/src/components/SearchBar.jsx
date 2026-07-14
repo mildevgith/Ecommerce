@@ -1,6 +1,6 @@
 // src/components/SearchBar.jsx
 import { Search } from "lucide-react"; // Usamos lucide para mantener la estética profesional
-import { useState } from "react";
+import { useState } from "react"; // Importo el hook para manejar el estado local
 
 export default function SearchBar({ onSearch }) {
   // Estado local para capturar el texto que el usuario escribe
@@ -14,20 +14,20 @@ export default function SearchBar({ onSearch }) {
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit} // Asocio la función al evento de envío del formulario
       /* Centrado automático con mx-auto y un ancho máximo para que no se vea gigante en PC */
       className="flex items-center justify-center gap-2 w-full max-w-md mx-auto mb-6"
     >
       <input
-        type="text"
-        placeholder="Buscar productos..."
-        value={query}
+        type="text" // Campo de entrada de texto
+        placeholder="Buscar productos..." // Texto guía para el usuario
+        value={query} // Vinculo el valor del input al estado local
         // Cada vez que el usuario presiona una tecla, actualizamos el estado
         onChange={(e) => setQuery(e.target.value)}
         className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <button
-        type="submit"
+        type="submit" // Define este botón como el encargado de enviar el formulario
         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
       >
         {/* El icono de la lupa de lucide-react */}

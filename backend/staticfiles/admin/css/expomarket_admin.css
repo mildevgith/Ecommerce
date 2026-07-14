@@ -4,43 +4,43 @@
 
 /* Contenedor principal de la marca en el sidebar */
 .brand-link {
-    display: flex !important;
-    align-items: center !important;
-    padding: 10px 12px !important;
-    height: 56px !important; 
-    overflow: hidden !important;
+    display: flex !important;          /* Activa el diseño de caja flexible para alinear el logo y el texto en línea. */
+    align-items: center !important;    /* Centra verticalmente el logo circular y el texto dentro de la barra. */
+    padding: 10px 12px !important;     /* Define el espacio interno (arriba/abajo e izquierda/derecha) del contenedor. */
+    height: 56px !important;           /* Fuerza una altura fija para que coincida exactamente con la barra superior de Jazzmin. */
+    overflow: hidden !important;       /* Recorta y oculta cualquier elemento que intente salirse de los límites de la caja. */
 }
 
 /* Ajuste del Logo Circular */
 .brand-link .brand-image {
-    max-height: 38px !important;
-    width: 38px !important;
-    margin-left: 2px !important;
-    margin-right: 0 !important;
-    opacity: 1 !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
+    max-height: 38px !important;       /* Limita la altura máxima de la imagen del logo circular para que no desfigure el menú. */
+    width: 38px !important;            /* Define un ancho fijo simétrico para mantener el logo perfectamente cuadrado. */
+    margin-left: 2px !important;       /* Desplaza sutilmente el logo hacia la derecha separándolo del borde izquierdo. */
+    margin-right: 0 !important;        /* Elimina cualquier margen derecho nativo de Jazzmin para controlar la separación manualmente. */
+    opacity: 1 !important;             /* Asegura que la imagen sea totalmente opaca y visible (cancela transparencias por defecto). */
+    box-shadow: none !important;       /* Quita sombras o relieves automáticos que Django le pone a las imágenes de marca. */
+    border-radius: 0 !important;       /* Cancela el redondeo por código en caso de que tu imagen PNG ya tenga su propio fondo circular. */
 }
 
 /* Inyección de la imagen de texto (EXPOMAR GRUPO GRB) */
 .brand-link .brand-text {
-    background-image: url('../img/logo_texto.png') !important; /* Sube un nivel y entra a img */
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: left center !important;
+    background-image: url('../img/logo_texto.png') !important; /* Carga de forma relativa tu imagen corporativa de texto escalable. */
+    background-size: contain !important;                       /* Escala la imagen de texto automáticamente para que quepa entera sin cortarse. */
+    background-repeat: no-repeat !important;                   /* Evita que la imagen del logo de texto se duplique o se repita en mosaico. */
+    background-position: left center !important;               /* Alinea la imagen cargada a la izquierda y centrada verticalmente en su espacio. */
     
     /* Dimensiones en píxeles para que no se deforme */
-    width: 145px !important; 
-    height: 34px !important;
-    margin-left: 8px !important;
-    display: inline-block !important;
+    width: 145px !important;           /* Asigna el ancho físico exacto que ocupará el logo de texto en el header. */
+    height: 34px !important;           /* Asigna la altura física exacta proporcional al ancho para evitar distorsiones. */
+    margin-left: 8px !important;       /* Crea una separación horizontal de 8 píxeles entre el logo circular y el texto. */
+    display: inline-block !important;  /* Cambia el comportamiento a bloque en línea para que respete el ancho, el alto y la alineación. */
     
     /* Oculta el texto "EXPOMAR" de Django */
-    text-indent: -9999px !important; 
-    overflow: hidden !important;
+    text-indent: -9999px !important;   /* Empuja el texto plano original de Django fuera de la pantalla para que no se pise con la imagen. */
+    overflow: hidden !important;       /* Hace invisible el texto original que fue desplazado por la propiedad anterior. */
 }
 
 /* Ocultar texto al colapsar el menú */
 .sidebar-collapse .brand-text {
-    display: none !important;
+    display: none !important;          /* Esconde por completo el logo de texto cuando guardas o encoges la barra lateral izquierda. */
 }

@@ -1,23 +1,27 @@
 // src/pages/Contacto.jsx
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { motion } from "framer-motion"; // Librería para animaciones fluidas
+import { useState } from "react"; // Hook para manejar el estado del formulario
 
 export default function Contacto() {
+  // Estado para capturar los valores de los inputs en tiempo real
   const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
 
+  // Función genérica para actualizar el estado del formulario cuando el usuario escribe
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Función para manejar el envío (aquí podrías conectar con un backend o servicio de emails)
   const handleSubmit = (e) => {
     e.preventDefault();
     alert("Mensaje enviado. ¡Gracias por contactarnos!");
-    setForm({ nombre: "", email: "", mensaje: "" });
+    setForm({ nombre: "", email: "", mensaje: "" }); // Reseteamos el formulario al enviar
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to from-[#f5f8ff] to-[#eaf5ff] flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-16">
-      {/* Título principal */}
+    <div className="min-h-screen bg-gradient-to-r from-[#f5f8ff] to-[#eaf5ff] flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-16">
+      
+      {/* Título animado: Entrada con movimiento desde arriba */}
       <motion.h2
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -27,7 +31,7 @@ export default function Contacto() {
         Contáctanos
       </motion.h2>
 
-      {/* Subtítulo */}
+      {/* Subtítulo animado: Entrada con fade in (aparece gradualmente) */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -38,7 +42,7 @@ export default function Contacto() {
         Déjanos tu mensaje y te responderemos lo antes posible.
       </motion.p>
 
-      {/* Tarjeta del formulario */}
+      {/* Tarjeta del formulario: Contenedor con sombra y borde decorativo superior */}
       <motion.form
         onSubmit={handleSubmit}
         initial={{ opacity: 0, scale: 0.95 }}
@@ -47,11 +51,9 @@ export default function Contacto() {
         className="bg-white shadow-2xl rounded-2xl p-6 sm:p-8 w-full max-w-sm sm:max-w-md md:max-w-lg border-t-8 border-[#de6e28]"
       >
         <div className="space-y-5">
-          {/* Nombre */}
+          {/* Campo: Nombre */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1 text-sm sm:text-base">
-              Nombre
-            </label>
+            <label className="block text-gray-700 font-semibold mb-1 text-sm sm:text-base">Nombre</label>
             <input
               type="text"
               name="nombre"
@@ -63,11 +65,9 @@ export default function Contacto() {
             />
           </div>
 
-          {/* Correo */}
+          {/* Campo: Correo */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1 text-sm sm:text-base">
-              Correo electrónico
-            </label>
+            <label className="block text-gray-700 font-semibold mb-1 text-sm sm:text-base">Correo electrónico</label>
             <input
               type="email"
               name="email"
@@ -79,11 +79,9 @@ export default function Contacto() {
             />
           </div>
 
-          {/* Mensaje */}
+          {/* Campo: Área de texto para mensaje */}
           <div>
-            <label className="block text-gray-700 font-semibold mb-1 text-sm sm:text-base">
-              Mensaje
-            </label>
+            <label className="block text-gray-700 font-semibold mb-1 text-sm sm:text-base">Mensaje</label>
             <textarea
               name="mensaje"
               value={form.mensaje}
@@ -95,18 +93,18 @@ export default function Contacto() {
           </div>
         </div>
 
-        {/* Botón */}
+        {/* Botón de envío con efecto de escala al pasar el mouse (Hover) y clic (Tap) */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           type="submit"
-          className="mt-6 w-full bg-gradient-to from-[#de6e28] via-[#0bafd4] to-[#242a57] text-white py-2.5 sm:py-3 rounded-lg font-semibold text-base sm:text-lg shadow-md hover:shadow-lg transition"
+          className="mt-6 w-full bg-gradient-to-r from-[#de6e28] via-[#0bafd4] to-[#242a57] text-white py-2.5 sm:py-3 rounded-lg font-semibold text-base sm:text-lg shadow-md hover:shadow-lg transition"
         >
           Enviar mensaje
         </motion.button>
       </motion.form>
 
-      {/* Pie */}
+      {/* Footer del componente */}
       <p className="text-gray-500 text-xs sm:text-sm mt-8 text-center px-3">
         © {new Date().getFullYear()} Expomarket — Todos los derechos reservados.
       </p>

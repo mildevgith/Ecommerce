@@ -1,3 +1,4 @@
+// Defino el componente funcional Loader
 export default function Loader() {
   return (
     /* Contenedor principal:
@@ -10,24 +11,24 @@ export default function Loader() {
       <svg
         /* animate-spin: Esta clase de Tailwind hace que el icono gire infinitamente */
         className="animate-spin h-12 w-12 text-blue-600 mb-3"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg" // Define el espacio de nombres XML para SVG
+        fill="none" // Indica que no debe rellenarse el contenedor principal
+        viewBox="0 0 24 24" // Define las coordenadas del canvas interno
       >
         {/* El círculo de fondo con opacidad baja */}
         <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
+          className="opacity-25" // Opacidad reducida para el borde inactivo
+          cx="12" // Posición central horizontal
+          cy="12" // Posición central vertical
+          r="10" // Radio del círculo
+          stroke="currentColor" // Hereda el color del texto definido en el padre
+          strokeWidth="4" // Grosor del trazo del borde
         ></circle>
         {/* La "llave" o arco que se ve girando con más color */}
         <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8v8z"
+          className="opacity-75" // Opacidad mayor para el trazo activo
+          fill="currentColor" // Relleno con el color heredado
+          d="M4 12a8 8 0 018-8v8z" // Ruta (path) geométrica que dibuja el arco de carga
         ></path>
       </svg>
 

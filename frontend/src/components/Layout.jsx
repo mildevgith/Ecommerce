@@ -1,7 +1,8 @@
-import { Outlet } from "react-router-dom"; // El "espacio en blanco" donde se cargan las páginas
-import Footer from "./Footer";
-import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom"; // Importo el componente que actúa como marcador de posición para las rutas hijas
+import Footer from "./Footer"; // Importo el componente del pie de página
+import Navbar from "./Navbar"; // Importo el componente de la barra de navegación
 
+// Defino el componente Layout que envolverá a todas las páginas de la aplicación
 export default function Layout() {
   return (
     /* flex-col y min-h-screen:

@@ -1,79 +1,80 @@
 /* Importación de Tipografía Premium */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap'); 
+/* Enlaza y descarga la fuente moderna 'Plus Jakarta Sans' directamente desde los servidores de Google Fonts. */
 
 /* Configuración de fondo base Océano */
 body, .wrapper, .content-wrapper, .main-footer {
-    font-family: 'Plus Jakarta Sans', sans-serif !important;
-    background-color: #0b1426 !important; /* Azul Marino Abisal */
-    color: #e2e8f0 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important; /* Aplica la tipografía importada a todo el cuerpo, contenedores y pie de página del panel. */
+    background-color: #0b1426 !important;                     /* Aplica un color azul oscuro profundo de fondo para darle la identidad de océano abisal. */
+    color: #e2e8f0 !important;                                /* Fuerza a que todos los textos principales tengan un tono gris claro/blanco para alta legibilidad. */
 }
 
 /* Modificación de la barra lateral (Sidebar) */
 .main-sidebar {
-    background-color: #111c36 !important; /* Azul Océano Medio */
-    border-right: 1px solid rgba(255, 255, 255, 0.04);
+    background-color: #111c36 !important;                     /* Cambia el fondo del menú lateral por un azul marino intermedio que resalta sobre el fondo abisal. */
+    border-right: 1px solid rgba(255, 255, 255, 0.04);         /* Dibuja una línea de división derecha casi transparente para separar sutilmente el menú del contenido. */
 }
 
 /* Cambiar el avatar o la letra estática "A" del Header por tu marca */
 .brand-link .brand-image {
-    display: none !important; /* Esconde el círculo por defecto */
+    display: none !important; /* Oculta el contenedor circular nativo de la imagen de marca por defecto para evitar duplicaciones. */
 }
 .brand-link .brand-text {
-    font-weight: 800 !important;
-    color: #ff6b35 !important; /* Color Naranja Crustáceo */
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    font-weight: 800 !important;      /* Asigna un grosor de letra ultra negrita al texto identificador de la marca. */
+    color: #ff6b35 !important;        /* Cambia el color del texto de la marca a un tono naranja llamativo (Crustáceo). */
+    letter-spacing: 0.5px;            /* Separa horizontalmente los caracteres del texto para estilizar su lectura en mayúsculas. */
+    text-transform: uppercase;        /* Convierte automáticamente todo el texto del nombre de la marca a letras mayúsculas. */
 }
 /* Añade un sutil subtítulo debajo de la marca mediante CSS */
 .brand-link::after {
-    content: "PESCADOS Y MARISCOS";
-    display: block;
-    font-size: 9px;
-    color: #94a3b8;
-    letter-spacing: 2px;
-    margin-left: 0.5rem;
-    margin-top: -2px;
+    content: "PESCADOS Y MARISCOS";    /* Inyecta el texto del eslogan directamente debajo del contenedor de marca sin tocar el HTML. */
+    display: block;                    /* Forza a que el eslogan se comporte como un bloque independiente para que se ubique en una línea nueva. */
+    font-size: 9px;                    /* Reduce el tamaño del texto del eslogan para mantener la jerarquía visual frente al título. */
+    color: #94a3b8;                    /* Aplica un tono gris azulado suave al eslogan para que sea discreto y elegante. */
+    letter-spacing: 2px;               /* Aplica un espaciado amplio entre las letras del subtítulo para darle un diseño de marca premium. */
+    margin-left: 0.5rem;               /* Desplaza el eslogan un poco hacia la derecha para alinearlo estéticamente con el título. */
+    margin-top: -2px;                  /* Reduce el espacio vertical superior para pegar el eslogan sutilmente al nombre principal. */
 }
 
 /* DARLE COLOR Y DISEÑO A LOS ICONOS DE LA BARRA LATERAL */
 .nav-sidebar .nav-icon {
-    color: #38bdf8 !important; /* Azul brillante agua para los iconos por defecto */
-    font-size: 1.1rem !important;
-    transition: transform 0.2s ease;
+    color: #38bdf8 !important;         /* Pinta todos los iconos generales de las aplicaciones con un color azul cian brillante (agua). */
+    font-size: 1.1rem !important;      /* Modifica el tamaño físico de los iconos de la barra lateral para que sean más visibles. */
+    transition: transform 0.2s ease;   /* Agrega una transición suave de 0.2 segundos para cualquier animación de movimiento o escala. */
 }
 
 /* Resaltado específico para el icono de Productos (Pescado) */
 .fa-fish {
-    color: #ff9f1c !important; /* Dorado/Naranja Marino */
+    color: #ff9f1c !important;         /* Pinta específicamente el icono con la clase de pescado en color dorado/naranja marino brillante. */
 }
 /* Resaltado específico para Pedidos y Carritos */
 .fa-shopping-cart, .fa-cart-plus, .fa-truck-loading {
-    color: #4ade80 !important; /* Verde Alga */
+    color: #4ade80 !important;         /* Agrupa y pinta los iconos de ventas, compras y transportes en un color verde alga vibrante. */
 }
 
 /* Efecto hover moderno al seleccionar filas o menús */
 .nav-sidebar .nav-link.active {
-    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%) !important;
-    color: #ffffff !important;
-    border-radius: 10px !important;
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%) !important; /* Aplica un fondo con degradado diagonal que va desde el naranja oscuro al naranja claro. */
+    color: #ffffff !important;         /* Cambia el texto de la opción activa o seleccionada a blanco puro. */
+    border-radius: 10px !important;    /* Redondea los bordes del botón del menú activo para darle un aspecto moderno de cápsula. */
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35); /* Genera un brillo o sombra difuminada de color naranja alrededor del botón activo. */
 }
 
 .nav-sidebar .nav-link:hover .nav-icon {
-    transform: scale(1.2);
+    transform: scale(1.2);             /* Agranda el icono un 20% mediante una animación de escala cuando el usuario pasa el cursor por encima. */
 }
 
 /* Estilizado de las Tablas e Inputs */
 .card {
-    background-color: #111c36 !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    border-radius: 14px !important;
+    background-color: #111c36 !important;             /* Cambia el fondo de las tarjetas contenedoras de tablas y formularios a azul océano medio. */
+    border: 1px solid rgba(255, 255, 255, 0.05) !important; /* Aplica un borde ultra delgado y translúcido para definir los contornos de las cajas. */
+    border-radius: 14px !important;                   /* Redondea las esquinas de los contenedores tipo tarjeta para suavizar la interfaz. */
 }
 
 .btn-expomarket, .btn-primary, input[type=submit] {
-    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%) !important;
-    border: none !important;
-    border-radius: 20px !important;
-    font-weight: 700 !important;
-    color: white !important;
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%) !important; /* Asigna el gradiente corporativo naranja a todos los botones principales de guardado. */
+    border: none !important;                          /* Elimina los bordes o contornos nativos de los botones del navegador. */
+    border-radius: 20px !important;                   /* Redondea por completo los extremos de los botones dándoles una apariencia estilizada. */
+    font-weight: 700 !important;                      /* Forza el texto interno de los botones a un estilo negrita muy marcado. */
+    color: white !important;                          /* Asegura que las etiquetas o textos dentro de los botones de acción sean siempre blancos. */
 }

@@ -1,43 +1,132 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <meta charset="utf-8">
-</head>
+  <meta charset="utf-8"> </head>
 <body>
   <script>
 /*
     json2.js
     2011-10-19
-
     Public Domain.
-
     NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
-
     See http://www.JSON.org/js.html
-
-    This code should be minified before deployment.
-    See http://javascript.crockford.com/jsmin.html
-
-    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
-    NOT CONTROL.
-
 */
-var JSON;if(!JSON){JSON={}}(function(){function str(a,b){var c,d,e,f,g=gap,h,i=b[a];if(i&&typeof i==="object"&&typeof i.toJSON==="function"){i=i.toJSON(a)}if(typeof rep==="function"){i=rep.call(b,a,i)}switch(typeof i){case"string":return quote(i);case"number":return isFinite(i)?String(i):"null";case"boolean":case"null":return String(i);case"object":if(!i){return"null"}gap+=indent;h=[];if(Object.prototype.toString.apply(i)==="[object Array]"){f=i.length;for(c=0;c<f;c+=1){h[c]=str(c,i)||"null"}e=h.length===0?"[]":gap?"[\n"+gap+h.join(",\n"+gap)+"\n"+g+"]":"["+h.join(",")+"]";gap=g;return e}if(rep&&typeof rep==="object"){f=rep.length;for(c=0;c<f;c+=1){if(typeof rep[c]==="string"){d=rep[c];e=str(d,i);if(e){h.push(quote(d)+(gap?": ":":")+e)}}}}else{for(d in i){if(Object.prototype.hasOwnProperty.call(i,d)){e=str(d,i);if(e){h.push(quote(d)+(gap?": ":":")+e)}}}}e=h.length===0?"{}":gap?"{\n"+gap+h.join(",\n"+gap)+"\n"+g+"}":"{"+h.join(",")+"}";gap=g;return e}}function quote(a){escapable.lastIndex=0;return escapable.test(a)?'"'+a.replace(escapable,function(a){var b=meta[a];return typeof b==="string"?b:"\\u"+("0000"+a.charCodeAt(0).toString(16)).slice(-4)})+'"':'"'+a+'"'}function f(a){return a<10?"0"+a:a}"use strict";if(typeof Date.prototype.toJSON!=="function"){Date.prototype.toJSON=function(a){return isFinite(this.valueOf())?this.getUTCFullYear()+"-"+f(this.getUTCMonth()+1)+"-"+f(this.getUTCDate())+"T"+f(this.getUTCHours())+":"+f(this.getUTCMinutes())+":"+f(this.getUTCSeconds())+"Z":null};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(a){return this.valueOf()}}var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={"\b":"\\b","\t":"\\t","\n":"\\n","\f":"\\f","\r":"\\r",'"':'\\"',"\\":"\\\\"},rep;if(typeof JSON.stringify!=="function"){JSON.stringify=function(a,b,c){var d;gap="";indent="";if(typeof c==="number"){for(d=0;d<c;d+=1){indent+=" "}}else if(typeof c==="string"){indent=c}rep=b;if(b&&typeof b!=="function"&&(typeof b!=="object"||typeof b.length!=="number")){throw new Error("JSON.stringify")}return str("",{"":a})}}if(typeof JSON.parse!=="function"){JSON.parse=function(text,reviver){function walk(a,b){var c,d,e=a[b];if(e&&typeof e==="object"){for(c in e){if(Object.prototype.hasOwnProperty.call(e,c)){d=walk(e,c);if(d!==undefined){e[c]=d}else{delete e[c]}}}}return reviver.call(a,b,e)}var j;text=String(text);cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return"\\u"+("0000"+a.charCodeAt(0).toString(16)).slice(-4)})}if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,"@").replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,"]").replace(/(?:^|:|,)(?:\s*\[)+/g,""))){j=eval("("+text+")");return typeof reviver==="function"?walk({"":j},""):j}throw new SyntaxError("JSON.parse")}}})()
-/* end of json2.js */
-;
-    function parse(query) {
-      var result = {};
-      var params = query.split("&");
-      for (var i = 0; i < params.length; i++) {
-        var param = params[i].split("=");
-        result[param[0]] = decodeURIComponent(param[1]);
-      }
-      return JSON.stringify(result);
+var JSON; if (!JSON) { JSON = {}; } // Declara el objeto global JSON si el navegador antiguo no lo tiene implementado de forma nativa.
+
+(function () { // Abre una función anónima autoejecutable para aislar las variables y no contaminar el entorno global.
+    function f(a) { 
+        return a < 10 ? "0" + a : a; // Función auxiliar que añade un cero a la izquierda para números menores de 10 (usado en fechas).
     }
 
-    document.body.textContent = document.body.innerText = parse(window.location.search.slice(1));
+    // Configura el método nativo de serialización JSON para objetos de tipo fecha, texto, número y boleano.
+    if (typeof Date.prototype.toJSON !== "function") {
+        Date.prototype.toJSON = function (a) {
+            return isFinite(this.valueOf()) ? this.getUTCFullYear() + "-" + f(this.getUTCMonth() + 1) + "-" + f(this.getUTCDate()) + "T" + f(this.getUTCHours()) + ":" + f(this.getUTCMinutes()) + ":" + f(this.getUTCSeconds()) + "Z" : null;
+            // Convierte una fecha nativa de JavaScript al formato estándar ISO 8601 de texto (AAAA-MM-DDTHH:MM:SSZ).
+        };
+        String.prototype.toJSON = Number.prototype.toJSON = Boolean.prototype.toJSON = function (a) {
+            return this.valueOf(); // Devuelve el valor primitivo real para cadenas, números y booleanos al serializar.
+        };
+    }
 
+    // Expresiones regulares para detectar caracteres de control peligrosos (cx) y caracteres que requieren escape en strings (escapable).
+    var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        gap, indent, meta = {"\b": "\\b", "\t": "\\t", "\n": "\\n", "\f": "\\f", "\r": "\\r", '"': '\\"', "\\": "\\\\"}, rep;
+
+    function quote(a) { // Recibe un texto, busca caracteres especiales y los devuelve envueltos en comillas seguras para formato JSON.
+        escapable.lastIndex = 0;
+        return escapable.test(a) ? '"' + a.replace(escapable, function (a) {
+            var b = meta[a];
+            return typeof b === "string" ? b : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' : '"' + a + '"';
+    }
+
+    function str(a, b) { // Función recursiva principal que analiza el tipo de dato (objeto, array, número, etc.) y lo convierte a texto JSON.
+        var c, d, e, f, g = gap, h, i = b[a];
+        if (i && typeof i === "object" && typeof i.toJSON === "function") { i = i.toJSON(a); }
+        if (typeof rep === "function") { i = rep.call(b, a, i); }
+        switch (typeof i) {
+        case "string": return quote(i);
+        case "number": return isFinite(i) ? String(i) : "null";
+        case "boolean": case "null": return String(i);
+        case "object":
+            if (!i) { return "null"; }
+            gap += indent; h = [];
+            if (Object.prototype.toString.apply(i) === "[object Array]") { // Si el objeto actual es una matriz o arreglo.
+                f = i.length;
+                for (c = 0; c < f; c += 1) { h[c] = str(c, i) || "null"; } // Convierte cada elemento del array a JSON.
+                e = h.length === 0 ? "[]" : gap ? "[\n" + gap + h.join(",\n" + gap) + "\n" + g + "]" : "[" + h.join(",") + "]";
+                gap = g; return e;
+            }
+            if (rep && typeof rep === "object") {
+                f = rep.length;
+                for (c = 0; c < f; c += 1) {
+                    if (typeof rep[c] === "string") { d = rep[c]; e = str(d, i); if (e) { h.push(quote(d) + (gap ? ": " : ":") + e); } }
+                }
+            } else {
+                for (d in i) { // Itera sobre todas las propiedades del objeto JavaScript.
+                    if (Object.prototype.hasOwnProperty.call(i, d)) {
+                        e = str(d, i); if (e) { h.push(quote(d) + (gap ? ": " : ":") + e); } // Estructura la clave y su valor en formato JSON.
+                    }
+                }
+            }
+            e = h.length === 0 ? "{}" : gap ? "{\n" + gap + h.join(",\n" + gap) + "\n" + g + "}" : "{" + h.join(",") + "}";
+            gap = g; return e;
+        }
+    }
+
+    // Define e implementa la función clásica JSON.stringify si el navegador antiguo no la soporta nativamente.
+    if (typeof JSON.stringify !== "function") {
+        JSON.stringify = function (a, b, c) {
+            var d; gap = ""; indent = "";
+            if (typeof c === "number") { for (d = 0; d < c; d += 1) { indent += " "; } } 
+            else if (typeof c === "string") { indent = c; }
+            rep = b;
+            if (b && typeof b !== "function" && (typeof b !== "object" || typeof b.length !== "number")) { throw new Error("JSON.stringify"); }
+            return str("", {"": a}); // Inicia el proceso recursivo de conversión pasando el objeto completo.
+        };
+    }
+
+    // Define e implementa la función clásica JSON.parse si el navegador antiguo no la soporta nativamente.
+    if (typeof JSON.parse !== "function") {
+        JSON.parse = function (text, reviver) {
+            function walk(a, b) { // Función recursiva interna para filtrar, transformar o revivir las propiedades del JSON parseado.
+                var c, d, e = a[b];
+                if (e && typeof e === "object") {
+                    for (c in e) {
+                        if (Object.prototype.hasOwnProperty.call(e, c)) {
+                            d = walk(e, c); if (d !== undefined) { e[c] = d; } else { delete e[c]; }
+                        }
+                    }
+                }
+                return reviver.call(a, b, e);
+            }
+            var j; text = String(text); cx.lastIndex = 0;
+            if (cx.test(text)) { text = text.replace(cx, function (a) { return "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4); }); }
+            // Valida mediante expresiones regulares que la cadena de texto sea un JSON seguro y estructurado antes de evaluarlo.
+            if (/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, "@").replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, "]").replace(/(?:^|:|,)(?:\s*\[)+/g, ""))) {
+                j = eval("(" + text + ")"); // Convierte de forma efectiva la cadena de texto limpia a objeto JS usando eval de forma controlada.
+                return typeof reviver === "function" ? walk({"": j}, "") : j; // Si existe la función reviver transforma el resultado, de lo contrario lo retorna directo.
+            }
+            throw new SyntaxError("JSON.parse"); // Lanza un error de sintaxis si el formato del texto recibido no es un JSON válido.
+        };
+    }
+}()); /* Fin de la librería de compatibilidad json2.js */
+
+    // Función propia que recibe los parámetros de la URL (?usuario=juan&id=5) y los convierte a formato JSON.
+    function parse(query) {
+      var result = {};                        // Inicializa un objeto de JavaScript vacío para almacenar los parámetros procesados.
+      var params = query.split("&");          // Rompe el texto de la URL en un arreglo separando cada par de parámetros por el carácter '&'.
+      for (var i = 0; i < params.length; i++) { // Bucle que itera uno por uno cada parámetro extraído del arreglo.
+        var param = params[i].split("=");     // Rompe el parámetro actual en dos partes separándolo por el carácter '=', aislando la clave del valor.
+        result[param[0]] = decodeURIComponent(param[1]); // Guarda en el objeto la clave (param[0]) asignándole su valor decodificado (param[1]) para resolver espacios o símbolos de URL.
+      }
+      return JSON.stringify(result);          // Convierte el objeto con todos los parámetros recopilados a una cadena de texto estructurada en JSON limpio.
+    }
+
+    // Obtiene la query string de la URL (eliminando el signo '?'), la procesa con la función parse() e inyecta el JSON final directamente como contenido visible de la página web.
+    document.body.textContent = document.body.innerText = parse(window.location.search.slice(1));
   </script>
 </body>
 </html>
-
