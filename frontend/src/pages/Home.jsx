@@ -21,7 +21,10 @@ import hero3 from "../assets/Hero2.jpg";
 // @ts-ignore
 import shirimhero from "../assets/shirimhero.jpg";
 
-const HERO_IMAGES = [shirimhero, hero2, hero3];
+//@ts-ignore
+import Crustaceos from "../assets/Crustaceos.jpeg";
+
+const HERO_IMAGES = [shirimhero, hero2, hero3, Crustaceos];
 
 export default function Home() {
   const [index, setIndex] = useState(0);
@@ -176,11 +179,11 @@ export default function Home() {
     <main className="min-h-screen bg-slate-50/50 selection:bg-orange-200">
       {/* HERO ORIGINAL INTACTO */}
       {!searchTerm && (
-        <section className="relative h-[95vh] w-full overflow-hidden bg-black">
+        <section className="relative h-[90vh] w-full overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
           <AnimatePresence mode="wait">
             <motion.div
               key={index}
-              initial={{ opacity: 0, scale: 1.1 }}
+              initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
@@ -188,45 +191,66 @@ export default function Home() {
             >
               <img
                 src={HERO_IMAGES[index]}
-                className="h-full w-full object-cover opacity-60"
-                alt="Expomarket"
+                className="h-full w-full object-cover opacity-40"
+                alt="Expomar productos del mar"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
             </motion.div>
           </AnimatePresence>
 
-          <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
-            <motion.h1
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="max-w-4xl text-5xl font-black tracking-tight text-white md:text-7xl lg:text-8xl"
-            >
-              Frescura que se <br />
-              <span className="bg-gradient-to-t from-orange-400 to-amber-600 bg-clip-text text-transparent">
-                siente en cada bocado
-              </span>
-            </motion.h1>
-
+          <div className="relative z-10 flex h-full flex-col md:flex-row items-center justify-center px-8 text-center md:text-left gap-10">
+            {/* Texto principal */}
             <motion.div
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="mt-10 flex flex-col sm:flex-row gap-4"
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="max-w-xl"
             >
-              <Link
-                to="/productos"
-                className="rounded-full bg-orange-500 px-10 py-4 font-extrabold text-white shadow-lg shadow-orange-500/40 hover:bg-orange-600 hover:scale-105 transition-all text-lg"
-              >
-                🛒 Ver Catálogo
-              </Link>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-full bg-green-500 px-10 py-4 font-extrabold text-white shadow-lg shadow-green-500/40 hover:bg-green-600 hover:scale-105 transition-all text-lg flex items-center justify-center gap-2"
-              >
-                <MessageSquare size={22} /> Pedir por WhatsApp
-              </a>
+              <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-600">
+                  Frescura que se siente
+                </span>
+                <span className="block mt-2 text-orange-400">
+                  Cada bocado, un placer
+                </span>
+              </h1>
+              <p className="mt-4 text-slate-300 text-lg">
+                Productos del mar seleccionados con calidad y sabor inigualable.
+              </p>
+
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                <Link
+                  to="/productos"
+                  className="rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg shadow-orange-500/40 hover:bg-orange-600 hover:scale-105 transition-all"
+                >
+                  🛒 Ver Catálogo
+                </Link>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-green-500 px-8 py-3 font-bold text-white shadow-lg shadow-green-500/40 hover:bg-green-600 hover:scale-105 transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageSquare size={22} /> Pedir por WhatsApp
+                </a>
+              </div>
+            </motion.div>
+
+            {/* Imagen lateral con badge */}
+            <motion.div
+              initial={{ x: 50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="relative"
+            >
+              <div className="absolute -top-6 -right-6 bg-orange-500 text-white font-bold rounded-full px-4 py-2 text-sm shadow-lg">
+                30% OFF
+              </div>
+              <img
+                src="src/assets/Crustaceos.jpeg"
+                alt="Plato de mariscos"
+                className="w-[320px] md:w-[400px] rounded-full border-4 border-orange-400 shadow-xl hover:scale-105 transition-transform"
+              />
             </motion.div>
           </div>
         </section>

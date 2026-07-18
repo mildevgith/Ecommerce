@@ -3,14 +3,14 @@ import os                      # Permite interactuar con el sistema operativo y 
 import dj_database_url         # Parsea cadenas de conexión URL para configurar bases de datos (clave para Railway).
 from dotenv import load_dotenv # Carga las variables secretas desde un archivo local '.env'.
 
-# Cargar variables de entorno
-load_dotenv()                  # Activa la lectura de las variables guardadas en el archivo '.env'.
 
-# Directorio raíz del proyecto
-BASE_DIR = Path(__file__).resolve().parent.parent # Encuentra la carpeta principal del proyecto (backend/).
+load_dotenv()                                     # Activa la lectura de las variables de entorno guardadas en el archivo '.env'.
+
+BASE_DIR = Path(__file__).resolve().parent.parent # Encuentra la carpeta principal del proyecto (backend).
 
 # --- SEGURIDAD ---
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "m4lmxu#if!t&mc=^(&y+7a8ojrt3%!qmw7edgc=a6#$+f%h_v") 
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "m4lmxu#if!t&mc=^(&y+7a8ojrt3%!qmw7edgc=a6#$+f%h_v")
+ 
 # Firma criptográfica de Django; usa una variable segura o un texto por defecto si estás en local.
 
 DEBUG = os.getenv("DEBUG", "False").lower() in ('true', '1', 't') 

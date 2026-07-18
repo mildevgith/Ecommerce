@@ -11,7 +11,6 @@ import {
   ChevronRight
 } from "lucide-react";
 
- // Importo iconos desde lucide-react
 import logoImg from "../assets/logo.png"; // Importo logo
 import sloganImg from "../assets/slogan.png"; // Importo eslogan
 
@@ -56,16 +55,16 @@ export default function Navbar() {
     <header className="bg-white sticky top-0 z-100 border-b border-gray-100 shadow-sm font-sans">
       <div className="max-w-[1440px] mx-auto px-4 md:px-10 h-20 flex items-center justify-between gap-4">
 
-        {/* LOGO & BRANDING */}
+        {/* Logo & Branding */}
         <Link to="/" className="flex items-center gap-3 shrink-0 transition-transform hover:scale-[1.02]">
-          <img src={logoImg} alt="Mixtura" className="h-12 md:h-11 w-auto object-contain" />
+          <img src={logoImg} alt="Mixtura" className="h-12 md:h-14 w-auto object-contain" />
           <div className="hidden lg:block h-8 w-1px bg-gray-200"></div>
           <div className="hidden lg:flex flex-col justify-center leading-none">
-            <img src={sloganImg} alt="Sello de Calidad" className="h-9 w-auto object-contain opacity-80" />
+            <img src={sloganImg} alt="Sello de Calidad" className="h-10 w-auto object-contain opacity-80" />
           </div>
         </Link>
 
-        {/* BUSCADOR (Desktop) */}
+        {/* BuscadorDesktop */}
         <form
           onSubmit={handleSearch}
           className="hidden md:flex grow max-w-xl relative items-center bg-gray-50 rounded-full border border-transparent focus-within:border-gray-200 focus-within:bg-white focus-within:shadow-md transition-all duration-300"
@@ -75,7 +74,7 @@ export default function Navbar() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Busca productos acuícolas..."
+            placeholder="Encuentra acuícolas ..."
             className="w-full bg-transparent py-2.5 px-3 outline-none text-[13px] text-gray-700 font-medium"
           />
           <button
@@ -86,10 +85,10 @@ export default function Navbar() {
           </button>
         </form>
 
-        {/* ACCIONES DERECHA */}
+        {/* Menu Desktop */}
         <div className="flex items-center gap-3 md:gap-6">
 
-          {/* NAV LINKS (Desktop) */}
+          {/* Nav Links Desktop */}
           <nav className="hidden xl:flex items-center gap-8 text-[#242A57]">
             <Link to="/" className="text-[14px] font-bold hover:text-[#DE6E28] transition-colors">Inicio</Link>
             <Link to="/ofertas" className="text-[14px] font-bold hover:text-[#DE6E28] transition-colors">Ofertas</Link>
@@ -97,7 +96,7 @@ export default function Navbar() {
 
           <div className="hidden md:block h-6 w-1px bg-gray-200"></div>
 
-          {/* PERFIL / LOGOUT */}
+          {/* Perfil / Loguot */}
           <div className="flex items-center gap-4">
             <div
               className="flex items-center gap-3 cursor-pointer group"
@@ -121,7 +120,7 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* CARRITO */}
+            {/* Carrito */}
             <Link to="/carrito" className="relative p-2.5 bg-gray-100 rounded-full hover:bg-gray-200 transition-all group shadow-sm active:scale-90">
               <ShoppingCart className="w-6 h-6 text-[#242A57]" />
               {cartCount > 0 && (
@@ -131,7 +130,7 @@ export default function Navbar() {
               )}
             </Link>
 
-            {/* BOTÓN MENÚ MÓVIL */}
+            {/* Boton Menu Movil */}
             <button
               className="md:hidden p-2 text-[#242A57] hover:bg-gray-100 rounded-lg transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -142,11 +141,11 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* MENÚ MÓVIL (Overlay) */}
+      {/* Menu Movil (Overlay) */}
       <div className={`fixed inset-0 top-20 bg-white z-90 md:hidden transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="p-6 space-y-8 h-full flex flex-col overflow-y-auto">
 
-          {/* BUSCADOR MÓVIL */}
+          {/* Buscador Movil */}
           <form onSubmit={handleSearch} className="relative flex items-center bg-gray-100 rounded-2xl p-1 shadow-inner border border-gray-100">
             <input
               type="text"
@@ -160,7 +159,7 @@ export default function Navbar() {
             </button>
           </form>
 
-          {/* LINKS MÓVIL */}
+          {/* Links Movil */}
           <nav className="flex flex-col gap-2">
             <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl text-[15px] font-bold text-[#242A57]">
               Inicio <ChevronRight className="w-4 h-4 text-gray-400" />
@@ -170,7 +169,7 @@ export default function Navbar() {
             </Link>
           </nav>
 
-          {/* PERFIL MÓVIL */}
+          {/* Perfil Movil */}
           <div className="pt-4 mt-auto border-t border-gray-100">
             {user ? (
               <div className="space-y-4">
