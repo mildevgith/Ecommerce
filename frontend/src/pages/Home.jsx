@@ -1,13 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  CheckCircle2,
   Clock,
+  Eye,
   MessageSquare,
   ShieldCheck,
   ShoppingCart,
   Truck,
-  Eye,
   X,
-  CheckCircle2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -37,7 +37,7 @@ export default function Home() {
 
   // NUEVO ESTADO PARA MANEJAR LA VENTANA MODAL DEL DETALLE
   const [selectedProduct, setSelectedProduct] = useState(null);
-  
+
   // NUEVOS ESTADOS PARA LA VENTANA MODAL DE CATEGORÍAS Y SUS PRODUCTOS
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoryProducts, setCategoryProducts] = useState([]);
@@ -50,12 +50,12 @@ export default function Home() {
 
   // CONFIGURACIÓN DE RUTA INTELIGENTE MEJORADA
   const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
-  
+
   const BASE_URL = "https://serene-peace-production-62ee.up.railway.app";
   const LOCAL_URL = "http://localhost:8000";
-  
+
   const API_URL = esLocal ? `${LOCAL_URL}/api` : `${BASE_URL}/api`;
-  
+
   const whatsappNumber = "573174262521";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("¡Hola Expomarket! Me interesa información para mi negocio.")}`;
 
@@ -72,7 +72,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         let resCat = await fetch(`${API_URL}/categorias/`);
-        
+
         if (!resCat.ok && esLocal) {
           resCat = await fetch(`${BASE_URL}/api/categorias/`);
         }
@@ -208,10 +208,10 @@ export default function Home() {
             >
               <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-600">
-                  Frescura que se siente
+                  Frescura que se siente en
                 </span>
                 <span className="block mt-2 text-orange-400">
-                  Cada bocado, un placer
+                  Cada bocado
                 </span>
               </h1>
               <p className="mt-4 text-slate-300 text-lg">
@@ -314,7 +314,7 @@ export default function Home() {
                     alt={producto.nombre}
                   />
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button 
+                    <button
                       onClick={() => setSelectedProduct(producto)}
                       className="bg-white/90 backdrop-blur-xs text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-white transition-all transform scale-90 group-hover:scale-100"
                     >
@@ -442,7 +442,7 @@ export default function Home() {
                   className="h-full w-full object-cover transition-transform group-hover:scale-110"
                   alt={cat.nombre}
                 />
-                
+
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-8 flex flex-col justify-end">
                   <h3 className="text-2xl font-bold text-white uppercase mb-2">{cat.nombre}</h3>
                   <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -499,15 +499,15 @@ export default function Home() {
       <AnimatePresence>
         {selectedCategory && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
-            <motion.div 
-              className="absolute inset-0" 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedCategory(null)}
             />
 
-            <motion.div 
+            <motion.div
               className="relative bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden z-10 border border-slate-100 max-h-[85vh] flex flex-col"
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -515,7 +515,7 @@ export default function Home() {
               transition={{ type: "spring", damping: 25, stiffness: 350 }}
             >
               {/* Botón Cerrar */}
-              <button 
+              <button
                 onClick={() => setSelectedCategory(null)}
                 className="absolute top-4 right-4 z-20 bg-slate-100 text-slate-600 p-2 rounded-full hover:bg-orange-500 hover:text-white transition-colors"
               >
@@ -628,22 +628,22 @@ export default function Home() {
       <AnimatePresence>
         {selectedProduct && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md">
-            <motion.div 
-              className="absolute inset-0" 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedProduct(null)}
             />
 
-            <motion.div 
+            <motion.div
               className="relative bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden z-10 border border-slate-100 max-h-[90vh] flex flex-col lg:flex-row"
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 350 }}
             >
-              <button 
+              <button
                 onClick={() => setSelectedProduct(null)}
                 className="absolute top-4 right-4 z-20 bg-slate-100 text-slate-600 p-2 rounded-full hover:bg-orange-500 hover:text-white transition-colors shadow-xs"
               >
@@ -651,9 +651,9 @@ export default function Home() {
               </button>
 
               <div className="w-full lg:w-1/2 h-64 lg:h-auto relative bg-slate-100">
-                <img 
-                  src={getImageUrl(selectedProduct.imagen)} 
-                  alt={selectedProduct.nombre} 
+                <img
+                  src={getImageUrl(selectedProduct.imagen)}
+                  alt={selectedProduct.nombre}
                   className="w-full h-full object-cover"
                 />
                 {selectedProduct.precio_oferta && (
@@ -698,7 +698,7 @@ export default function Home() {
                       Descripción del Producto
                     </h4>
                     <p className="text-sm text-slate-600 leading-relaxed">
-                      {selectedProduct.descripcion || 
+                      {selectedProduct.descripcion ||
                         `Disfruta de la frescura inigualable de nuestro ${selectedProduct.nombre}. Seleccionado rigurosamente bajo los más altos estándares internacionales, garantizando una cadena de frío estricta directo a tu hogar o negocio en Cali.`}
                     </p>
                   </div>

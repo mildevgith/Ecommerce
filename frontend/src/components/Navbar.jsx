@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
 import {
+  ChevronRight,
+  LogOut,
+  Menu,
+  Percent,
   Search,
   ShoppingCart,
   User,
-  LogOut,
-  Menu,
-  X,
-  ChevronRight,
-  Percent
+  X
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 import logoImg from "../assets/logo.png";
 import sloganImg from "../assets/slogan.png";
@@ -165,8 +165,8 @@ export default function Navbar() {
               Productos <ChevronRight className="w-4 h-4 text-gray-400" />
             </Link>
             <Link to="/ofertas" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl text-[15px] font-bold text-[#242A57]">
-              <span className="flex items-center gap-2"><Percent className="w-4 h-4 text-[#DE6E28]" /> Ofertas</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <span className="flex items-center gap-2"><Percent className="hidden md:block w-4 h-4 text-[#DE6E28]" /> Ofertas</span>
+              <ChevronRight className="hidden w-4 h-4 text-gray-400" />
             </Link>
             <Link to="/contacto" onClick={() => setIsMenuOpen(false)} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl text-[15px] font-bold text-[#242A57]">
               Soporte <ChevronRight className="w-4 h-4 text-gray-400" />
