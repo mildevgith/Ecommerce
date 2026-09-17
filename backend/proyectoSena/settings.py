@@ -10,14 +10,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent # Encuentra la carpeta princip
 
 # --- SEGURIDAD ---
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "m4lmxu#if!t&mc=^(&y+7a8ojrt3%!qmw7edgc=a6#$+f%h_v")
- 
+
 # Firma criptográfica de Django; usa una variable segura o un texto por defecto si estás en local.
 
-DEBUG = os.getenv("DEBUG", "False").lower() in ('true', '1', 't') 
+DEBUG = os.getenv("DEBUG", "False").lower() in ('true', '1', 't')
 # Apaga el modo de depuración en producción si la variable detecta 'False' para no mostrar errores a clientes.
 
 # Permitimos el localhost y también el dominio que nos asigne Railway
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,.railway.app").split(",") 
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,.railway.app").split(",")
 # Lista de dominios e IPs web autorizadas para servir la aplicación.
 
 # --- APLICACIONES ---
@@ -69,18 +69,37 @@ TEMPLATES = [
 ]
 
 # --- BASE DE DATOS ---
+import dj_database_url
+import os
+from pathlib import Path
+
+# Asegúrate de tener definido BASE_DIR más arriba en tu archivo
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 DATABASES = {
     'default': dj_database_url.config(
-        conn_max_age=600,         # Mantiene la conexión abierta 10 minutos para ahorrar recursos.
-        conn_health_checks=True,  # Verifica si la base de datos sigue viva antes de cada consulta.
+        # 1. Intenta leer la variable de entorno de producción (Render/Railway)
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600
     )
 }
+
+# 2. 💡 EL RESPALDO: Si la variable de entorno está vacía (porque estás en tu PC)
+# el código automáticamente usa una base de datos local SQLite para que puedas programar sin internet.
+if not DATABASES['default']:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 # --- ARCHIVOS ESTÁTICOS Y MEDIA ---
 STATIC_URL = '/static/'                  # Ruta web desde donde se accede a los archivos estáticos.
 STATIC_ROOT = BASE_DIR / 'staticfiles'   # Carpeta donde se compilarán los estáticos para producción.
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage' 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 # Configura WhiteNoise para comprimir (gzip) y cachear los archivos CSS/JS.
 
 STATICFILES_DIRS = []                    # Lista de carpetas de origen de archivos estáticos.
@@ -147,7 +166,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Panel Principal", "url": "admin:index", "permissions": ["auth.view_user"]}, # Enlace al inicio del admin.
         {"name": "Ver Tienda Virtual 🛒", "url": "http://localhost:5173", "new_window": True}, # Abre tu React en pestaña nueva.
     ],
-    
+
     # --- Comportamiento Barra Lateral ---
     "show_sidebar": True,          # Muestra el árbol de aplicaciones a la izquierda.
     "navigation_expanded": True,   # Mantiene los menús desplegados automáticamente.
@@ -173,7 +192,7 @@ JAZZMIN_SETTINGS = {
         "tienda.tiendaproducto": "fas fa-fish",       # Icono de pescado para tus productos marinos.
         "tienda.tiendaresenaproducto": "fas fa-comments-dollar", # Icono de comentarios de valoraciones.
     },
-    
+
     "changeform_format": "horizontal_tabs", # Muestra los formularios de edición organizados en pestañas limpias.
 }
 
@@ -208,5 +227,5 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'), # Credencial secreta y privada de conexión.
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage' 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # Sobreescribe el sistema de archivos local para enviar directamente todas las fotos multimedia (mariscos) a Cloudinary.
