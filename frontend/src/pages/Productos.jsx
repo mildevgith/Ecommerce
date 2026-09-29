@@ -1,12 +1,35 @@
 // src/pages/Productos.jsx
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
+import axios from '../axios'; // Ajusta la ruta según dónde tengas tu archivo api.js
 import mix from "../assets/mix.jpeg";
 import { useCart } from "../context/CartContext";
 
+
 export default function Productos() {
-  const [productos, setProductos] = useState([]); 
+    const [productos, setProductos] = useState([]);
+
+    useEffect(() => {
+        axios.get('/axios/productos/') // Ya tomará automáticamente la URL de Render o Local
+            .then(response => {
+                setProductos(response.data);
+            })
+            .catch(error => {
+                console.error("Error al cargar productos:", error);
+            });
+    }, []);
+
+    return (
+        <div>
+            {/* Tu código para mostrar los productos */}
+        </div>
+    );
+}
+
+
+
+export default function Productos() {
+  const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 6;
@@ -21,9 +44,9 @@ export default function Productos() {
 
   // DETECCIÓN AUTOMÁTICA DE ENTORNO (Casa vs Empresa)
   const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
-  
-  const BASE_URL = esLocal 
-    ? "http://localhost:8000" 
+
+  const BASE_URL = esLocal
+    ? "http://localhost:8000"
     : "https://serene-peace-production-62ee.up.railway.app";
 
   useEffect(() => {
@@ -36,14 +59,14 @@ export default function Productos() {
           : base_url;
 
         const response = await axios.get(url);
-        
+
         const dataFinal = response.data.results ? response.data.results : response.data;
-        
+
         setProductos(Array.isArray(dataFinal) ? dataFinal : []);
         setCurrentPage(1);
       } catch (error) {
         console.error("Error al conectar con la base de datos:", error);
-        setProductos([]); 
+        setProductos([]);
       } finally {
         setLoading(false);
       }
@@ -54,14 +77,14 @@ export default function Productos() {
   // Lógica de paginación segura
   const indexOfLast = currentPage * productsPerPage;
   const indexOfFirst = indexOfLast - productsPerPage;
-  
+
   const currentProducts = productos.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(productos.length / productsPerPage);
 
   // RESOLUCIÓN DE IMÁGENES CONTROLADA
   const getImageUrl = (url = "") => {
     if (!url) return "https://via.placeholder.com/400x300?text=Expomarket";
-    
+
     const urlStr = String(url);
     if (urlStr.startsWith("http://") || urlStr.startsWith("https://")) {
       return urlStr;
@@ -104,11 +127,11 @@ export default function Productos() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {currentProducts.map((producto) => (
                     <div key={producto.id} className="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-2xl transition-all group">
-                    <img 
-                        src={getImageUrl(producto.imagen)} 
-                        alt={producto.nombre} 
+                    <img
+                        src={getImageUrl(producto.imagen)}
+                        alt={producto.nombre}
                         className="w-full h-56 object-cover"
-                        onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=Imagen+No+Disponible'; }} 
+                        onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=Imagen+No+Disponible'; }}
                     />
                     <div className="p-5">
                         <h3 className="text-xl font-bold text-gray-800 mb-2">{producto.nombre}</h3>
@@ -126,7 +149,7 @@ export default function Productos() {
                         </button>
 
                         {/* Ahora en lugar de un <Link>, abre el modal asignando el producto actual al estado */}
-                        <button 
+                        <button
                             onClick={() => setProductoSeleccionado(producto)}
                             className="border border-blue-600 text-blue-600 px-4 py-2 rounded-full text-xs hover:bg-blue-600 hover:text-white transition cursor-pointer"
                         >
@@ -161,16 +184,16 @@ export default function Productos() {
 
       {/* MODAL DE DETALLE DEL PRODUCTO */}
       {productoSeleccionado && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
           onClick={() => setProductoSeleccionado(null)} // Cierra al hacer clic fuera
         >
-          <div 
+          <div
             className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate-scale-up"
             onClick={(e) => e.stopPropagation()} // Evita cerrar si se hace clic dentro del modal
           >
             {/* Botón X para cerrar */}
-            <button 
+            <button
               onClick={() => setProductoSeleccionado(null)}
               className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-full w-8 h-8 flex items-center justify-center transition-colors cursor-pointer z-10"
             >
@@ -180,9 +203,9 @@ export default function Productos() {
             <div className="flex flex-col md:flex-row">
               {/* Imagen en el Modal */}
               <div className="md:w-1/2 h-64 md:h-auto min-h-[250px] bg-gray-100">
-                <img 
-                  src={getImageUrl(productoSeleccionado.imagen)} 
-                  alt={productoSeleccionado.nombre} 
+                <img
+                  src={getImageUrl(productoSeleccionado.imagen)}
+                  alt={productoSeleccionado.nombre}
                   className="w-full h-full object-cover"
                   onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=Imagen+No+Disponible'; }}
                 />
@@ -193,14 +216,14 @@ export default function Productos() {
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800 mb-3">{productoSeleccionado.nombre}</h2>
                   <p className="text-gray-600 text-sm mb-4 leading-relaxed">{productoSeleccionado.descripcion || "Sin descripción adicional."}</p>
-                  
+
                   {/* Stock si viene de tu backend */}
                   {productoSeleccionado.stock !== undefined && (
                     <p className="text-xs font-semibold text-gray-500 mb-4">
                       Disponibles: <span className="text-blue-900">{productoSeleccionado.stock} unidades</span>
                     </p>
                   )}
-                  
+
                   <p className="text-blue-900 text-2xl font-bold mb-6">
                     ${Number(productoSeleccionado.precio).toLocaleString("es-CO")}
                   </p>

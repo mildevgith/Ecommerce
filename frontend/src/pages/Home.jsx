@@ -11,7 +11,31 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import axios from '../axios'; 
 import { useCart } from "../context/CartContext";
+
+
+
+
+export default function Productos() {
+    const [productos, setProductos] = useState([]);
+
+    useEffect(() => {
+        axios.get('/axios/productos/') // Ya tomará automáticamente la URL de Render o Local
+            .then(response => {
+                setProductos(response.data);
+            })
+            .catch(error => {
+                console.error("Error al cargar productos:", error);
+            });
+    }, []);
+
+    return (
+        <div>
+            {/* Tu código para mostrar los productos */}
+        </div>
+    );
+}
 
 // IMPORTACIONES DE IMÁGENES
 // @ts-ignore
@@ -142,11 +166,8 @@ export default function Home() {
     const fetchCategoryProducts = async () => {
       setLoadingCategoryProducts(true);
       try {
-        // Mismo fallback inteligente (Local -> Railway)
-        let response = await fetch(`${API_URL}/productos/?categoria=${selectedCategory.id}`);
-        if (!response.ok && esLocal) {
-          response = await fetch(`${BASE_URL}/api/productos/?categoria=${selectedCategory.id}`);
-        }
+        const response = await api.get(`/productos/?categoria=${selectedCategory.id}`);
+        const data = response.data;
 
         if (response.ok) {
           const data = await response.json();

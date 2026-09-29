@@ -22,6 +22,7 @@ else:                                       # Condicional: si está en producci�
     ]
 
 # Personalización del panel
+
 admin.site.site_header = "Panel Administrativo EXPOMARKET"       # Cambia el título principal de la barra de herramientas del admin clásico.
 admin.site.site_title = "EXPOMARKET Admin"                       # Cambia el texto secundario o metatítulo de la pestaña de administración.
 admin.site.index_title = "Bienvenido a la gestión de EXPOMARKET" # Modifica el saludo inicial de bienvenida en la cabecera del Dashboard principal.
