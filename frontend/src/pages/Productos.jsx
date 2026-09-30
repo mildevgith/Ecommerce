@@ -1,32 +1,9 @@
 // src/pages/Productos.jsx
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import axios from '../axios'; // Ajusta la ruta según dónde tengas tu archivo api.js
+import axios from '../axios'; // Tu configuración centralizada de Axios
 import mix from "../assets/mix.jpeg";
 import { useCart } from "../context/CartContext";
-
-
-export default function Productos() {
-    const [productos, setProductos] = useState([]);
-
-    useEffect(() => {
-        axios.get('/axios/productos/') // Ya tomará automáticamente la URL de Render o Local
-            .then(response => {
-                setProductos(response.data);
-            })
-            .catch(error => {
-                console.error("Error al cargar productos:", error);
-            });
-    }, []);
-
-    return (
-        <div>
-            {/* Tu código para mostrar los productos */}
-        </div>
-    );
-}
-
-
 
 export default function Productos() {
   const [productos, setProductos] = useState([]);
@@ -42,24 +19,15 @@ export default function Productos() {
   const queryParams = new URLSearchParams(location.search);
   const searchTerm = queryParams.get("search") || "";
 
-  // DETECCIÓN AUTOMÁTICA DE ENTORNO (Casa vs Empresa)
-  const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
-
-  const BASE_URL = esLocal
-    ? "http://localhost:8000"
-    : "https://serene-peace-production-62ee.up.railway.app";
-
   useEffect(() => {
     const obtenerProductos = async () => {
       setLoading(true);
       try {
-        const base_url = `${BASE_URL}/api/productos/`;
-        const url = searchTerm
-          ? `${base_url}?search=${encodeURIComponent(searchTerm)}`
-          : base_url;
+        const endpoint = searchTerm
+          ? `/productos/?search=${encodeURIComponent(searchTerm)}`
+          : '/productos/';
 
-        const response = await axios.get(url);
-
+        const response = await axios.get(endpoint);
         const dataFinal = response.data.results ? response.data.results : response.data;
 
         setProductos(Array.isArray(dataFinal) ? dataFinal : []);
@@ -72,7 +40,7 @@ export default function Productos() {
       }
     };
     obtenerProductos();
-  }, [searchTerm, BASE_URL]);
+  }, [searchTerm]);
 
   // Lógica de paginación segura
   const indexOfLast = currentPage * productsPerPage;
@@ -89,7 +57,10 @@ export default function Productos() {
     if (urlStr.startsWith("http://") || urlStr.startsWith("https://")) {
       return urlStr;
     }
-    return `${BASE_URL}${urlStr}`;
+
+    // Toma la URL base configurada en tus variables de entorno o usa Render por defecto
+    const baseURL = import.meta.env.VITE_BACKEND_URL || "https://ecommerce-dsr6.onrender.com";
+    return `${baseURL}${urlStr}`;
   };
 
   return (
@@ -143,12 +114,11 @@ export default function Productos() {
                         <div className="flex justify-between gap-2">
                         <button
                             onClick={() => addToCart(producto)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-orange-500 transition-colors flex-1"
+                            className="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold hover:bg-orange-500 transition-colors flex-1 cursor-pointer"
                         >
                             Añadir al carrito
                         </button>
 
-                        {/* Ahora en lugar de un <Link>, abre el modal asignando el producto actual al estado */}
                         <button
                             onClick={() => setProductoSeleccionado(producto)}
                             className="border border-blue-600 text-blue-600 px-4 py-2 rounded-full text-xs hover:bg-blue-600 hover:text-white transition cursor-pointer"
@@ -171,7 +141,7 @@ export default function Productos() {
                         setCurrentPage(num);
                         window.scrollTo({ top: 500, behavior: 'smooth' });
                     }}
-                    className={`px-4 py-2 rounded-full border border-blue-600 transition-colors ${currentPage === num ? "bg-blue-600 text-white" : "text-blue-600 hover:bg-blue-50"}`}
+                    className={`px-4 py-2 rounded-full border border-blue-600 transition-colors cursor-pointer ${currentPage === num ? "bg-blue-600 text-white" : "text-blue-600 hover:bg-blue-50"}`}
                   >
                     {num}
                   </button>
@@ -186,13 +156,12 @@ export default function Productos() {
       {productoSeleccionado && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
-          onClick={() => setProductoSeleccionado(null)} // Cierra al hacer clic fuera
+          onClick={() => setProductoSeleccionado(null)}
         >
           <div
             className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative animate-scale-up"
-            onClick={(e) => e.stopPropagation()} // Evita cerrar si se hace clic dentro del modal
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Botón X para cerrar */}
             <button
               onClick={() => setProductoSeleccionado(null)}
               className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-full w-8 h-8 flex items-center justify-center transition-colors cursor-pointer z-10"
@@ -201,7 +170,6 @@ export default function Productos() {
             </button>
 
             <div className="flex flex-col md:flex-row">
-              {/* Imagen en el Modal */}
               <div className="md:w-1/2 h-64 md:h-auto min-h-[250px] bg-gray-100">
                 <img
                   src={getImageUrl(productoSeleccionado.imagen)}
@@ -211,13 +179,11 @@ export default function Productos() {
                 />
               </div>
 
-              {/* Contenido/Información en el Modal */}
               <div className="md:w-1/2 p-6 flex flex-col justify-between">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800 mb-3">{productoSeleccionado.nombre}</h2>
                   <p className="text-gray-600 text-sm mb-4 leading-relaxed">{productoSeleccionado.descripcion || "Sin descripción adicional."}</p>
 
-                  {/* Stock si viene de tu backend */}
                   {productoSeleccionado.stock !== undefined && (
                     <p className="text-xs font-semibold text-gray-500 mb-4">
                       Disponibles: <span className="text-blue-900">{productoSeleccionado.stock} unidades</span>
@@ -233,15 +199,15 @@ export default function Productos() {
                   <button
                     onClick={() => {
                       addToCart(productoSeleccionado);
-                      setProductoSeleccionado(null); // Cierra automáticamente tras añadir
+                      setProductoSeleccionado(null);
                     }}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-orange-500 transition-colors flex-1"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-orange-500 transition-colors flex-1 cursor-pointer"
                   >
                     Añadir al carrito
                   </button>
                   <button
                     onClick={() => setProductoSeleccionado(null)}
-                    className="border border-gray-300 text-gray-600 px-4 py-3 rounded-full text-sm font-medium hover:bg-gray-50 transition-colors"
+                    className="border border-gray-300 text-gray-600 px-4 py-3 rounded-full text-sm font-medium hover:bg-gray-50 transition-colors cursor-pointer"
                   >
                     Cerrar
                   </button>
