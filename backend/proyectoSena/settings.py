@@ -95,6 +95,8 @@ if not STATIC_ROOT.exists():
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 # --- CONFIGURACIÓN DE CORS Y CSRF (Render + Vercel + Local) ---
 CORS_ALLOWED_ORIGINS = [
     "https://ecommerce-expomar-12.vercel.app",
