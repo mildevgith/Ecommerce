@@ -11,31 +11,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import axios from '../axios'; 
+import api from "../axios"; // <-- IMPORTANTE: Importamos tu instancia centralizada de Axios
 import { useCart } from "../context/CartContext";
-
-
-
-
-export default function Productos() {
-    const [productos, setProductos] = useState([]);
-
-    useEffect(() => {
-        axios.get('/axios/productos/') // Ya tomará automáticamente la URL de Render o Local
-            .then(response => {
-                setProductos(response.data);
-            })
-            .catch(error => {
-                console.error("Error al cargar productos:", error);
-            });
-    }, []);
-
-    return (
-        <div>
-            {/* Tu código para mostrar los productos */}
-        </div>
-    );
-}
 
 // IMPORTACIONES DE IMÁGENES
 // @ts-ignore
@@ -59,10 +36,10 @@ export default function Home() {
   const [productosOferta, setProductosOferta] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
-  // NUEVO ESTADO PARA MANEJAR LA VENTANA MODAL DEL DETALLE
+  // ESTADOS PARA LA VENTANA MODAL DEL DETALLE
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // NUEVOS ESTADOS PARA LA VENTANA MODAL DE CATEGORÍAS Y SUS PRODUCTOS
+  // ESTADOS PARA LA VENTANA MODAL DE CATEGORÍAS Y SUS PRODUCTOS
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoryProducts, setCategoryProducts] = useState([]);
   const [loadingCategoryProducts, setLoadingCategoryProducts] = useState(false);
@@ -71,14 +48,6 @@ export default function Home() {
   const { addToCart } = useCart();
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("search");
-
-  // CONFIGURACIÓN DE RUTA INTELIGENTE MEJORADA
-  const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
-
-  const BASE_URL = "https://ecommerce-dsr6.onrender.com";
-  const LOCAL_URL = "http://localhost:8000";
-
-  const API_URL = esLocal ? `${LOCAL_URL}/api` : `${BASE_URL}/api`;
 
   const whatsappNumber = "573174262521";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("¡Hola Expomarket! Me interesa información para mi negocio.")}`;
@@ -91,70 +60,50 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  // CARGA DE DATOS OPTIMIZADA
+  // CARGA DE DATOS OPTIMIZADA CON AXIOS
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let resCat = await fetch(`${API_URL}/categorias/`);
-
-        if (!resCat.ok && esLocal) {
-          resCat = await fetch(`${BASE_URL}/api/categorias/`);
-        }
-
-        if (resCat.ok) {
-          const dataCat = await resCat.json();
-          setCategories(Array.isArray(dataCat) ? dataCat : (dataCat.results || []));
-        }
-
-        const currentApi = (!resCat.ok && esLocal) ? `${BASE_URL}/api` : API_URL;
+        // 1. Cargar Categorías
+        const resCat = await api.get('/categorias/');
+        const dataCat = resCat.data;
+        setCategories(Array.isArray(dataCat) ? dataCat : (dataCat.results || []));
 
         if (searchTerm) {
-          const resSearch = await fetch(`${currentApi}/productos/?search=${searchTerm}`);
-          if (resSearch.ok) {
-            const dataSearch = await resSearch.json();
-            setSearchResults(Array.isArray(dataSearch) ? dataSearch : (dataSearch.results || []));
-          }
+          // 2. Búsqueda si existe término
+          const resSearch = await api.get(`/productos/?search=${searchTerm}`);
+          const dataSearch = resSearch.data;
+          setSearchResults(Array.isArray(dataSearch) ? dataSearch : (dataSearch.results || []));
         } else {
-          const resProd = await fetch(`${currentApi}/productos/`);
-          if (resProd.ok) {
-            const dataProd = await resProd.json();
-            const listaGeneral = Array.isArray(dataProd) ? dataProd : (dataProd.results || []);
-            setProductosDestacados(listaGeneral.slice(0, 8));
+          // 3. Productos Generales / Destacados
+          const resProd = await api.get('/productos/');
+          const listaGeneral = Array.isArray(resProd.data) ? resProd.data : (resProd.data.results || []);
+          setProductosDestacados(listaGeneral.slice(0, 8));
+
+          // 4. Recomendados
+          try {
+            const resRec = await api.get('/productos/recomendados/');
+            const listaRecomendados = Array.isArray(resRec.data) ? resRec.data : (resRec.data.results || []);
+            if (listaRecomendados.length > 0) {
+              setProductosDestacados(listaRecomendados.slice(0, 4));
+            }
+          } catch (e) {
+            console.log("Usando productos generales como destacados (endpoint recomendados no disponible)");
           }
 
-          const resRec = await fetch(`${currentApi}/productos/recomendados/`);
-          if (resRec.ok) {
-            const dataRec = await resRec.json();
-            const listaRecomendados = Array.isArray(dataRec) ? dataRec : (dataRec.results || []);
-            setProductosDestacados(listaRecomendados.slice(0, 4));
-          }
-
-          const resTodo = await fetch(`${currentApi}/productos/`);
-          if (resTodo.ok) {
-            const dataTodo = await resTodo.json();
-            const listaProductos = Array.isArray(dataTodo) ? dataTodo : (dataTodo.results || []);
-
-            const ofertas = listaProductos.filter(
-              (prod) => prod.en_oferta === true || prod.precio_oferta != null,
-            );
-            setProductosOferta(ofertas.slice(0, 4));
-          }
+          // 5. Ofertas
+          const ofertas = listaGeneral.filter(
+            (prod) => prod.en_oferta === true || prod.precio_oferta != null
+          );
+          setProductosOferta(ofertas.slice(0, 4));
         }
       } catch (error) {
-        console.error("Error conectando con Django, reintentando con producción...", error);
-        try {
-          const resCatProduction = await fetch(`${BASE_URL}/api/categorias/`);
-          if (resCatProduction.ok) {
-            const dataCat = await resCatProduction.json();
-            setCategories(Array.isArray(dataCat) ? dataCat : (dataCat.results || []));
-          }
-        } catch (err) {
-          console.error("Error crítico de red:", err);
-        }
+        console.error("Error conectando con el backend de Render vía Axios:", error);
       }
     };
+
     fetchData();
-  }, [API_URL, searchTerm]);
+  }, [searchTerm]);
 
   // EFECTO PARA CARGAR LOS PRODUCTOS DE LA CATEGORÍA SELECCIONADA EN EL MODAL
   useEffect(() => {
@@ -168,11 +117,7 @@ export default function Home() {
       try {
         const response = await api.get(`/productos/?categoria=${selectedCategory.id}`);
         const data = response.data;
-
-        if (response.ok) {
-          const data = await response.json();
-          setCategoryProducts(Array.isArray(data) ? data : (data.results || []));
-        }
+        setCategoryProducts(Array.isArray(data) ? data : (data.results || []));
       } catch (error) {
         console.error("Error cargando productos de la categoría:", error);
       } finally {
@@ -181,22 +126,21 @@ export default function Home() {
     };
 
     fetchCategoryProducts();
-  }, [selectedCategory, API_URL, esLocal]);
+  }, [selectedCategory]);
 
-  // RESOLUCIÓN DE IMÁGENES ULTRA SEGURA
+  // RESOLUCIÓN DE IMÁGENES
   const getImageUrl = (url = "") => {
     if (!url) return "https://via.placeholder.com/400x300?text=Expomarket";
-
     const urlStr = String(url);
     if (urlStr.startsWith("http://") || urlStr.startsWith("https://")) {
       return urlStr;
     }
-
-    const hostMultimedia = esLocal ? LOCAL_URL : BASE_URL;
-    return `${hostMultimedia}${urlStr}`;
+    // Si viene relativa, la completamos con la URL base de Render configurada en axios.js
+    const baseURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+    return `${baseURL}${urlStr}`;
   };
 
-  return (
+return (
     <main className="min-h-screen bg-slate-50/50 selection:bg-orange-200">
       {/* HERO ORIGINAL INTACTO */}
       {!searchTerm && (
