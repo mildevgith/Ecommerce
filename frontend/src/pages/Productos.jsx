@@ -1,8 +1,8 @@
 // src/pages/Productos.jsx
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import axios from '../axios'; // Tu configuración centralizada de Axios
 import mix from "../assets/mix.jpeg";
+import axios from '../axios'; // Tu configuración centralizada de Axios
 import { useCart } from "../context/CartContext";
 
 export default function Productos() {
@@ -66,7 +66,7 @@ export default function Productos() {
   return (
     <>
       <section className="relative w-full h-[70vh] flex items-center justify-center overflow-hidden shadow-md">
-        <img src={mix} alt="Productos frescos" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+        <img src={getImageUrl(mix)} alt="Productos frescos" className="absolute inset-0 w-full h-full object-cover opacity-80" />
         <div className="absolute inset-0 bg-black/25"></div>
         <div className="relative z-10 text-center px-4 max-w-3xl">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white drop-shadow-lg">
