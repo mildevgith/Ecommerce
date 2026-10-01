@@ -39,7 +39,7 @@ class TiendaProducto(models.Model):
     precio = models.DecimalField(max_digits=12, decimal_places=2) # Campo numérico exacto de alta precisión para el costo base del artículo.
     precio_oferta = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True) # Campo decimal opcional para guardar el costo rebajado de promoción.
     stock = models.IntegerField() # Cantidad disponible      # Campo numérico entero para el control y conteo de existencias físicas en bodega.
-    imagen = models.ImageField(upload_to='productos/', blank=True, null=True) # Define la ruta de la carpeta donde se almacenarán las fotos de los productos.
+    imagen = models.URLField(max_length=500, blank=True, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True) # Registra de forma automática la fecha y hora exacta en la que se sube el producto.
     # Relaciono el producto con una categoría (Un producto pertenece a una categoría)
     categoria = models.ForeignKey('tienda.TiendaCategoria', on_delete=models.DO_NOTHING) # Vincula el producto a una categoría padre (Relación de uno a muchos).
