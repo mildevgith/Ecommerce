@@ -23,7 +23,7 @@ class TiendaCliente(models.Model):
 class TiendaCategoria(models.Model):
     nombre = models.CharField(max_length=100)               # Campo para dar un título o nombre único a la categoría de mariscos.
     descripcion = models.TextField()                        # Campo de texto largo para detallar las especificaciones generales de la categoría.
-    imagen = models.ImageField(upload_to='categorias/', blank=True, null=True) # Define la ruta de subida en el almacenamiento para la foto representativa de la categoría.
+    imagen = models.URLField(max_length=500, blank=True, null=True)
 
     class Meta:
         db_table = 'tienda_categoria'                       # Establece el nombre técnico de la tabla de categorías dentro de la base de datos SQL.
