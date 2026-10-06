@@ -54,7 +54,7 @@ export default function AuthPage() {
     <div className="min-h-[70vh] flex items-center justify-center bg-gray-50 py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-10 border-t-8 border-[#de6e28]">
         <h2 className="text-3xl font-extrabold text-center text-[#242a57] mb-2">
-          {isLogin ? "INGRESAR" : "REGISTRARSE"} // Título dinámico según modo
+          {isLogin ? "INGRESAR" : "REGISTRARSE"} 
         </h2>
         
         <form onSubmit={handleSubmit} className="space-y-5">
