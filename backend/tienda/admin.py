@@ -5,8 +5,9 @@ from .models import (
     TiendaItemcarrito, TiendaPedido, TiendaDetallepedido,
     TiendaHistorialestadopedido, TiendaMetodopago, TiendaPago,
     TiendaDetalleproducto, TiendaInventario, TiendaResenaproducto,
-    TiendaCupondescuento, UserOTP, Profile
+    TiendaCupondescuento, UserOTP, Profile, TiendaBanner
 )
+
 
 # --- GESTIÓN DE CLIENTES ---
 @admin.register(TiendaCliente) # Registra el modelo TiendaCliente vinculándolo con su clase de configuración personalizada.
@@ -72,4 +73,10 @@ admin.site.register(TiendaMetodopago)            # Registra los tipos de pago ac
 admin.site.register(TiendaDetalleproducto)       # Registra las descripciones o especificaciones técnicas adicionales de los ítems.
 admin.site.register(TiendaResenaproducto)        # Registra las valoraciones y comentarios de texto enviados por los clientes sobre los pescados/mariscos.
 admin.site.register(UserOTP)                     # Registra la base de datos de claves temporales de un solo uso (One-Time Password) enviadas para seguridad.
-admin.site.register(Profile)                     # Registra la extensión de datos de usuario para el manejo del perfil general dentro del sitio.
+admin.site.register(Profile)  
+
+
+@admin.register(TiendaBanner)
+class TiendaBanner(admin.ModelAdmin):
+    list_display = ('id', 'titulo', 'activo', 'fecha_creacion')
+    list_editable = ('activo',)# Registra la extensión de datos de usuario para el manejo del perfil general dentro del sitio.

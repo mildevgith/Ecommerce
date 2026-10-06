@@ -3,6 +3,23 @@ from django.conf import settings
 from django.contrib.auth.models import User
 import random
 
+
+
+# --- TABLA DE BANNERS (Hero Images dinámicas) ---
+class TiendaBanner(models.Model):
+    titulo = models.CharField(max_length=100, blank=True, null=True)
+    imagen = models.ImageField(upload_to='banners/')
+    activo = models.BooleanField(default=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    class Meta:
+        db_table = 'tienda_banner'
+        verbose_name = "Banner"
+        verbose_name_plural = "Banners"
+
+    def __str__(self):
+        return self.titulo or f"Banner #{self.id}"
+
 # --- TABLA DE CLIENTES ---
 class TiendaCliente(models.Model):
     # Conecto el cliente con un usuario del sistema (solo un cliente por usuario)

@@ -1,10 +1,13 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User  
 from .models import (
     Profile, UserOTP, TiendaProducto, TiendaCliente,
     TiendaCategoria, TiendaCarrito, TiendaItemcarrito,
-    TiendaPedido, TiendaHistorialestadopedido, TiendaDetalleproducto
+    TiendaPedido, TiendaHistorialestadopedido, TiendaDetalleproducto, 
+    TiendaBanner, TiendaPago
 )
+
+
 
 # 1. TRADUCTOR DE USUARIO: Convierte los datos básicos de Django (ID, email) a JSON
 class UserSerializer(serializers.ModelSerializer):
@@ -83,4 +86,13 @@ class MetodoPagoSerializer(serializers.ModelSerializer):
 class TiendaPagoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaPedido                                            # Vincula la transacción final con los datos globales de la orden de compra.
-        fields = '__all__'                                              # Mapea todas las propiedades relacionales del pedido para auditoría de transacciones monetarias.
+        fields = '__all__'
+        
+        
+
+
+class TiendaBannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TiendaBanner
+        fields = '__all__'
+    

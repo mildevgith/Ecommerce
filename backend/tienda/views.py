@@ -7,7 +7,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,17 +16,16 @@ from rest_framework.pagination import PageNumberPagination
 
 from .models import (
     TiendaProducto, TiendaCategoria, TiendaCarrito, TiendaCliente,
-    TiendaPedido, TiendaDetallepedido, TiendaPago, TiendaMetodopago, Profile
+    TiendaPedido, TiendaDetallepedido, TiendaPago, TiendaMetodopago, Profile, TiendaBanner, 
 )
 from .serializers import (
     TiendaProductoSerializer, TiendaCategoriaSerializer,
-    TiendaPedidoSerializer, ProfileSerializer
+    TiendaPedidoSerializer, ProfileSerializer, TiendaBannerSerializer
 )
 
 def eliminar_tildes(cadena):
     if not cadena: return "" # Si la cadena de texto llega vacía, retorna inmediatamente un string en blanco para evitar errores.
     return ''.join((c for c in unicodedata.normalize('NFD', cadena) if unicodedata.category(c) != 'Mn'))
-    # Descompone los caracteres con acentos o tildes y filtra eliminando las marcas diacríticas para dejar el texto plano.
 
 
 # --- CLASE DE PAGINACIÓN PERSONALIZADA ---
@@ -37,9 +35,9 @@ class CatalogoPagination(PageNumberPagination):
     Configuración de paginación para el catálogo de productos.
     Divide los resultados devueltos en bloques de 8 elementos.
     """
-    page_size = 8                        # Define de forma fija el límite máximo de 8 registros de productos devueltos por cada página.
-    page_size_query_param = 'page_size'  # Expone el parámetro en la URL para que el cliente pueda solicitar opcionalmente otro tamaño de página.
-    max_page_size = 100                  # Restringe el límite máximo absoluto a 100 registros para proteger el rendimiento de la base de datos.
+    page_size = 8                          # Define de forma fija el límite máximo de 8 registros de productos devueltos por cada página.
+    page_size_query_param = 'page_size'    # Expone el parámetro en la URL para que el cliente pueda solicitar opcionalmente otro tamaño de página.
+    max_page_size = 100                    # Restringe el límite máximo absoluto a 100 registros para proteger el rendimiento de la base de datos.
 
 
 # --- AUTENTICACIÓN REAL ---
@@ -99,13 +97,23 @@ class AuthVerifyView(APIView):
         return Response({"error": "Credenciales inválidas"}, status=401) # Rechaza el acceso con un mensaje de alerta y código HTTP 401 Unauthorized.
 
 
-# --- CATÁLOGO ---
+# --- BANNERS Y CATÁLOGO ---
+
+class BannerViewSet(viewsets.ModelViewSet):
+    queryset = TiendaBanner.objects.all()
+    serializer_class = TiendaBannerSerializer
+    permission_classes = [AllowAny]
+
+class LegacyBannerViewSet(viewsets.ModelViewSet):
+    queryset = TiendaBanner.objects.all()
+    serializer_class = TiendaBannerSerializer
+    permission_classes = [AllowAny]
 
 class ProductCatalogViewSet(viewsets.ModelViewSet):
-    queryset = TiendaProducto.objects.all().order_by('-id') # Define la consulta inicial trayendo todos los mariscos ordenados del más nuevo al más antiguo.
-    serializer_class = TiendaProductoSerializer            # Asigna el serializador encargado de traducir los campos de los productos a formato JSON.
+    queryset = TiendaProducto.objects.all().order_by('-id') # Define la consulta inicial trayendo todos los productos ordenados del más nuevo al más antiguo.
+    serializer_class = TiendaProductoSerializer             # Asigna el serializador encargado de traducir los campos de los productos a formato JSON.
     permission_classes = [AllowAny]                         # Libera el acceso para que el público general pueda navegar y consultar el catálogo de productos.
-    pagination_class = CatalogoPagination                  # Vincula la paginación de 8 elementos por página a la respuesta de la lista general.
+    pagination_class = CatalogoPagination                   # Vincula la paginación de 8 elementos por página a la respuesta de la lista general.
 
     def get_queryset(self):
         queryset = self.queryset # Obtiene la consulta base de los productos ordenada por ID de forma descendente.
@@ -118,7 +126,7 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
             
         categoria_id = self.request.query_params.get('categoria', None) # Captura el identificador numérico de la categoría enviado en los parámetros de la URL.
         if categoria_id:
-            queryset = queryset.filter(categoria_id=categoria_id) # Aplica una cláusula WHERE en SQL para segmentar únicamente los pescados de esa categoría.
+            queryset = queryset.filter(categoria_id=categoria_id) # Aplica una cláusula WHERE en SQL para segmentar únicamente los productos de esa categoría.
             
         return queryset.distinct() # Retorna el conjunto de datos final depurado eliminando filas duplicadas mediante un DISTINCT en SQL.
 
@@ -127,7 +135,7 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
         try:
             productos = TiendaProducto.objects.filter(es_destacado=True)[:4] # Consulta y extrae únicamente los primeros 4 productos que tengan activo el interruptor de destacados.
             if not productos.exists(): # Evaluación lógica de respaldo en caso de que el administrador no haya marcado ningún producto como destacado.
-                productos = TiendaProducto.objects.all().order_by('-id')[:4] # Captura como plan de contingencia los últimos 4 mariscos ingresados a la plataforma.
+                productos = TiendaProducto.objects.all().order_by('-id')[:4] # Captura como plan de contingencia los últimos 4 productos ingresados a la plataforma.
             serializer = self.get_serializer(productos, many=True) # Traduce el arreglo de objetos encontrados a un bloque estructurado de texto JSON.
             return Response(serializer.data, status=status.HTTP_200_OK) # Despacha la lista final de sugerencias al frontend de React con un estado HTTP 200 OK.
         except Exception as e:
@@ -144,7 +152,7 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST) # Devuelve el detalle del error en caso de fallo junto a un código HTTP 400.
 
 
-# --- PROCESAMIENTO DE PEDIDOS REAL ---
+# --- PROCESAMIENTO DE PEDIDOS ---
 
 class CrearPedidoView(APIView):
     permission_classes = [AllowAny] # Permite el procesamiento del flujo de checkout tanto para usuarios registrados como en transiciones rápidas.
@@ -154,7 +162,6 @@ class CrearPedidoView(APIView):
         try:
             with transaction.atomic(): # Asegura la consistencia financiera total; si falla la creación de un ítem, el pedido completo se anula.
                 email_cliente = data['datos_envio']['email'].lower().strip()
-                # CORRECCIÓN: Buscamos por email O por username (ya que el email puede estar vacío)
                 user = User.objects.filter(Q(email=email_cliente) | Q(username=email_cliente)).first() # Ejecuta un filtro flexible para capturar el primer usuario que coincida.
                 
                 if not user: # Validación preventiva de seguridad para verificar la existencia del cliente antes de procesar el pago.
@@ -176,7 +183,7 @@ class CrearPedidoView(APIView):
                 ) # Crea e inserta la cabecera del pedido guardando el total facturado y fijando su estado logístico inicial.
 
                 for item in data['items']: # Bucle iterativo encargado de desglosar cada uno de los productos que venían dentro del carrito de compras.
-                    producto = TiendaProducto.objects.get(id=item['producto_id']) # Busca y valida la existencia del marisco en el inventario mediante su ID único.
+                    producto = TiendaProducto.objects.get(id=item['producto_id']) # Busca y valida la existencia del producto en el inventario mediante su ID único.
                     TiendaDetallepedido.objects.create(
                         pedido=pedido,
                         producto=producto,
@@ -200,13 +207,14 @@ class CrearPedidoView(APIView):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = TiendaCategoria.objects.all() # Define la consulta por defecto abstrayendo todas las categorías registradas en el ecommerce.
     serializer_class = TiendaCategoriaSerializer # Configura el formateador para empaquetar el nombre, descripción e imagen de las categorías en JSON.
+    permission_classes = [AllowAny]
 
     @action(detail=True, methods=['get'], url_path='productos', permission_classes=[AllowAny]) # Define un endpoint anidado en la ruta /api/categorias/<id>/productos/.
     def productos(self, request, pk=None):
         try:
             self.pagination_class = None # Limpia el limitador de paginación para retornar de corrido todos los productos pertenecientes a esta categoría.
             categoria = self.get_object() # Ejecuta un control interno para extraer la categoría según el ID (pk) provisto en la URL.
-            productos = TiendaProducto.objects.filter(categoria=categoria).order_by('-id') # Filtra el catálogo seleccionando los mariscos de esa familia ordenados por novedad.
+            productos = TiendaProducto.objects.filter(categoria=categoria).order_by('-id') # Filtra el catálogo seleccionando los productos de esa familia ordenados por novedad.
             serializer = TiendaProductoSerializer(productos, many=True, context={'request': request}) # Serializa la lista inyectando el contexto de la petición para las URLs de imágenes.
             return Response(serializer.data, status=status.HTTP_200_OK) # Retorna los artículos segmentados al frontend junto a un estado HTTP 200 OK.
         except TiendaCategoria.DoesNotExist:
@@ -222,8 +230,8 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """
-        Sobrescribimos el método create para usar tu lógica personalizada
-        de CrearPedidoView dentro del router automático.
+        Sobrescribimos el método create para usar la lógica personalizada
+        de creación de pedidos dentro del router automático.
         """
         data = request.data
         try:
@@ -247,10 +255,10 @@ class OrderViewSet(viewsets.ModelViewSet):
                 ) # Registra e inserta la orden formal asignando los totales económicos y definiendo el estado logístico como Pendiente.
 
                 for item in data['items']: # Ejecuta un bucle por cada uno de los ítems de compra contenidos en el arreglo enviado por React.
-                    producto = TiendaProducto.objects.get(id=item['producto_id']) # Trae de la tabla la información del producto marino para asegurar stock y consistencia.
+                    producto = TiendaProducto.objects.get(id=item['producto_id']) # Trae de la tabla la información del producto para asegurar stock y consistencia.
                     TiendaDetallepedido.objects.create(
                         pedido=pedido, producto=producto,
-                        cantidad=item['cantidad'], precio_unitario=item['precio_unitario']
+                        amount=item['cantidad'], precio_unitario=item['precio_unitario']
                     ) # Escribe las líneas unitarias de facturación congelando cantidades y costos del momento exacto de la compra.
 
                 return Response({"message": "Pedido creado", "pedido_id": pedido.id}, status=201) # Finaliza enviando el número de confirmación de pedido y código HTTP 201 Created.
