@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import api from "../axios"; 
+import api from "../axios";
 import { useCart } from "../context/CartContext";
 
 export default function Home() {
@@ -130,83 +130,72 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-slate-50/50 selection:bg-orange-200">
       {/* HERO DINÁMICO CONTROLADO DESDE DJANGO */}
-      {!searchTerm && (
+      {!searchTerm && banners.length > 0 && (
         <section className="relative h-[90vh] w-full overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
           <AnimatePresence mode="wait">
-            {banners.length > 0 && (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 1.05 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-                className="absolute inset-0"
-              >
-                <img
-                  src={getImageUrl(banners[index]?.imagen)}
-                  className="h-full w-full object-cover opacity-40"
-                  alt={banners[index]?.titulo || "Expomarket Banner"}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="relative z-10 flex h-full flex-col md:flex-row items-center justify-center px-8 text-center md:text-left gap-10">
-            {/* Texto principal */}
             <motion.div
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              className="max-w-xl"
+              key={index}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+              className="absolute inset-0 flex items-center justify-center px-8"
             >
-              <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-600">
-                  {banners[index]?.titulo || "Frescura que se siente en"}
-                </span>
-                <span className="block mt-2 text-orange-400">
-                  {banners[index]?.descripcion || "Cada bocado"}
-                </span>
-              </h1>
-              <p className="mt-4 text-slate-300 text-lg">
-                Productos del mar seleccionados con calidad y sabor inigualable.
-              </p>
-
-              <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                <Link
-                  to="/productos"
-                  className="rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg shadow-orange-500/40 hover:bg-orange-600 hover:scale-105 transition-all"
-                >
-                  🛒 Ver Catálogo
-                </Link>
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-full bg-green-500 px-8 py-3 font-bold text-white shadow-lg shadow-green-500/40 hover:bg-green-600 hover:scale-105 transition-all flex items-center justify-center gap-2"
-                >
-                  <MessageSquare size={22} /> Pedir por WhatsApp
-                </a>
-              </div>
-            </motion.div>
-
-            {/* Imagen lateral dinámica (toma el siguiente banner o el primero) */}
-            <motion.div
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="relative hidden md:block"
-            >
-              <div className="absolute -top-6 -right-6 bg-orange-500 text-white font-bold rounded-full px-4 py-2 text-sm shadow-lg z-20">
-                30% OFF
-              </div>
+              {/* Imagen de fondo del banner actual */}
               <img
-                src={getImageUrl(banners[(index + 1) % banners.length]?.imagen || banners[0]?.imagen)}
-                alt="Plato destacado"
-                className="w-[320px] md:w-[400px] h-[400px] object-cover rounded-full border-4 border-orange-400 shadow-xl hover:scale-105 transition-transform"
+                src={getImageUrl(banners[index]?.imagen)}
+                className="absolute inset-0 h-full w-full object-cover opacity-40"
+                alt={banners[index]?.titulo || "Expomarket Banner"}
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+
+              <div className="relative z-10 flex h-full w-full max-w-7xl flex-col md:flex-row items-center justify-between gap-10">
+                {/* Texto principal dinámico del banner */}
+                <div className="max-w-xl text-center md:text-left">
+                  <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
+                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-600">
+                      {banners[index]?.titulo || "Frescura que se siente en"}
+                    </span>
+                    <span className="block mt-2 text-orange-400">
+                      {banners[index]?.descripcion || "Cada bocado"}
+                    </span>
+                  </h1>
+                  <p className="mt-4 text-slate-300 text-lg">
+                    Productos del mar seleccionados con calidad y sabor inigualable.
+                  </p>
+
+                  <div className="mt-8 flex flex-col sm:flex-row justify-center md:justify-start gap-4">
+                    <Link
+                      to="/productos"
+                      className="rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg shadow-orange-500/40 hover:bg-orange-600 hover:scale-105 transition-all"
+                    >
+                      🛒 Ver Catálogo
+                    </Link>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-full bg-green-500 px-8 py-3 font-bold text-white shadow-lg shadow-green-500/40 hover:bg-green-600 hover:scale-105 transition-all flex items-center justify-center gap-2"
+                    >
+                      <MessageSquare size={22} /> Pedir por WhatsApp
+                    </a>
+                  </div>
+                </div>
+
+                {/* Imagen lateral del banner */}
+                <div className="relative hidden md:block">
+                  <div className="absolute -top-6 -right-6 bg-orange-500 text-white font-bold rounded-full px-4 py-2 text-sm shadow-lg z-20">
+                    30% OFF
+                  </div>
+                  <img
+                    src={getImageUrl(banners[index]?.imagen)}
+                    alt="Plato destacado"
+                    className="w-[320px] md:w-[400px] h-[400px] object-cover rounded-full border-4 border-orange-400 shadow-xl"
+                  />
+                </div>
+              </div>
             </motion.div>
-          </div>
+          </AnimatePresence>
         </section>
       )}
 
