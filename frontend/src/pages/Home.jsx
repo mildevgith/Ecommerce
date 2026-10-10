@@ -157,8 +157,7 @@ export default function Home() {
               transition={{ duration: 1 }}
               className="absolute inset-0 flex items-center justify-center px-8"
             >
-<<<<<<< Updated upstream
-=======
+
               <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-600">
                   {banners[index]?.titulo || "Frescura que se siente en"}
@@ -199,7 +198,7 @@ export default function Home() {
               <div className="absolute -top-6 -right-6 bg-orange-500 text-white font-bold rounded-full px-4 py-2 text-sm shadow-lg z-20">
                 30% OFF
               </div>
->>>>>>> Stashed changes
+
               <img
                 src={getImageUrl(banners[index]?.imagen)}
                 className="absolute inset-0 h-full w-full object-cover opacity-40"
