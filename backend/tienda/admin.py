@@ -38,7 +38,7 @@ class TiendaCategoriaAdmin(admin.ModelAdmin):
     list_editable = ('activo', 'orden')
     fieldsets = (
         ('Información Principal', {
-            'fields': ('nombre', 'slug', 'descripcion', 'imagen', 'categoria_padre')
+            'fields': ('nombre', 'descripcion', 'imagen', 'categoria_padre')
         }),
         ('Configuración y Estado', {
             'fields': ('activo', 'orden')
