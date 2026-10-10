@@ -13,15 +13,32 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.pagination import PageNumberPagination
+from .models import Receta
+from .serializers import RecetaSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.utils import timezone
+from .models import TiendaCupondescuento, TiendaSuscripcion
+from .models import TiendaSuscripcion
+
+
 
 from .models import (
     TiendaProducto, TiendaCategoria, TiendaCarrito, TiendaCliente,
-    TiendaPedido, TiendaDetallepedido, TiendaPago, TiendaMetodopago, Profile, TiendaBanner, 
+    TiendaPedido, TiendaDetallepedido, TiendaPago, TiendaMetodopago, Profile, TiendaBanner,
 )
 from .serializers import (
     TiendaProductoSerializer, TiendaCategoriaSerializer,
     TiendaPedidoSerializer, ProfileSerializer, TiendaBannerSerializer
 )
+
+
+class RecetaViewSet(viewsets.ModelViewSet):
+    queryset = Receta.objects.all().order_by('-id')
+    serializer_class = RecetaSerializer
+
+
 
 def eliminar_tildes(cadena):
     if not cadena: return "" # Si la cadena de texto llega vacía, retorna inmediatamente un string en blanco para evitar errores.
@@ -50,8 +67,8 @@ class AuthRegisterView(APIView):
         data = request.data
         email = data.get('email', '').lower().strip() # Obtiene el correo, lo convierte a letras minúsculas y remueve espacios en blanco en los extremos.
         password = data.get('password')
-        nombre = data.get('nombre')  
-        whatsapp = data.get('whatsapp', '') 
+        nombre = data.get('nombre')
+        whatsapp = data.get('whatsapp', '')
 
         if not email or not password: # Valida la presencia de las credenciales obligatorias; si falta alguna, detiene el proceso.
             return Response({"error": "Email y contraseña son obligatorios"}, status=400) # Retorna una respuesta de error con código HTTP 400 Bad Request.
@@ -117,17 +134,17 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset # Obtiene la consulta base de los productos ordenada por ID de forma descendente.
-        
+
         search = self.request.query_params.get('search', None) # Extrae el parámetro de texto de búsqueda enviado en los filtros de la URL.
         if search:
             self.pagination_class = None # Desactiva por completo la paginación cuando el usuario busca para poder mostrar todos los resultados en una sola lista.
             st = eliminar_tildes(search) # Genera una copia del texto ingresado removiéndole los acentos para dar mayor flexibilidad a la coincidencia.
             queryset = queryset.filter(Q(nombre__icontains=search) | Q(nombre__icontains=st)) # Filtra ignorando mayúsculas si el nombre coincide con el texto original o sin tildes.
-            
+
         categoria_id = self.request.query_params.get('categoria', None) # Captura el identificador numérico de la categoría enviado en los parámetros de la URL.
         if categoria_id:
             queryset = queryset.filter(categoria_id=categoria_id) # Aplica una cláusula WHERE en SQL para segmentar únicamente los productos de esa categoría.
-            
+
         return queryset.distinct() # Retorna el conjunto de datos final depurado eliminando filas duplicadas mediante un DISTINCT en SQL.
 
     @action(detail=False, methods=['get'], url_path='recomendados', permission_classes=[AllowAny]) # Define un endpoint personalizado en la ruta /api/productos/recomendados/.
@@ -163,7 +180,7 @@ class CrearPedidoView(APIView):
             with transaction.atomic(): # Asegura la consistencia financiera total; si falla la creación de un ítem, el pedido completo se anula.
                 email_cliente = data['datos_envio']['email'].lower().strip()
                 user = User.objects.filter(Q(email=email_cliente) | Q(username=email_cliente)).first() # Ejecuta un filtro flexible para capturar el primer usuario que coincida.
-                
+
                 if not user: # Validación preventiva de seguridad para verificar la existencia del cliente antes de procesar el pago.
                     return Response({"error": "Usuario no encontrado. Inicie sesión."}, status=404) # Detiene la compra enviando una respuesta HTTP 404 Not Found.
 
@@ -238,7 +255,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             with transaction.atomic(): # Levanta una transacción blindada de escritura para asegurar que la cabecera y el desglose de productos se guarden juntos.
                 email_cliente = data['datos_envio']['email'].lower().strip()
                 user = User.objects.filter(Q(email=email_cliente) | Q(username=email_cliente)).first() # Ejecuta la consulta combinada para localizar la cuenta del usuario dueño.
-                
+
                 if not user:
                     return Response({"error": "Usuario no encontrado."}, status=404) # Retorna un error HTTP 404 cancelando el flujo si la cuenta del cliente no existe.
 
@@ -264,3 +281,80 @@ class OrderViewSet(viewsets.ModelViewSet):
                 return Response({"message": "Pedido creado", "pedido_id": pedido.id}, status=201) # Finaliza enviando el número de confirmación de pedido y código HTTP 201 Created.
         except Exception as e:
             return Response({"error": str(e)}, status=400) # Controla y responde con los detalles de cualquier excepción arrojada mediante un código HTTP 400.
+
+
+class ValidarCuponView(APIView):
+    def post(self, request):
+        codigo = request.data.get('codigo', '').strip().upper()
+        total_carrito = float(request.data.get('total', 0))
+
+        if not codigo:
+            return Response({"error": "Ingresa un código de cupón válido."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            cupon = TiendaCupondescuento.objects.get(codigo=codigo, activo=True)
+
+            # Validar fecha de expiración si existe
+            if cupon.fecha_expiracion and cupon.fecha_expiracion < timezone.now().date():
+                return Response({"error": "Este cupón ha expirado."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Cálculo real del descuento basado en el porcentaje
+            monto_descuento = (total_carrito * float(cupon.porcentaje_descuento)) / 100
+
+            return Response({
+                "valido": True,
+                "codigo": cupon.codigo,
+                "descuento": monto_descuento,
+                "mensaje": f"¡Cupón '{cupon.codigo}' aplicado con éxito!"
+            }, status=status.HTTP_200_OK)
+
+        except TiendaCupondescuento.DoesNotExist:
+            return Response({"error": "El cupón ingresado no existe o no está activo."}, status=status.HTTP_404_NOT_FOUND)
+    def post(self, request):
+        codigo = request.data.get('codigo', '').strip().upper()
+        total_carrito = float(request.data.get('total', 0))
+
+        if not codigo:
+            return Response({"error": "Ingresa un código de cupón válido."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            cupon = TiendaCupondescuento.objects.get(codigo=codigo, activo=True)
+
+            # Validar fecha de expiración si el modelo la tiene
+            if hasattr(cupon, 'fecha_expiracion') and cupon.fecha_expiracion:
+                if cupon.fecha_expiracion < timezone.now().date():
+                    return Response({"error": "Este cupón ha expirado."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Cálculo del descuento
+            monto_descuento = 0
+            if hasattr(cupon, 'porcentaje_descuento') and cupon.porcentaje_descuento:
+                monto_descuento = (total_carrito * float(cupon.porcentaje_descuento)) / 100
+            elif hasattr(cupon, 'monto_fijo') and cupon.monto_fijo:
+                monto_descuento = float(cupon.monto_fijo)
+
+            return Response({
+                "valido": True,
+                "codigo": cupon.codigo,
+                "descuento": monto_descuento,
+                "mensaje": f"¡Cupón '{cupon.codigo}' aplicado con éxito!"
+            }, status=status.HTTP_200_OK)
+
+        except TiendaCupondescuento.DoesNotExist:
+            return Response({"error": "El cupón ingresado no existe o no está activo."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class RegistrarSuscripcionView(APIView):
+    def post(self, request):
+        email = request.data.get('email', '').strip().lower()
+
+        if not email:
+            return Response({"error": "Por favor, ingresa un correo válido."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if TiendaSuscripcion.objects.filter(email=email).exists():
+            return Response({"message": "Este correo ya se encuentra registrado."}, status=status.HTTP_200_OK)
+
+        try:
+            TiendaSuscripcion.objects.create(email=email)
+            return Response({"success": "¡Te has suscrito correctamente!"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": "Hubo un problema al procesar tu solicitud."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

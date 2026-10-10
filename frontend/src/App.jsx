@@ -3,12 +3,13 @@ import Layout from "./components/Layout";
 import { CartProvider } from "./context/CartContext";
 import AuthPage from "./pages/AuthPage";
 import Carrito from "./pages/Carrito";
+import CategoriaProductos from "./pages/CategoriaProductos";
 import Checkout from "./pages/Checkout";
 import Confirmacion from "./pages/Confirmacion";
 import Home from "./pages/Home";
 import Ofertas from "./pages/Ofertas";
 import Productos from "./pages/Productos";
-import CategoriaProductos from "./pages/CategoriaProductos";
+import Recetas from "./pages/Recetas";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -23,6 +24,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="productos" element={<Productos />} />
           <Route path="ofertas" element={<Ofertas />} />
+          <Route path="/recetas" element={<Recetas />} />
           <Route path="carrito" element={<Carrito />} />
           <Route path="confirmacion" element={<Confirmacion />} />
 

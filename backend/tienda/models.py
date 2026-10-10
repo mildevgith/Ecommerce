@@ -2,6 +2,57 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 import random
+from django.utils import timezone
+
+
+
+
+class TiendaCupondescuento(models.Model):
+    codigo = models.CharField(max_length=50, unique=True, help_text="Ej: EXPO2026")
+    porcentaje_descuento = models.DecimalField(max_digits=5, decimal_places=2, help_text="Porcentaje de descuento (Ej: 10.00 para 10%)")
+    activo = models.BooleanField(default=True, help_text="Desmarca si el cupón ya no debe usarse")
+    fecha_expiracion = models.DateField(blank=True, null=True, help_text="Fecha límite de validez (opcional)")
+    creado_en = models.DateTimeField(default=timezone.now, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.codigo} ({self.porcentaje_descuento}%)"
+
+class TiendaSuscripcion(models.Model):
+    email = models.EmailField(unique=True, max_length=254, verbose_name="Correo Electrónico")
+    fecha_suscripcion = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Subcripción")
+
+    class Meta:
+        db_table = 'tienda_suscripcion'
+        verbose_name = "Suscripción"
+        verbose_name_plural = "Suscripciones"
+
+    def __str__(self):
+        return self.email
+
+
+
+
+
+
+class Receta(models.Model):
+    titulo = models.CharField(max_length=200)
+    categoria = models.CharField(max_length=100)
+    tiempo = models.CharField(max_length=50)
+    porciones = models.CharField(max_length=50)
+    dificultad = models.CharField(max_length=50)
+    descripcion = models.TextField()
+    ingrediente_principal = models.CharField(max_length=150)
+
+    # CAMBIO: Usamos URLField para aceptar directamente el enlace público de Supabase
+    imagen = models.URLField(max_length=500, help_text="Pega aquí el enlace público de la imagen en Supabase Storage")
+
+    youtube_url = models.URLField(blank=True, null=True, help_text="Enlace del video de YouTube de la receta")
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titulo
+
+
 
 class TiendaBanner(models.Model):
     titulo = models.CharField(max_length=100, blank=True, null=True)
@@ -102,31 +153,45 @@ class TiendaItemcarrito(models.Model):
 
 
 
+
+
 class TiendaPedido(models.Model):
-    fecha_pedido = models.DateTimeField(auto_now_add=True)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-    direccion_envio = models.CharField(max_length=255)
-    estado_actual = models.CharField(max_length=50)
-    cliente = models.ForeignKey('tienda.TiendaCliente', on_delete=models.DO_NOTHING) #
+    ESTADOS_PAGO = [
+        ('PENDIENTE', 'Pendiente'),
+        ('APROBADO', 'Aprobado'),
+        ('RECHAZADO', 'Rechazado'),
+    ]
+
+    usuario = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True)
+    email_contacto = models.EmailField(null=True, blank=True)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    costo_envio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    descuento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    estado_pago = models.CharField(max_length=20, choices=ESTADOS_PAGO, default='PENDIENTE')
+    transaccion_id = models.CharField(max_length=255, blank=True, null=True)
+    metodo_pago = models.CharField(max_length=50, blank=True, null=True)
+
+    creado_en = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
         db_table = 'tienda_pedido'
 
-    def __str__(self):
-        return f"Pedido #{self.id} de {self.cliente.user.username}"
-
-
 
 class TiendaDetallepedido(models.Model):
-    cantidad = models.IntegerField()
-    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
-    pedido = models.ForeignKey('tienda.TiendaPedido', on_delete=models.DO_NOTHING) #
-    producto = models.ForeignKey('tienda.TiendaProducto', on_delete=models.DO_NOTHING, blank=True, null=True)
+    pedido = models.ForeignKey(TiendaPedido, related_name='detalles', on_delete=models.CASCADE)
+    producto = models.ForeignKey('TiendaProducto', on_delete=models.SET_NULL, null=True, blank=True)
+    nombre_producto = models.CharField(max_length=255, null=True, blank=True)
+    cantidad = models.IntegerField(default=1)
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    subtotal_item = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
         db_table = 'tienda_detallepedido'
 
 
+        
 
 class TiendaHistorialestadopedido(models.Model):
     estado = models.CharField(max_length=50)
@@ -188,18 +253,7 @@ class TiendaResenaproducto(models.Model):
 
 
 
-class TiendaCupondescuento(models.Model):
-    codigo = models.CharField(unique=True, max_length=20)
-    descuento = models.DecimalField(max_digits=5, decimal_places=2)
-    valido_desde = models.DateField()
-    valido_hasta = models.DateField()
-    activo = models.BooleanField()
 
-    class Meta:
-        db_table = 'tienda_cupondescuento'
-
-    def __str__(self):
-        return self.codigo
 
 
 
@@ -230,14 +284,4 @@ class UserOTP(models.Model):
 
 
 
-class TiendaSuscripcion(models.Model):
-    email = models.EmailField(unique=True, max_length=254, verbose_name="Correo Electrónico")
-    fecha_suscripcion = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Subcripción")
 
-    class Meta:
-        db_table = 'tienda_suscripcion'
-        verbose_name = "Suscripción"
-        verbose_name_plural = "Suscripciones"
-
-    def __str__(self):
-        return self.email                                   

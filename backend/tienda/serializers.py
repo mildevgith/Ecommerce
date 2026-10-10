@@ -1,11 +1,18 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User  
+from django.contrib.auth.models import User
 from .models import (
     Profile, UserOTP, TiendaProducto, TiendaCliente,
     TiendaCategoria, TiendaCarrito, TiendaItemcarrito,
-    TiendaPedido, TiendaHistorialestadopedido, TiendaDetalleproducto, 
-    TiendaBanner, TiendaPago
+    TiendaPedido, TiendaHistorialestadopedido, TiendaDetalleproducto,
+    TiendaBanner, TiendaPago, Receta
 )
+
+
+class RecetaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Receta
+        fields = '__all__'
+
 
 
 
@@ -87,12 +94,11 @@ class TiendaPagoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaPedido                                            # Vincula la transacción final con los datos globales de la orden de compra.
         fields = '__all__'
-        
-        
+
+
 
 
 class TiendaBannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaBanner
         fields = '__all__'
-    

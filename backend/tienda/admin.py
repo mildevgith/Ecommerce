@@ -4,8 +4,28 @@ from .models import (
     TiendaItemcarrito, TiendaPedido, TiendaDetallepedido,
     TiendaHistorialestadopedido, TiendaMetodopago, TiendaPago,
     TiendaDetalleproducto, TiendaInventario, TiendaResenaproducto,
-    TiendaCupondescuento, UserOTP, Profile, TiendaBanner
+    TiendaCupondescuento, UserOTP, Profile, TiendaBanner, Receta, TiendaCupondescuento, TiendaSuscripcion, TiendaPedido, TiendaDetallepedido
 )
+
+
+
+@admin.register(TiendaCupondescuento)
+class TiendaCupondescuentoAdmin(admin.ModelAdmin):
+    list_display = ('codigo', 'porcentaje_descuento', 'activo', 'fecha_expiracion')
+    search_fields = ('codigo',)
+    list_filter = ('activo', 'fecha_expiracion')
+
+@admin.register(TiendaSuscripcion)
+class TiendaSuscripcionAdmin(admin.ModelAdmin):
+    list_display = ('email', 'fecha_suscripcion')
+    search_fields = ('email',)
+    list_filter = ('fecha_suscripcion',)
+
+
+@admin.register(Receta)
+class RecetaAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'categoria', 'tiempo', 'porciones')
+    search_fields = ('titulo', 'categoria')
 
 @admin.register(TiendaBanner)
 class TiendaBanner(admin.ModelAdmin):
@@ -50,11 +70,6 @@ class ProductoAdmin(admin.ModelAdmin):
     search_fields = ('nombre',)
 
 
-@admin.register(TiendaPedido)
-class TiendaPedidoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'cliente', 'fecha_pedido', 'total', 'estado_actual')
-    list_filter = ('estado_actual', 'fecha_pedido')
-    ordering = ('-fecha_pedido',)
 
 
 @admin.register(TiendaInventario)
@@ -71,20 +86,35 @@ class TiendaPagoAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(TiendaCupondescuento)
-class TiendaCupondescuentoAdmin(admin.ModelAdmin):
-    list_display = ('codigo', 'descuento', 'valido_hasta', 'activo')
-    list_editable = ('activo',)
-
 
 admin.site.register(TiendaCarrito)
+
+
 admin.site.register(TiendaItemcarrito)
-admin.site.register(TiendaDetallepedido)
+class TiendaDetallepedidoInline(admin.TabularInline):
+    model = TiendaDetallepedido
+    extra = 0
+    readonly_fields = ['nombre_producto', 'cantidad', 'precio_unitario', 'subtotal_item']
+
+class TiendaDetallepedidoInline(admin.TabularInline):
+    model = TiendaDetallepedido
+    extra = 0
+    readonly_fields = ['nombre_producto', 'cantidad', 'precio_unitario', 'subtotal_item']
+
+@admin.register(TiendaPedido)
+class TiendaPedidoAdmin(admin.ModelAdmin):
+    list_display = ['id', 'email_contacto', 'creado_en', 'total', 'estado_pago', 'metodo_pago']
+    list_filter = ['estado_pago', 'creado_en']
+    search_fields = ['email_contacto', 'transaccion_id']
+    ordering = ['-creado_en']
+    inlines = [TiendaDetallepedidoInline]
+
+
 admin.site.register(TiendaHistorialestadopedido)
 admin.site.register(TiendaMetodopago)
 admin.site.register(TiendaDetalleproducto)
 admin.site.register(TiendaResenaproducto)
-admin.site.register(UserOTP)                     
+admin.site.register(UserOTP)
 admin.site.register(Profile)
 
 

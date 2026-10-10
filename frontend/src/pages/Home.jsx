@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  CheckCircle2,
   Clock,
   Eye,
   MessageSquare,
@@ -8,6 +7,10 @@ import {
   ShoppingCart,
   Truck,
   X,
+  Sparkles,
+  CheckCircle,
+  Globe,
+  MapPin,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -61,13 +64,11 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Cargar Banners Dinámicos desde Django
         const resBanners = await api.get('/banners/');
         const dataBanners = resBanners.data;
         const bannerList = Array.isArray(dataBanners) ? dataBanners : (dataBanners.results || []);
         setBanners(bannerList);
 
-        // 2. Cargar Categorías
         const resCat = await api.get('/categorias/');
         const dataCat = resCat.data;
         setCategories(Array.isArray(dataCat) ? dataCat : (dataCat.results || []));
@@ -104,9 +105,18 @@ export default function Home() {
     fetchData();
   }, [searchTerm]);
 
-  // CARGAR PRODUCTOS DE CATEGORÍA SELECCIONADA
+  // CARGAR PRODUCTOS DE CATEGORÍA SELECCIONADA (Si no es transporte)
   useEffect(() => {
     if (!selectedCategory) {
+      setCategoryProducts([]);
+      return;
+    }
+
+    const catName = (selectedCategory.nombre || "").toLowerCase();
+    const isTransport = catName.includes("transporte") || catName.includes("logística") || catName.includes("fletes");
+
+    if (isTransport) {
+      setLoadingCategoryProducts(false);
       setCategoryProducts([]);
       return;
     }
@@ -127,9 +137,15 @@ export default function Home() {
     fetchCategoryProducts();
   }, [selectedCategory]);
 
+  const isTransportCategory = (cat) => {
+    if (!cat) return false;
+    const name = (cat.nombre || "").toLowerCase();
+    return name.includes("transporte") || name.includes("logística") || name.includes("fletes");
+  };
+
   return (
     <main className="min-h-screen bg-slate-50/50 selection:bg-orange-200">
-      {/* HERO DINÁMICO CONTROLADO DESDE DJANGO */}
+      {/*HERO DINÁMICO*/}
       {!searchTerm && banners.length > 0 && (
         <section className="relative h-[90vh] w-full overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
           <AnimatePresence mode="wait">
@@ -141,7 +157,6 @@ export default function Home() {
               transition={{ duration: 1 }}
               className="absolute inset-0 flex items-center justify-center px-8"
             >
-              {/* Imagen de fondo del banner actual */}
               <img
                 src={getImageUrl(banners[index]?.imagen)}
                 className="absolute inset-0 h-full w-full object-cover opacity-40"
@@ -150,24 +165,26 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
 
               <div className="relative z-10 flex h-full w-full max-w-7xl flex-col md:flex-row items-center justify-between gap-10">
-                {/* Texto principal dinámico del banner */}
                 <div className="max-w-xl text-center md:text-left">
-                  <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
-                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-600">
+                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#DE6E28]/20 border border-[#DE6E28]/40 text-orange-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md mb-4">
+                    <Sparkles className="w-3.5 h-3.5" /> Exclusivo en Cali
+                  </span>
+                  <h1 className="text-5xl md:text-6xl font-black text-white leading-tight">
+                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
                       {banners[index]?.titulo || "Frescura que se siente en"}
                     </span>
                     <span className="block mt-2 text-orange-400">
                       {banners[index]?.descripcion || "Cada bocado"}
                     </span>
                   </h1>
-                  <p className="mt-4 text-slate-300 text-lg">
+                  <p className="mt-4 text-slate-300 text-lg font-medium">
                     Productos del mar seleccionados con calidad y sabor inigualable.
                   </p>
 
                   <div className="mt-8 flex flex-col sm:flex-row justify-center md:justify-start gap-4">
                     <Link
                       to="/productos"
-                      className="rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg shadow-orange-500/40 hover:bg-orange-600 hover:scale-105 transition-all"
+                      className="rounded-2xl bg-[#DE6E28] px-8 py-3.5 font-bold text-white shadow-lg shadow-orange-500/30 hover:bg-[#c55d1f] hover:scale-105 transition-all text-center"
                     >
                       🛒 Ver Catálogo
                     </Link>
@@ -175,22 +192,21 @@ export default function Home() {
                       href={whatsappUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-full bg-green-500 px-8 py-3 font-bold text-white shadow-lg shadow-green-500/40 hover:bg-green-600 hover:scale-105 transition-all flex items-center justify-center gap-2"
+                      className="rounded-2xl bg-emerald-600 px-8 py-3.5 font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 hover:scale-105 transition-all flex items-center justify-center gap-2"
                     >
-                      <MessageSquare size={22} /> Pedir por WhatsApp
+                      <MessageSquare size={20} /> Pedir por WhatsApp
                     </a>
                   </div>
                 </div>
 
-                {/* Imagen lateral del banner */}
                 <div className="relative hidden md:block">
-                  <div className="absolute -top-6 -right-6 bg-orange-500 text-white font-bold rounded-full px-4 py-2 text-sm shadow-lg z-20">
+                  <div className="absolute -top-6 -right-6 bg-[#DE6E28] text-white font-black rounded-full px-4 py-2 text-sm shadow-lg z-20">
                     30% OFF
                   </div>
                   <img
                     src={getImageUrl(banners[index]?.imagen)}
                     alt="Plato destacado"
-                    className="w-[320px] md:w-[400px] h-[400px] object-cover rounded-full border-4 border-orange-400 shadow-xl"
+                    className="w-[320px] md:w-[400px] h-[400px] object-cover rounded-full border-4 border-[#DE6E28] shadow-2xl"
                   />
                 </div>
               </div>
@@ -201,28 +217,28 @@ export default function Home() {
 
       {/* SECCIÓN DE CARACTERÍSTICAS */}
       {!searchTerm && (
-        <section className="bg-white py-12 border-b">
+        <section className="bg-white py-12 border-b border-gray-100 shadow-xs">
           <div className="mx-auto max-w-7xl px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="flex flex-col items-center">
-              <div className="mb-4 p-3 bg-orange-100 rounded-2xl text-orange-600">
-                <Truck size={30} />
+              <div className="mb-4 p-3 bg-orange-50 rounded-2xl text-[#DE6E28]">
+                <Truck size={28} />
               </div>
-              <h3 className="font-bold text-slate-900">Envíos en Cali</h3>
-              <p className="text-sm text-slate-500">Llegamos a todo el sur de la ciudad.</p>
+              <h3 className="font-bold text-[#242A57]">Envíos en Cali</h3>
+              <p className="text-sm text-gray-500 mt-1">Llegamos a todo el sur y la ciudad.</p>
             </div>
-            <div className="flex flex-col items-center border-x border-slate-100">
-              <div className="mb-4 p-3 bg-orange-100 rounded-2xl text-orange-600">
-                <ShieldCheck size={30} />
+            <div className="flex flex-col items-center border-x border-gray-100">
+              <div className="mb-4 p-3 bg-orange-50 rounded-2xl text-[#DE6E28]">
+                <ShieldCheck size={28} />
               </div>
-              <h3 className="font-bold text-slate-900">Calidad Premium</h3>
-              <p className="text-sm text-slate-500">Productos seleccionados rigurosamente.</p>
+              <h3 className="font-bold text-[#242A57]">Calidad Premium</h3>
+              <p className="text-sm text-gray-500 mt-1">Productos seleccionados rigurosamente.</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="mb-4 p-3 bg-orange-100 rounded-2xl text-orange-600">
-                <Clock size={30} />
+              <div className="mb-4 p-3 bg-orange-50 rounded-2xl text-[#DE6E28]">
+                <Clock size={28} />
               </div>
-              <h3 className="font-bold text-slate-900">Cadena de Frío</h3>
-              <p className="text-sm text-slate-500">Garantizamos la temperatura ideal.</p>
+              <h3 className="font-bold text-[#242A57]">Cadena de Frío</h3>
+              <p className="text-sm text-gray-500 mt-1">Garantizamos la temperatura ideal.</p>
             </div>
           </div>
         </section>
@@ -232,12 +248,13 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-6 py-16">
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h2 className="text-3xl font-black text-slate-900">
+            <span className="text-xs font-black uppercase tracking-widest text-[#DE6E28] block mb-1">Selección Especial</span>
+            <h2 className="text-3xl font-black text-[#242A57]">
               {searchTerm ? `Resultados para: "${searchTerm}"` : "Nuestros Recomendados"}
             </h2>
           </div>
           {searchTerm && (
-            <Link to="/" className="text-orange-500 font-bold hover:underline flex items-center gap-2">
+            <Link to="/" className="text-[#DE6E28] font-bold hover:underline flex items-center gap-2">
               Limpiar búsqueda
             </Link>
           )}
@@ -247,46 +264,63 @@ export default function Home() {
           {(searchTerm ? searchResults : productosDestacados).map((producto, idx) => (
             <div
               key={producto.id ? `prod-${producto.id}` : `prod-fallback-${idx}`}
-              className="group relative rounded-2xl bg-white p-3 border shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+              className="group bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
               <div>
-                <div className="relative overflow-hidden rounded-xl h-64">
+                <div className="relative overflow-hidden h-64 bg-gray-100">
                   <img
                     src={getImageUrl(producto.imagen)}
-                    className="h-full w-full object-cover group-hover:scale-110 transition-transform"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     alt={producto.nombre}
                   />
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                     <button
                       onClick={() => setSelectedProduct(producto)}
-                      className="bg-white/90 backdrop-blur-xs text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-white transition-all transform scale-90 group-hover:scale-100"
+                      className="w-full bg-white/90 backdrop-blur-md text-[#242A57] py-2 rounded-xl text-xs font-extrabold shadow-md hover:bg-white transition-all flex items-center justify-center gap-1.5"
                     >
-                      Ver Vista Rápida
+                      <Eye size={14} /> Vista Rápida
                     </button>
                   </div>
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-[#242A57] text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full shadow-xs">
+                    Fresco
+                  </div>
                 </div>
-                <div className="mt-4 p-2 text-center">
-                  <h3 className="text-lg font-bold text-slate-800 line-clamp-1">{producto.nombre}</h3>
-                  <p className="mt-1 text-orange-500 font-bold text-xl">
+
+                <div className="p-6 pb-2">
+                  <h3 className="text-lg font-black text-[#242A57] group-hover:text-[#DE6E28] transition-colors line-clamp-1">{producto.nombre}</h3>
+                  <p className="text-gray-500 text-xs mt-1.5 line-clamp-2">
+                    {producto.descripcion || "Selección marina de alta calidad para tu mesa."}
+                  </p>
+                  <p className="mt-3 text-[#242A57] font-black text-xl">
                     ${producto.precio ? Number(producto.precio).toLocaleString("es-CO") : "0"}{" "}
-                    <span className="text-xs text-slate-400">/ Kg</span>
+                    <span className="text-xs text-gray-400 font-bold">/ lb o kg</span>
                   </p>
                 </div>
               </div>
 
-              <div className="p-2 pt-0 space-y-2">
-                <button
-                  onClick={() => setSelectedProduct(producto)}
-                  className="w-full rounded-xl bg-slate-100 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-200 transition-colors flex items-center justify-center gap-1.5"
+              <div className="p-6 pt-3 space-y-2.5">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => addToCart(producto)}
+                    className="flex-1 bg-[#242A57] text-white py-3 rounded-2xl text-xs font-extrabold hover:bg-[#DE6E28] transition-all shadow-sm flex items-center justify-center gap-2"
+                  >
+                    <ShoppingCart size={16} /> Añadir
+                  </button>
+                  <button
+                    onClick={() => setSelectedProduct(producto)}
+                    className="px-4 py-3 rounded-2xl text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all"
+                  >
+                    Detalles
+                  </button>
+                </div>
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`¡Hola Expomarket! Me interesa información sobre Ventas Mayoristas para el producto: ${producto.nombre}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-emerald-600 text-white py-3 rounded-2xl text-xs font-extrabold hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 shadow-sm"
                 >
-                  <Eye size={14} /> Detalle Completo
-                </button>
-                <button
-                  onClick={() => addToCart(producto)}
-                  className="w-full rounded-xl bg-slate-900 py-3 font-bold text-white hover:bg-orange-500 transition-colors flex items-center justify-center gap-2"
-                >
-                  <ShoppingCart size={18} /> Añadir al carrito
-                </button>
+                  <MessageSquare size={16} /> Ventas Mayoristas
+                </a>
               </div>
             </div>
           ))}
@@ -295,13 +329,13 @@ export default function Home() {
 
       {/* SECCIÓN: OFERTAS */}
       {!searchTerm && productosOferta.length > 0 && (
-        <section className="mx-auto max-w-7xl px-6 py-12 border-t">
+        <section className="mx-auto max-w-7xl px-6 py-12 border-t border-gray-100">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <span className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-2 block">
+              <span className="text-xs font-black uppercase tracking-widest text-[#DE6E28] mb-1 block">
                 Ahorra Hoy
               </span>
-              <h2 className="text-3xl font-black text-slate-900">
+              <h2 className="text-3xl font-black text-[#242A57]">
                 Ofertas Imperdibles 🔥
               </h2>
             </div>
@@ -311,55 +345,64 @@ export default function Home() {
             {productosOferta.map((producto, idx) => (
               <div
                 key={producto.id ? `oferta-${producto.id}` : `oferta-fallback-${idx}`}
-                className="group relative rounded-2xl bg-white p-3 border border-orange-100 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                className="group bg-white rounded-3xl overflow-hidden border border-orange-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
               >
                 <div>
-                  <div className="absolute top-5 left-5 z-10 bg-orange-500 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                    Oferta
-                  </div>
-
-                  <div className="relative overflow-hidden rounded-xl h-64">
+                  <div className="relative overflow-hidden h-64 bg-gray-100">
+                    <div className="absolute top-4 left-4 z-10 bg-[#DE6E28] text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                      Oferta
+                    </div>
                     <img
                       src={getImageUrl(producto.imagen)}
-                      className="h-full w-full object-cover group-hover:scale-110 transition-transform"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       alt={producto.nombre}
                     />
                   </div>
-                  <div className="mt-4 p-2 text-center">
-                    <h3 className="text-lg font-bold text-slate-800 line-clamp-1">{producto.nombre}</h3>
-                    <div className="mt-1 flex items-center justify-center gap-2 font-bold">
+                  <div className="p-6 pb-2">
+                    <h3 className="text-lg font-black text-[#242A57] group-hover:text-[#DE6E28] transition-colors line-clamp-1">{producto.nombre}</h3>
+                    <div className="mt-3 flex items-baseline gap-2 font-bold">
                       {producto.precio_oferta ? (
                         <>
-                          <span className="text-slate-400 line-through text-sm">
+                          <span className="text-gray-400 line-through text-xs font-semibold">
                             ${Number(producto.precio).toLocaleString("es-CO")}
                           </span>
-                          <span className="text-orange-600 text-xl">
+                          <span className="text-[#DE6E28] text-2xl font-black">
                             ${Number(producto.precio_oferta).toLocaleString("es-CO")}
                           </span>
                         </>
                       ) : (
-                        <span className="text-orange-600 text-xl">
+                        <span className="text-[#DE6E28] text-2xl font-black">
                           ${Number(producto.precio).toLocaleString("es-CO")}
                         </span>
                       )}
-                      <span className="text-xs text-slate-400 font-normal">/ Kg</span>
+                      <span className="text-xs text-gray-400 font-bold">/ lb o kg</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-2 pt-0 space-y-2">
-                  <button
-                    onClick={() => setSelectedProduct(producto)}
-                    className="w-full rounded-xl bg-orange-50 text-xs font-bold text-orange-600 hover:bg-orange-100 transition-colors flex items-center justify-center gap-1.5"
+                <div className="p-6 pt-3 space-y-2.5">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => addToCart(producto)}
+                      className="flex-1 bg-[#242A57] text-white py-3 rounded-2xl text-xs font-extrabold hover:bg-[#DE6E28] transition-all shadow-sm flex items-center justify-center gap-2"
+                    >
+                      <ShoppingCart size={16} /> Añadir
+                    </button>
+                    <button
+                      onClick={() => setSelectedProduct(producto)}
+                      className="px-4 py-3 rounded-2xl text-xs font-bold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all"
+                    >
+                      Detalles
+                    </button>
+                  </div>
+                  <a
+                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`¡Hola Expomarket! Me interesa información sobre Ventas Mayoristas para el producto en oferta: ${producto.nombre}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-emerald-600 text-white py-3 rounded-2xl text-xs font-extrabold hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 shadow-sm"
                   >
-                    <Eye size={14} /> Detalle Completo
-                  </button>
-                  <button
-                    onClick={() => addToCart(producto)}
-                    className="w-full rounded-xl bg-slate-900 py-3 font-bold text-white hover:bg-orange-500 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <ShoppingCart size={18} /> Añadir al carrito
-                  </button>
+                    <MessageSquare size={16} /> Ventas Mayoristas
+                  </a>
                 </div>
               </div>
             ))}
@@ -369,36 +412,38 @@ export default function Home() {
 
       {/* CATEGORÍAS */}
       {!searchTerm && categories.length > 0 && (
-        <section className="mx-auto max-w-7xl px-6 py-12 border-t">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-2">Categorías</h2>
-          <p className="text-4xl font-extrabold text-slate-900 mb-12">¿Qué se te antoja hoy?</p>
+        <section className="mx-auto max-w-7xl px-6 py-12 border-t border-gray-100">
+          <span className="text-xs font-black uppercase tracking-widest text-[#DE6E28] mb-1 block">Explora por Tipo</span>
+          <h2 className="text-3xl font-black text-[#242A57] mb-10">¿Qué se te antoja hoy?</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {categories.map((cat, idx) => (
               <motion.div
                 key={cat.id ? `cat-${cat.id}` : `cat-fallback-${idx}`}
-                whileHover={{ y: -8 }}
-                className="relative overflow-hidden rounded-3xl bg-slate-200 h-80 group"
+                whileHover={{ y: -6 }}
+                className="relative overflow-hidden rounded-3xl bg-slate-200 h-80 group shadow-md"
               >
                 <img
                   src={getImageUrl(cat.imagen)}
-                  className="h-full w-full object-cover transition-transform group-hover:scale-110"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                   alt={cat.nombre}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-8 flex flex-col justify-end">
-                  <h3 className="text-2xl font-bold text-white uppercase mb-2">{cat.nombre}</h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#242A57]/90 via-slate-900/40 to-transparent p-8 flex flex-col justify-end">
+                  <h3 className="text-2xl font-black text-white uppercase mb-3">{cat.nombre}</h3>
                   <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <button
                       onClick={() => setSelectedCategory(cat)}
-                      className="w-full rounded-xl bg-white/90 backdrop-blur-xs text-slate-900 py-2 text-xs font-bold shadow-md hover:bg-white transition-colors flex items-center justify-center gap-1.5"
+                      className="w-full rounded-2xl bg-white text-[#242A57] py-2.5 text-xs font-black shadow-md hover:bg-orange-50 transition-colors flex items-center justify-center gap-1.5"
                     >
                       <Eye size={14} /> Vista Rápida Categoría
                     </button>
-                    <Link
-                      to={`/categoria/${cat.id}`}
-                      className="text-orange-400 font-bold text-sm hover:underline text-center"
-                    >
-                      Ver selección premium →
-                    </Link>
+                    {!isTransportCategory(cat) && (
+                      <Link
+                        to={`/categoria/${cat.id}`}
+                        className="text-orange-300 font-bold text-xs hover:underline text-center pt-1"
+                      >
+                        Ver selección premium →
+                      </Link>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -407,45 +452,101 @@ export default function Home() {
         </section>
       )}
 
-      {/* MODALES DE CATEGORÍAS Y PRODUCTOS (INCLUIDOS PARA MANTENER LA FUNCIONALIDAD) */}
+      {/* MODAL DE CATEGORÍAS (CONDICIONAL: PRODUCTOS O TRANSPORTE/FLETES) */}
       <AnimatePresence>
         {selectedCategory && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
             <motion.div className="absolute inset-0" onClick={() => setSelectedCategory(null)} />
-            <motion.div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden z-10 border border-slate-100 max-h-[85vh] flex flex-col">
-              <button onClick={() => setSelectedCategory(null)} className="absolute top-4 right-4 z-20 bg-slate-100 text-slate-600 p-2 rounded-full hover:bg-orange-500 hover:text-white transition-colors">
+            <motion.div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden z-10 border border-gray-100 max-h-[85vh] flex flex-col">
+              <button onClick={() => setSelectedCategory(null)} className="absolute top-4 right-4 z-20 bg-gray-100 text-gray-700 p-2.5 rounded-full hover:bg-[#DE6E28] hover:text-white transition-colors">
                 <X size={18} />
               </button>
-              <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-4">
-                <div className="w-16 h-16 rounded-xl overflow-hidden shadow-xs flex-shrink-0">
+
+              <div className="p-6 border-b border-gray-100 bg-gray-50 flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-xs flex-shrink-0 bg-gray-200">
                   <img src={getImageUrl(selectedCategory.imagen)} alt={selectedCategory.nombre} className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-orange-500 uppercase tracking-widest">Catálogo de Categoría</span>
-                  <h2 className="text-2xl font-black text-slate-900 uppercase">{selectedCategory.nombre}</h2>
+                  <span className="text-[10px] font-black text-[#DE6E28] uppercase tracking-widest">
+                    {isTransportCategory(selectedCategory) ? "Servicio Logístico Especializado" : "Catálogo de Categoría"}
+                  </span>
+                  <h2 className="text-2xl font-black text-[#242A57] uppercase">{selectedCategory.nombre}</h2>
                 </div>
               </div>
-              <div className="p-6 overflow-y-auto flex-1 bg-slate-50/30">
-                {loadingCategoryProducts ? (
-                  <div className="flex flex-col items-center justify-center py-12 gap-3 text-slate-400">
-                    <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                  </div>
-                ) : categoryProducts.length === 0 ? (
-                  <div className="text-center py-12 text-slate-400">No hay productos en esta categoría.</div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {categoryProducts.map((producto, idx) => (
-                      <div key={producto.id || idx} className="bg-white p-3 border rounded-2xl flex flex-col justify-between">
-                        <div>
-                          <img src={getImageUrl(producto.imagen)} alt={producto.nombre} className="h-44 w-full object-cover rounded-xl" />
-                          <h4 className="font-bold mt-2 text-slate-800">{producto.nombre}</h4>
-                          <p className="text-orange-600 font-bold">${Number(producto.precio).toLocaleString("es-CO")}</p>
+
+              <div className="p-8 overflow-y-auto flex-1 bg-slate-50/50">
+                {isTransportCategory(selectedCategory) ? (
+                  // CONTENIDO ESPECIAL PARA FLETES / TRANSPORTE
+                  <div className="space-y-6">
+                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs space-y-4">
+                      <h3 className="text-xl font-black text-[#242A57]">Logística y Transporte en Cadena de Frío</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        Garantizamos un control estricto de temperatura de principio a fin para alimentos congelados y refrigerados, asegurando que tus productos conserven intactas sus propiedades en cada trayecto.
+                      </p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                        <div className="bg-orange-50/50 p-4 rounded-xl border border-orange-100 flex flex-col items-center text-center">
+                          <MapPin className="text-[#DE6E28] mb-2" size={24} />
+                          <h4 className="font-bold text-[#242A57] text-xs">Regional / Local</h4>
+                          <p className="text-[11px] text-gray-500 mt-1">Cali y Valle del Cauca</p>
                         </div>
-                        <button onClick={() => addToCart(producto)} className="mt-3 bg-slate-900 text-white py-2 rounded-xl text-xs font-bold hover:bg-orange-500 transition-colors">
-                          Añadir
-                        </button>
+                        <div className="bg-orange-50/50 p-4 rounded-xl border border-orange-100 flex flex-col items-center text-center">
+                          <Truck className="text-[#DE6E28] mb-2" size={24} />
+                          <h4 className="font-bold text-[#242A57] text-xs">Nivel Nacional</h4>
+                          <p className="text-[11px] text-gray-500 mt-1">Principales ciudades de Colombia</p>
+                        </div>
+                        <div className="bg-orange-50/50 p-4 rounded-xl border border-orange-100 flex flex-col items-center text-center">
+                          <Globe className="text-[#DE6E28] mb-2" size={24} />
+                          <h4 className="font-bold text-[#242A57] text-xs">Internacional</h4>
+                          <p className="text-[11px] text-gray-500 mt-1">Carga y exportación</p>
+                        </div>
                       </div>
-                    ))}
+                    </div>
+
+                    <a
+                      href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent("¡Hola Expomarket! Me interesa cotizar un servicio de transporte y fletes para alimentos congelados.")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-sm hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"
+                    >
+                      <MessageSquare size={20} /> Cotizar Fletes por WhatsApp
+                    </a>
+                  </div>
+                ) : (
+                  // CONTENIDO NORMAL DE PRODUCTOS DE CATEGORÍA
+                  <div>
+                    {loadingCategoryProducts ? (
+                      <div className="flex flex-col items-center justify-center py-12 gap-3 text-gray-400">
+                        <div className="w-8 h-8 border-4 border-[#242A57] border-t-[#DE6E28] rounded-full animate-spin" />
+                      </div>
+                    ) : categoryProducts.length === 0 ? (
+                      <div className="text-center py-12 text-gray-400 font-medium">No hay productos en esta categoría.</div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {categoryProducts.map((producto, idx) => (
+                          <div key={producto.id || idx} className="bg-white p-4 border border-gray-100 rounded-3xl flex flex-col justify-between shadow-xs">
+                            <div>
+                              <img src={getImageUrl(producto.imagen)} alt={producto.nombre} className="h-44 w-full object-cover rounded-2xl mb-3" />
+                              <h4 className="font-bold text-[#242A57]">{producto.nombre}</h4>
+                              <p className="text-[#DE6E28] font-black text-lg mt-1">${Number(producto.precio).toLocaleString("es-CO")}</p>
+                            </div>
+                            <div className="mt-4 space-y-2">
+                              <button onClick={() => addToCart(producto)} className="w-full bg-[#242A57] text-white py-2.5 rounded-xl text-xs font-bold hover:bg-[#DE6E28] transition-colors">
+                                Añadir al carrito
+                              </button>
+                              <a
+                                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`¡Hola Expomarket! Me interesa información sobre Ventas Mayoristas para el producto: ${producto.nombre}`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full block bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-bold text-center hover:bg-emerald-700 transition-colors"
+                              >
+                                💬 Ventas Mayoristas
+                              </a>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -454,26 +555,45 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* MODAL DE PRODUCTO */}
       <AnimatePresence>
         {selectedProduct && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
             <motion.div className="absolute inset-0" onClick={() => setSelectedProduct(null)} />
             <motion.div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden z-10 flex flex-col lg:flex-row max-h-[90vh]">
-              <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 z-20 bg-slate-100 p-2 rounded-full hover:bg-orange-500 hover:text-white">
+              <button onClick={() => setSelectedProduct(null)} className="absolute top-4 right-4 z-20 bg-gray-100 p-2.5 rounded-full hover:bg-[#DE6E28] hover:text-white transition-colors">
                 <X size={18} />
               </button>
-              <div className="w-full lg:w-1/2 h-64 lg:h-auto bg-slate-100">
+              <div className="w-full lg:w-1/2 h-64 lg:h-auto bg-gray-100">
                 <img src={getImageUrl(selectedProduct.imagen)} alt={selectedProduct.nombre} className="w-full h-full object-cover" />
               </div>
               <div className="w-full lg:w-1/2 p-8 flex flex-col justify-between">
                 <div>
-                  <h2 className="text-3xl font-black text-slate-900">{selectedProduct.nombre}</h2>
-                  <p className="text-2xl font-black text-slate-900 mt-4">${Number(selectedProduct.precio).toLocaleString("es-CO")}</p>
-                  <p className="text-sm text-slate-600 mt-2">{selectedProduct.descripcion || "Sin descripción detallada."}</p>
+                  <span className="text-[10px] font-black text-[#DE6E28] uppercase tracking-widest block mb-1">Detalle del Producto</span>
+                  <h2 className="text-3xl font-black text-[#242A57]">{selectedProduct.nombre}</h2>
+                  <p className="text-2xl font-black text-[#DE6E28] mt-2">${Number(selectedProduct.precio).toLocaleString("es-CO")}</p>
+                  <p className="text-sm text-gray-600 mt-3 leading-relaxed">{selectedProduct.descripcion || "Sin descripción detallada."}</p>
+
+                  <div className="bg-orange-50/50 border border-orange-100 p-3 rounded-2xl mt-4 space-y-1">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                      <CheckCircle className="w-4 h-4 text-[#DE6E28]" /> Venta por Libra y Kilo
+                    </div>
+                  </div>
                 </div>
-                <button onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }} className="w-full bg-slate-900 text-white py-3 font-bold rounded-xl hover:bg-orange-500 transition-colors mt-6">
-                  Añadir al carrito
-                </button>
+
+                <div className="space-y-2.5 mt-6">
+                  <button onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }} className="w-full bg-[#242A57] text-white py-3.5 font-bold rounded-2xl hover:bg-[#DE6E28] transition-colors text-xs shadow-sm">
+                    Añadir al carrito
+                  </button>
+                  <a
+                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`¡Hola Expomarket! Me interesa información sobre Ventas Mayoristas para el producto: ${selectedProduct.nombre}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full block bg-emerald-600 text-white py-3.5 font-bold rounded-2xl text-center hover:bg-emerald-700 transition-colors text-xs shadow-sm"
+                  >
+                    💬 Hablar con Asesor Mayorista
+                  </a>
+                </div>
               </div>
             </motion.div>
           </div>
