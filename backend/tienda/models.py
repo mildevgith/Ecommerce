@@ -76,7 +76,7 @@ class TiendaCliente(models.Model):
     codigoPostal = models.CharField(max_length=25, null=True, blank=True)
     ciudad = models.CharField(max_length=100, null=True, blank=True)
     departamento = models.CharField(max_length=100, null=True, blank=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         db_table = 'tienda_cliente'
@@ -89,7 +89,7 @@ class TiendaCategoria(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
     imagen = models.URLField(max_length=500, blank=True, null=True)
-    slug = models.SlugField(max_length=120, unique=True, blank=True, null=True)
+    #slug = models.SlugField(max_length=120, unique=True, blank=True, null=True)
     activo = models.BooleanField(default=True)
     categoria_padre = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subcategorias')
     orden = models.IntegerField(default=0)
