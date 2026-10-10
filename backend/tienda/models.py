@@ -89,7 +89,6 @@ class TiendaCategoria(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
     imagen = models.URLField(max_length=500, blank=True, null=True)
-    #slug = models.SlugField(max_length=120, unique=True, blank=True, null=True)
     activo = models.BooleanField(default=True)
     categoria_padre = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subcategorias')
     orden = models.IntegerField(default=0)
