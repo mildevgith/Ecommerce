@@ -157,6 +157,49 @@ export default function Home() {
               transition={{ duration: 1 }}
               className="absolute inset-0 flex items-center justify-center px-8"
             >
+<<<<<<< Updated upstream
+=======
+              <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-600">
+                  {banners[index]?.titulo || "Frescura que se siente en"}
+                </span>
+                <span className="block mt-2 text-orange-400">
+                  {banners[index]?.descripcion || "Cada bocado"}
+                </span>
+              </h1>
+              <p className="mt-4 text-slate-300 text-lg">
+                Productos del mar seleccionados con calidad y sabor inigualable.
+              </p>
+
+              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                <Link
+                  to="/productos"
+                  className="rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg shadow-orange-500/40 hover:bg-orange-600 hover:scale-105 transition-all"
+                >
+                  🛒 Ver Catálogo
+                </Link>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-green-500 px-8 py-3 font-bold text-white shadow-lg shadow-green-500/40 hover:bg-green-600 hover:scale-105 transition-all flex items-center justify-center gap-2"
+                >
+                  <MessageSquare size={22} /> Pedir por WhatsApp
+                </a>
+              </div>
+            </motion.div>
+
+            {/* Imagen lateral dinámica (toma el siguiente banner o el primero) */}
+            <motion.div
+              initial={{ x: 50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="relative mt-6 md:mt-0 block md:block"
+            >
+              <div className="absolute -top-6 -right-6 bg-orange-500 text-white font-bold rounded-full px-4 py-2 text-sm shadow-lg z-20">
+                30% OFF
+              </div>
+>>>>>>> Stashed changes
               <img
                 src={getImageUrl(banners[index]?.imagen)}
                 className="absolute inset-0 h-full w-full object-cover opacity-40"
