@@ -31,10 +31,10 @@ class TiendaClienteAdmin(admin.ModelAdmin):
 
 @admin.register(TiendaCategoria)
 class TiendaCategoriaAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'slug', 'categoria_padre', 'activo', 'orden')
+    list_display = ('nombre', 'categoria_padre', 'activo', 'orden')
     list_filter = ('activo', 'categoria_padre')
     search_fields = ('nombre', 'descripcion')
-    #prepopulated_fields = {'slug': ('nombre',)}
+    
     list_editable = ('activo', 'orden')
     fieldsets = (
         ('Información Principal', {
