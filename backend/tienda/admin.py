@@ -22,7 +22,7 @@ class TiendaSuscripcionAdmin(admin.ModelAdmin):
     list_filter = ('fecha_suscripcion',)
 
 
-@admin.register(TiendaCliente) 
+@admin.register(TiendaCliente)
 class TiendaClienteAdmin(admin.ModelAdmin):
     list_display = ('user', 'ciudad', 'departamento', 'telefono', 'nombre', 'apellido')
     list_filter = ('ciudad', 'departamento')
@@ -31,10 +31,13 @@ class TiendaClienteAdmin(admin.ModelAdmin):
 
 @admin.register(TiendaCategoria)
 class TiendaCategoriaAdmin(admin.ModelAdmin):
+
     list_display = ('nombre', 'categoria_padre', 'activo', 'orden')
     list_filter = ('activo', 'categoria_padre')
     search_fields = ('nombre', 'descripcion')
-    
+    list_display = ('nombre', 'categoria_padre', 'activo', 'orden')
+    list_filter = ('activo', 'categoria_padre')
+    search_fields = ('nombre', 'descripcion')
     list_editable = ('activo', 'orden')
     fieldsets = (
         ('Información Principal', {
@@ -52,10 +55,10 @@ class TiendaCategoriaAdmin(admin.ModelAdmin):
 
 @admin.register(TiendaProducto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'precio', 'stock', 'categoria', 'en_oferta') 
-    list_editable = ('precio', 'stock', 'en_oferta')                       
-    list_filter = ('categoria', 'en_oferta', 'fecha_creacion')             
-    search_fields = ('nombre',)                                            
+    list_display = ('nombre', 'precio', 'stock', 'categoria', 'en_oferta')
+    list_editable = ('precio', 'stock', 'en_oferta')
+    list_filter = ('categoria', 'en_oferta', 'fecha_creacion')
+    search_fields = ('nombre',)
 
 
 class TiendaDetallepedidoInline(admin.TabularInline):
@@ -64,25 +67,25 @@ class TiendaDetallepedidoInline(admin.TabularInline):
     readonly_fields = ['nombre_producto', 'cantidad', 'precio_unitario', 'subtotal_item']
 
 
-@admin.register(TiendaPedido) 
+@admin.register(TiendaPedido)
 class TiendaPedidoAdmin(admin.ModelAdmin):
-    list_display = ['id', 'cliente', 'email_contacto', 'creado_en', 'total', 'estado_pago', 'estado_actual'] 
-    list_filter = ['estado_pago', 'estado_actual', 'creado_en']                           
+    list_display = ['id', 'cliente', 'email_contacto', 'creado_en', 'total', 'estado_pago', 'estado_actual']
+    list_filter = ['estado_pago', 'estado_actual', 'creado_en']
     search_fields = ['email_contacto', 'transaccion_id']
-    ordering = ['-creado_en']                                      
+    ordering = ['-creado_en']
     inlines = [TiendaDetallepedidoInline]
 
 
-@admin.register(TiendaInventario) 
+@admin.register(TiendaInventario)
 class TiendaInventarioAdmin(admin.ModelAdmin):
-    list_display = ('producto', 'cantidad_actual', 'actualizado') 
-    search_fields = ('producto__nombre',)                                
+    list_display = ('producto', 'cantidad_actual', 'actualizado')
+    search_fields = ('producto__nombre',)
 
 
-@admin.register(TiendaPago) 
+@admin.register(TiendaPago)
 class TiendaPagoAdmin(admin.ModelAdmin):
-    list_display = ('referencia', 'pedido', 'metodo', 'estado', 'fecha_pago') 
-    list_filter = ('estado', 'metodo')                                    
+    list_display = ('referencia', 'pedido', 'metodo', 'estado', 'fecha_pago')
+    list_filter = ('estado', 'metodo')
 
 
 @admin.register(Receta)

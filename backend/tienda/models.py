@@ -164,13 +164,13 @@ class TiendaPedido(models.Model):
     costo_envio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     descuento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    
+
     estado_pago = models.CharField(max_length=20, choices=ESTADOS_PAGO, default='PENDIENTE')
     transaccion_id = models.CharField(max_length=255, blank=True, null=True)
     metodo_pago = models.CharField(max_length=50, blank=True, null=True)
     direccion_envio = models.CharField(max_length=255, null=True, blank=True)
     estado_actual = models.CharField(max_length=50, default='Pendiente')
-    
+
     creado_en = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
