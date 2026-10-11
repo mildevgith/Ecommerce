@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
                 ('activo', models.BooleanField(default=True)),
                 ('fecha_creacion', models.DateTimeField(auto_now_add=True, null=True)),
             ],
-            options={
+            options=[
 
             ],
         ),
