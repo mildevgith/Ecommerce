@@ -27,7 +27,6 @@ class Migration(migrations.Migration):
                 ('imagen', models.URLField(help_text='Pega aquí el enlace público de la imagen en Supabase Storage', max_length=500)),
                 ('youtube_url', models.URLField(blank=True, help_text='Enlace del video de YouTube de la receta', null=True)),
                 ('creado_en', models.DateTimeField(auto_now_add=True)),
-<<<<<<< HEAD
             ],
             options={
                 'db_table': 'tienda_receta',
@@ -43,7 +42,7 @@ class Migration(migrations.Migration):
                 ('fecha_creacion', models.DateTimeField(auto_now_add=True, null=True)),
             ],
             options={
-=======
+
             ],
         ),
         migrations.CreateModel(
@@ -56,7 +55,7 @@ class Migration(migrations.Migration):
                 ('fecha_creacion', models.DateTimeField(auto_now_add=True, null=True)),
             ],
             options={
->>>>>>> 2b78159 (Actualizacion general de ecommerce en el front y el backend)
+
                 'verbose_name': 'Banner',
                 'verbose_name_plural': 'Banners',
                 'db_table': 'tienda_banner',
@@ -131,11 +130,11 @@ class Migration(migrations.Migration):
             name='TiendaCliente',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-<<<<<<< HEAD
+
                 ('nombre', models.CharField(blank=True, max_length=255, null=True)),
-=======
+
                 ('nombre', models.CharField(max_length=255)),
->>>>>>> 2b78159 (Actualizacion general de ecommerce en el front y el backend)
+
                 ('apellido', models.CharField(blank=True, max_length=255, null=True)),
                 ('direccion', models.CharField(blank=True, max_length=255, null=True)),
                 ('telefono', models.CharField(blank=True, max_length=20, null=True)),
@@ -143,13 +142,13 @@ class Migration(migrations.Migration):
                 ('codigoPostal', models.CharField(blank=True, max_length=25, null=True)),
                 ('ciudad', models.CharField(blank=True, max_length=100, null=True)),
                 ('departamento', models.CharField(blank=True, max_length=100, null=True)),
-<<<<<<< HEAD
+
                 ('fecha_actualizacion', models.DateTimeField(auto_now=True, null=True)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-=======
+
                 ('fecha_actualizacion', models.DateTimeField(auto_now=True)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL)),
->>>>>>> 2b78159 (Actualizacion general de ecommerce en el front y el backend)
+
             ],
             options={
                 'db_table': 'tienda_cliente',
@@ -178,14 +177,14 @@ class Migration(migrations.Migration):
                 ('estado_pago', models.CharField(choices=[('PENDIENTE', 'Pendiente'), ('APROBADO', 'Aprobado'), ('RECHAZADO', 'Rechazado')], default='PENDIENTE', max_length=20)),
                 ('transaccion_id', models.CharField(blank=True, max_length=255, null=True)),
                 ('metodo_pago', models.CharField(blank=True, max_length=50, null=True)),
-<<<<<<< HEAD
+
                 ('direccion_envio', models.CharField(blank=True, max_length=255, null=True)),
                 ('estado_actual', models.CharField(default='Pendiente', max_length=50)),
                 ('creado_en', models.DateTimeField(auto_now_add=True, null=True)),
                 ('cliente', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='tienda.tiendacliente')),
-=======
+
                 ('creado_en', models.DateTimeField(auto_now_add=True, null=True)),
->>>>>>> 2b78159 (Actualizacion general de ecommerce en el front y el backend)
+
                 ('usuario', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],
             options={
