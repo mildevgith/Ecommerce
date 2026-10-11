@@ -9,7 +9,7 @@ import Confirmacion from "./pages/Confirmacion";
 import Home from "./pages/Home";
 import Ofertas from "./pages/Ofertas";
 import Productos from "./pages/Productos";
-import Recetas from "./pages/Recetasem";
+import Recetas from "./pages/Recetas";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
