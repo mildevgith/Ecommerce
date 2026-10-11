@@ -2,15 +2,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Clock,
   Eye,
+  Globe,
+  MapPin,
   MessageSquare,
   ShieldCheck,
   ShoppingCart,
+  Sparkles,
   Truck,
   X,
-  Sparkles,
-  CheckCircle,
-  Globe,
-  MapPin,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -105,7 +104,7 @@ export default function Home() {
     fetchData();
   }, [searchTerm]);
 
-  // CARGAR PRODUCTOS DE CATEGORÍA SELECCIONADA (Si no es transporte)
+  // CARGAR PRODUCTOS DE CATEGORÍA SELECCIONADA
   useEffect(() => {
     if (!selectedCategory) {
       setCategoryProducts([]);
@@ -145,9 +144,9 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50/50 selection:bg-orange-200">
-      {/*HERO DINÁMICO*/}
+      {/* HERO DINÁMICO CORREGIDO */}
       {!searchTerm && banners.length > 0 && (
-        <section className="relative h-[90vh] w-full overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
+        <section className="relative h-[90vh] w-full overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 flex items-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={index}
@@ -155,25 +154,39 @@ export default function Home() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
-              className="absolute inset-0 flex items-center justify-center px-8"
+              className="absolute inset-0"
             >
+              {/* Imagen de fondo limpia */}
+              <img
+                src={getImageUrl(banners[index]?.imagen)}
+                className="absolute inset-0 h-full w-full object-cover opacity-40"
+                alt={banners[index]?.titulo || "Expomarket Banner"}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+            </motion.div>
+          </AnimatePresence>
 
-              <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight">
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-600">
+          <div className="relative z-10 mx-auto max-w-7xl w-full px-6 flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="max-w-xl text-center md:text-left">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#DE6E28]/20 border border-[#DE6E28]/40 text-orange-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md mb-4">
+                <Sparkles className="w-3.5 h-3.5" /> Exclusivo en Cali
+              </span>
+              <h1 className="text-5xl md:text-6xl font-black text-white leading-tight">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
                   {banners[index]?.titulo || "Frescura que se siente en"}
                 </span>
                 <span className="block mt-2 text-orange-400">
                   {banners[index]?.descripcion || "Cada bocado"}
                 </span>
               </h1>
-              <p className="mt-4 text-slate-300 text-lg">
+              <p className="mt-4 text-slate-300 text-lg font-medium">
                 Productos del mar seleccionados con calidad y sabor inigualable.
               </p>
 
-              <div className="mt-8 flex flex-col sm:flex-row gap-4">
+              <div className="mt-8 flex flex-col sm:flex-row justify-center md:justify-start gap-4">
                 <Link
                   to="/productos"
-                  className="rounded-full bg-orange-500 px-8 py-3 font-bold text-white shadow-lg shadow-orange-500/40 hover:bg-orange-600 hover:scale-105 transition-all"
+                  className="rounded-2xl bg-[#DE6E28] px-8 py-3.5 font-bold text-white shadow-lg shadow-orange-500/30 hover:bg-[#c55d1f] hover:scale-105 transition-all text-center"
                 >
                   🛒 Ver Catálogo
                 </Link>
@@ -181,79 +194,24 @@ export default function Home() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full bg-green-500 px-8 py-3 font-bold text-white shadow-lg shadow-green-500/40 hover:bg-green-600 hover:scale-105 transition-all flex items-center justify-center gap-2"
+                  className="rounded-2xl bg-emerald-600 px-8 py-3.5 font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 hover:scale-105 transition-all flex items-center justify-center gap-2"
                 >
-                  <MessageSquare size={22} /> Pedir por WhatsApp
+                  <MessageSquare size={20} /> Pedir por WhatsApp
                 </a>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Imagen lateral dinámica (toma el siguiente banner o el primero) */}
-            <motion.div
-              initial={{ x: 50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="relative mt-6 md:mt-0 block md:block"
-            >
-              <div className="absolute -top-6 -right-6 bg-orange-500 text-white font-bold rounded-full px-4 py-2 text-sm shadow-lg z-20">
+            <div className="relative hidden md:block">
+              <div className="absolute -top-6 -right-6 bg-[#DE6E28] text-white font-black rounded-full px-4 py-2 text-sm shadow-lg z-20">
                 30% OFF
               </div>
-
               <img
                 src={getImageUrl(banners[index]?.imagen)}
-                className="absolute inset-0 h-full w-full object-cover opacity-40"
-                alt={banners[index]?.titulo || "Expomarket Banner"}
+                alt="Plato destacado"
+                className="w-[320px] md:w-[400px] h-[400px] object-cover rounded-full border-4 border-[#DE6E28] shadow-2xl"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
-
-              <div className="relative z-10 flex h-full w-full max-w-7xl flex-col md:flex-row items-center justify-between gap-10">
-                <div className="max-w-xl text-center md:text-left">
-                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#DE6E28]/20 border border-[#DE6E28]/40 text-orange-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md mb-4">
-                    <Sparkles className="w-3.5 h-3.5" /> Exclusivo en Cali
-                  </span>
-                  <h1 className="text-5xl md:text-6xl font-black text-white leading-tight">
-                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
-                      {banners[index]?.titulo || "Frescura que se siente en"}
-                    </span>
-                    <span className="block mt-2 text-orange-400">
-                      {banners[index]?.descripcion || "Cada bocado"}
-                    </span>
-                  </h1>
-                  <p className="mt-4 text-slate-300 text-lg font-medium">
-                    Productos del mar seleccionados con calidad y sabor inigualable.
-                  </p>
-
-                  <div className="mt-8 flex flex-col sm:flex-row justify-center md:justify-start gap-4">
-                    <Link
-                      to="/productos"
-                      className="rounded-2xl bg-[#DE6E28] px-8 py-3.5 font-bold text-white shadow-lg shadow-orange-500/30 hover:bg-[#c55d1f] hover:scale-105 transition-all text-center"
-                    >
-                      🛒 Ver Catálogo
-                    </Link>
-                    <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-2xl bg-emerald-600 px-8 py-3.5 font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-700 hover:scale-105 transition-all flex items-center justify-center gap-2"
-                    >
-                      <MessageSquare size={20} /> Pedir por WhatsApp
-                    </a>
-                  </div>
-                </div>
-
-                <div className="relative hidden md:block">
-                  <div className="absolute -top-6 -right-6 bg-[#DE6E28] text-white font-black rounded-full px-4 py-2 text-sm shadow-lg z-20">
-                    30% OFF
-                  </div>
-                  <img
-                    src={getImageUrl(banners[index]?.imagen)}
-                    alt="Plato destacado"
-                    className="w-[320px] md:w-[400px] h-[400px] object-cover rounded-full border-4 border-[#DE6E28] shadow-2xl"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+            </div>
+          </div>
         </section>
       )}
 
@@ -494,7 +452,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* MODAL DE CATEGORÍAS (CONDICIONAL: PRODUCTOS O TRANSPORTE/FLETES) */}
+      {/* MODAL DE CATEGORÍAS */}
       <AnimatePresence>
         {selectedCategory && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
@@ -518,12 +476,11 @@ export default function Home() {
 
               <div className="p-8 overflow-y-auto flex-1 bg-slate-50/50">
                 {isTransportCategory(selectedCategory) ? (
-                  // CONTENIDO ESPECIAL PARA FLETES / TRANSPORTE
                   <div className="space-y-6">
                     <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xs space-y-4">
                       <h3 className="text-xl font-black text-[#242A57]">Logística y Transporte en Cadena de Frío</h3>
                       <p className="text-gray-600 text-sm leading-relaxed">
-                        Garantizamos un control estricto de temperatura de principio a fin para alimentos congelados y refrigerados, asegurando que tus productos conserven intactas sus propiedades en cada trayecto.
+                        Garantizamos un control estricto de temperatura de principio a fin para alimentos congelados y refrigerados.
                       </p>
 
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
@@ -555,7 +512,6 @@ export default function Home() {
                     </a>
                   </div>
                 ) : (
-                  // CONTENIDO NORMAL DE PRODUCTOS DE CATEGORÍA
                   <div>
                     {loadingCategoryProducts ? (
                       <div className="flex flex-col items-center justify-center py-12 gap-3 text-gray-400">
@@ -612,28 +568,27 @@ export default function Home() {
               <div className="w-full lg:w-1/2 p-8 flex flex-col justify-between">
                 <div>
                   <span className="text-[10px] font-black text-[#DE6E28] uppercase tracking-widest block mb-1">Detalle del Producto</span>
-                  <h2 className="text-3xl font-black text-[#242A57]">{selectedProduct.nombre}</h2>
-                  <p className="text-2xl font-black text-[#DE6E28] mt-2">${Number(selectedProduct.precio).toLocaleString("es-CO")}</p>
-                  <p className="text-sm text-gray-600 mt-3 leading-relaxed">{selectedProduct.descripcion || "Sin descripción detallada."}</p>
-
-                  <div className="bg-orange-50/50 border border-orange-100 p-3 rounded-2xl mt-4 space-y-1">
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                      <CheckCircle className="w-4 h-4 text-[#DE6E28]" /> Venta por Libra y Kilo
-                    </div>
-                  </div>
+                  <h3 className="text-2xl font-black text-[#242A57]">{selectedProduct.nombre}</h3>
+                  <p className="text-gray-500 text-sm mt-3 leading-relaxed">{selectedProduct.descripcion || "Sin descripción disponible."}</p>
+                  <p className="text-3xl font-black text-[#DE6E28] mt-4">${Number(selectedProduct.precio).toLocaleString("es-CO")}</p>
                 </div>
-
-                <div className="space-y-2.5 mt-6">
-                  <button onClick={() => { addToCart(selectedProduct); setSelectedProduct(null); }} className="w-full bg-[#242A57] text-white py-3.5 font-bold rounded-2xl hover:bg-[#DE6E28] transition-colors text-xs shadow-sm">
-                    Añadir al carrito
+                <div className="mt-6 space-y-3">
+                  <button
+                    onClick={() => {
+                      addToCart(selectedProduct);
+                      setSelectedProduct(null);
+                    }}
+                    className="w-full bg-[#242A57] text-white py-3.5 rounded-2xl font-bold hover:bg-[#DE6E28] transition-colors"
+                  >
+                    Añadir al Carrito
                   </button>
                   <a
                     href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`¡Hola Expomarket! Me interesa información sobre Ventas Mayoristas para el producto: ${selectedProduct.nombre}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full block bg-emerald-600 text-white py-3.5 font-bold rounded-2xl text-center hover:bg-emerald-700 transition-colors text-xs shadow-sm"
+                    className="w-full block text-center bg-emerald-600 text-white py-3.5 rounded-2xl font-bold hover:bg-emerald-700 transition-colors"
                   >
-                    💬 Hablar con Asesor Mayorista
+                    💬 Consultar Mayorista por WhatsApp
                   </a>
                 </div>
               </div>
