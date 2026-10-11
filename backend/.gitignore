@@ -17,3 +17,6 @@ db.sqlite3      # Si usas SQLite para pruebas, no quieres subir tus datos reales
 # --- ARCHIVOS DE USUARIO ---
 media/          # Aquí están las fotos de los pescados que subes.
                 # Normalmente no se suben a Git porque el servidor real tendrá sus propias fotos.
+
+dist/
+
