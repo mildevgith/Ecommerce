@@ -184,6 +184,7 @@ JAZZMIN_UI_TWEAKS = {
     "default_theme_mode": "auto",
     "theme": "default",
 }
+LANGUAGE_CODE = 'es-CO'
 
 
 
