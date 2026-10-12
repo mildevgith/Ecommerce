@@ -1,44 +1,55 @@
-/** Django-specific fixes for AdminLTE v4 / Bootstrap 5 UI **/
+/** Correcciones específicas de Django para AdminLTE v4 / Interfaz Bootstrap 5 **/
 
 /* ============================================================================
-   BASE FONT SIZE - Match AdminLTE v3 sizing (0.875rem / 14px)
-   AdminLTE v4 defaults to 1rem (16px) which is too large for an admin UI.
+   TAMAÑO DE FUENTE BASE - Coincide con el tamaño de AdminLTE v3 (0.875rem / 14px)
+   AdminLTE v4 usa por defecto 1rem (16px), lo cual es muy grande para una interfaz de administración.
    ========================================================================== */
 :root {
-    --bs-body-font-size: 0.875rem;
+  --bs-body-font-size: 0.875rem;
 }
 
 /* ============================================================================
-   GLOBAL LINK STYLING - Remove default Bootstrap 5 underlines in admin
+   ESTILOS DE ENLACES GLOBALES - Elimina los subrayados predeterminados de Bootstrap 5 en el admin
    ========================================================================== */
 .app-wrapper a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 /* ============================================================================
-   LOGIN LOGO - Light/Dark Mode Support
+   LOGO DE LOGIN - Soporte para Modo Claro / Oscuro
    ========================================================================== */
-.login-logo .logo-dark { display: none; }
-.login-logo .logo-light { display: inline; }
-html[data-bs-theme="dark"] .login-logo .logo-light { display: none; }
-html[data-bs-theme="dark"] .login-logo .logo-dark { display: inline; }
+.login-logo .logo-dark {
+  display: none;
+}
+
+.login-logo .logo-light {
+  display: inline;
+}
+
+html[data-bs-theme="dark"] .login-logo .logo-light {
+  display: none;
+}
+
+html[data-bs-theme="dark"] .login-logo .logo-dark {
+  display: inline;
+}
 
 
 /* ============================================================================
-   DJANGO FORM INLINES - Hide empty extra form rows
+   INLINES DE FORMULARIOS DE DJANGO - Oculta las filas de formularios vacías adicionales
    ========================================================================== */
 .empty-form {
-    display: none !important;
+  display: none !important;
 }
 
-/* Django's .form-row conflicts with Bootstrap - ensure table display */
+/* La clase .form-row de Django entra en conflicto con Bootstrap - asegura visualización de tabla */
 .table tr.form-row {
-    display: table-row;
+  display: table-row;
 }
 
 
 /* ============================================================================
-   DJANGO FORM FIELDS - Style Django's widget classes to match Bootstrap
+   CAMPOS DE FORMULARIO DE DJANGO - Iguala las clases de widgets de Django con Bootstrap
    ========================================================================== */
 .vTextField,
 .vLargeTextField,
@@ -48,17 +59,17 @@ html[data-bs-theme="dark"] .login-logo .logo-dark { display: inline; }
 .vForeignKeyRawIdAdminField,
 .vDateField,
 .vTimeField {
-    height: calc(2.25rem + 2px);
-    padding: .375rem .75rem;
-    font-size: var(--bs-body-font-size);
-    font-weight: 400;
-    line-height: 1.5;
-    background-color: var(--bs-body-bg);
-    background-clip: padding-box;
-    border: 1px solid var(--bs-border-color);
-    border-radius: .375rem;
-    color: var(--bs-body-color);
-    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  height: calc(2.25rem + 2px);
+  padding: .375rem .75rem;
+  font-size: var(--bs-body-font-size);
+  font-weight: 400;
+  line-height: 1.5;
+  background-color: var(--bs-body-bg);
+  background-clip: padding-box;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .375rem;
+  color: var(--bs-body-color);
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
 .vTextField:focus,
@@ -69,23 +80,23 @@ html[data-bs-theme="dark"] .login-logo .logo-dark { display: inline; }
 .vForeignKeyRawIdAdminField:focus,
 .vDateField:focus,
 .vTimeField:focus {
-    border-color: var(--bs-primary);
-    outline: 0;
-    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+  border-color: var(--bs-primary);
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
 }
 
 .vDateField,
 .vTimeField {
-    display: inline-block;
-    min-width: 200px;
+  display: inline-block;
+  min-width: 200px;
 }
 
 .vLargeTextField {
-    height: auto;
-    min-height: calc(2.25rem + 2px);
+  height: auto;
+  min-height: calc(2.25rem + 2px);
 }
 
-/* Dark mode theming for bare inputs (no .form-control class) */
+/* Tematización en modo oscuro para inputs sencillos (sin la clase .form-control) */
 input[type="text"],
 input[type="email"],
 input[type="url"],
@@ -95,437 +106,448 @@ input[type="time"],
 input[type="datetime-local"],
 input[type="password"],
 textarea {
-    background-color: var(--bs-body-bg);
-    border-color: var(--bs-border-color);
-    color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+  color: var(--bs-body-color);
 }
 
-/* Style Django's plain select elements to match Bootstrap 5 form-select */
+/* Estila los elementos select planos de Django para que coincidan con form-select de Bootstrap 5 */
 select:not(.form-select):not([multiple]) {
-    display: block;
-    width: 100%;
-    padding: .375rem 2.25rem .375rem .75rem;
-    font-size: var(--bs-body-font-size);
-    font-weight: 400;
-    line-height: 1.5;
-    color: var(--bs-body-color);
-    appearance: none;
-    background-color: var(--bs-body-bg);
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right .75rem center;
-    background-size: 16px 12px;
-    border: 1px solid var(--bs-border-color);
-    border-radius: .375rem;
-    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  display: block;
+  width: 100%;
+  padding: .375rem 2.25rem .375rem .75rem;
+  font-size: var(--bs-body-font-size);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--bs-body-color);
+  appearance: none;
+  background-color: var(--bs-body-bg);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right .75rem center;
+  background-size: 16px 12px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .375rem;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
 select:not(.form-select):not([multiple]):focus {
-    border-color: var(--bs-primary);
-    outline: 0;
-    box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .25);
+  border-color: var(--bs-primary);
+  outline: 0;
+  box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .25);
 }
 
 html[data-bs-theme="dark"] select:not(.form-select):not([multiple]) {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
 }
 
-/* Inline selects (action bars) should not be full width */
+/* Los selects en línea (barra de acciones) no deben ser de ancho completo */
 .actions select {
-    width: auto;
-    display: inline-block;
+  width: auto;
+  display: inline-block;
 }
 
 
 /* ============================================================================
-   DJANGO CALENDAR & CLOCK WIDGETS
+   WIDGETS DE CALENDARIO Y RELOJ DE DJANGO
    ========================================================================== */
 .calendarbox,
 .clockbox {
-    margin: 5px auto;
-    font-size: 12px;
-    width: 19em;
-    text-align: center;
-    background-color: var(--bs-body-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: .375rem;
-    box-shadow: var(--bs-box-shadow-sm);
-    overflow: hidden;
-    z-index: 1000;
+  margin: 5px auto;
+  font-size: 12px;
+  width: 19em;
+  text-align: center;
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: .375rem;
+  box-shadow: var(--bs-box-shadow-sm);
+  overflow: hidden;
+  z-index: 1000;
 }
 
 .clockbox {
-    width: auto;
+  width: auto;
 }
 
 .calendar table {
-    margin: 0;
-    padding: 0;
-    border-collapse: collapse;
-    width: 100%;
+  margin: 0;
+  padding: 0;
+  border-collapse: collapse;
+  width: 100%;
 }
 
 .calendar th {
-    padding: 8px 5px;
-    border-bottom: 1px solid var(--bs-border-color);
-    font-weight: 400;
-    font-size: 12px;
+  padding: 8px 5px;
+  border-bottom: 1px solid var(--bs-border-color);
+  font-weight: 400;
+  font-size: 12px;
 }
 
 .calendar td {
-    font-weight: 400;
-    font-size: 12px;
-    padding: 0;
-    border-top: 1px solid var(--bs-border-color);
+  font-weight: 400;
+  font-size: 12px;
+  padding: 0;
+  border-top: 1px solid var(--bs-border-color);
 }
 
 .calendar td.selected a {
-    background: var(--bs-primary);
-    color: #fff !important;
+  background: var(--bs-primary);
+  color: #fff !important;
 }
 
 .calendar td a,
 .timelist a {
-    display: block;
-    padding: 6px;
+  display: block;
+  padding: 6px;
 }
 
 .calendar td a:hover,
 .timelist a:hover {
-    background: var(--bs-primary);
-    color: white;
+  background: var(--bs-primary);
+  color: white;
 }
 
 .date-icon::before,
 .clock-icon::before {
-    font-family: "Font Awesome 5 Free" !important;
-    display: inline-block;
-    font: normal normal normal 14px/1 FontAwesome !important;
-    content: "\f073";
+  font-family: "Font Awesome 5 Free" !important;
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome !important;
+  content: "\f073";
 }
 
 .clock-icon::before {
-    content: "\f017";
+  content: "\f017";
 }
 
 
 /* ============================================================================
-   DJANGO RELATED WIDGET - FK selects with edit/add/view icons
+   WIDGET RELACIONADO DE DJANGO - Selects de Llave Foránea con iconos de editar/añadir/ver
    ========================================================================== */
 .related-widget-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .related-widget-wrapper .select2-container {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .related-widget-wrapper-link {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 
 /* ============================================================================
-   DJANGO SIDEBAR - Fixed layout scrolling
+   BARRA LATERAL DE DJANGO - Desplazamiento en diseño fijo
    ========================================================================== */
 .layout-fixed #jazzy-sidebar {
-    top: 0;
-    bottom: 0;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    scrollbar-width: none;
+  top: 0;
+  bottom: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-width: none;
 }
 
 .layout-fixed #jazzy-sidebar::-webkit-scrollbar {
-    width: 0;
+  width: 0;
 }
 
-#jazzy-sidebar .nav-sidebar > .nav-item {
-    width: 100%;
+#jazzy-sidebar .nav-sidebar>.nav-item {
+  width: 100%;
 }
 
 
 /* ============================================================================
-   SELECT2 - Dark theme support
+   SELECT2 - Soporte para tema oscuro
    ========================================================================== */
 html[data-bs-theme="dark"] .select2-container--default .select2-selection--single,
 html[data-bs-theme="dark"] .select2-container--default .select2-selection--multiple {
-    background-color: var(--bs-body-bg);
-    border-color: var(--bs-border-color);
-    color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+  color: var(--bs-body-color);
 }
 
 html[data-bs-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__rendered,
 html[data-bs-theme="dark"] .select2-container--default .select2-selection--multiple .select2-selection__rendered {
-    color: var(--bs-body-color);
+  color: var(--bs-body-color);
 }
 
 html[data-bs-theme="dark"] .select2-dropdown {
-    background-color: var(--bs-body-bg);
-    border-color: var(--bs-border-color);
+  background-color: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
 }
 
 html[data-bs-theme="dark"] .select2-container--default .select2-results__option {
-    background-color: var(--bs-body-bg);
-    color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
 
 html[data-bs-theme="dark"] .select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: var(--bs-primary);
-    color: var(--bs-white);
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
 }
 
-/* SELECT2 - Border theming */
+/* SELECT2 - Tematización de bordes */
 .select2-container--default .select2-selection--single,
 .select2-container--default .select2-selection--multiple {
-    border: 1px solid var(--bs-border-color);
-    border-radius: .375rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .375rem;
 }
 
 
 /* ============================================================================
-   FORM SPACING - Django form-row / form-group
+   ESPACIADO DE FORMULARIOS - form-row / form-group de Django
    ========================================================================== */
 .form-row {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .form-group {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .inline-related .form-row,
 .inline-related .form-group {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
 
 
 /* ============================================================================
-   HORIZONTAL SELECTORS - filter_horizontal / filter_vertical (permissions)
+   SELECTORES HORIZONTALES - filter_horizontal / filter_vertical (permisos)
    ========================================================================== */
 .selector {
-    display: flex;
-    align-items: stretch;
-    width: 100%;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
 }
 
 .selector-available,
 .selector-chosen {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .selector ul.selector-chooser {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0.5rem;
-    margin: 0;
-    list-style: none;
-    gap: 0.25rem;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.5rem;
+  margin: 0;
+  list-style: none;
+  gap: 0.25rem;
 }
 
 .selector ul.selector-chooser li {
-    list-style: none;
+  list-style: none;
 }
 
 .selector ul.selector-chooser a {
-    display: block;
-    width: 2rem;
-    height: 2rem;
-    line-height: 2rem;
-    text-align: center;
-    background-color: var(--bs-secondary-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: .375rem;
-    color: var(--bs-body-color);
-    font-size: 0;
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  text-align: center;
+  background-color: var(--bs-secondary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: .375rem;
+  color: var(--bs-body-color);
+  font-size: 0;
 }
 
 .selector ul.selector-chooser a::before {
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    font-size: 0.75rem;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 0.75rem;
 }
 
-.selector ul.selector-chooser a.selector-chooseall::before { content: "\f101"; }
-.selector ul.selector-chooser a.selector-add::before { content: "\f054"; }
-.selector ul.selector-chooser a.selector-remove::before { content: "\f053"; }
-.selector ul.selector-chooser a.selector-clearall::before { content: "\f100"; }
+.selector ul.selector-chooser a.selector-chooseall::before {
+  content: "\f101";
+}
+
+.selector ul.selector-chooser a.selector-add::before {
+  content: "\f054";
+}
+
+.selector ul.selector-chooser a.selector-remove::before {
+  content: "\f053";
+}
+
+.selector ul.selector-chooser a.selector-clearall::before {
+  content: "\f100";
+}
 
 .selector ul.selector-chooser a:hover {
-    background-color: var(--bs-primary);
-    border-color: var(--bs-primary);
-    color: #fff;
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: #fff;
 }
 
 .selector select {
-    width: 100%;
-    height: 15em;
-    padding: .25rem .5rem;
-    font-size: var(--bs-body-font-size);
-    color: var(--bs-body-color);
-    background-color: var(--bs-body-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: 0 0 .375rem .375rem;
-    border-top: none;
+  width: 100%;
+  height: 15em;
+  padding: .25rem .5rem;
+  font-size: var(--bs-body-font-size);
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0 0 .375rem .375rem;
+  border-top: none;
 }
 
 .selector-available h2,
 .selector-chosen h2 {
-    margin: 0;
-    padding: 0.375rem 0.75rem;
-    background-color: var(--bs-secondary-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: .375rem .375rem 0 0;
-    font-size: 0.8125rem;
-    font-weight: 600;
+  margin: 0;
+  padding: 0.375rem 0.75rem;
+  background-color: var(--bs-secondary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: .375rem .375rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
 }
 
 .selector .selector-filter {
-    padding: 0.375rem;
-    border: 1px solid var(--bs-border-color);
-    border-top: none;
-    background-color: var(--bs-body-bg);
+  padding: 0.375rem;
+  border: 1px solid var(--bs-border-color);
+  border-top: none;
+  background-color: var(--bs-body-bg);
 }
 
 .selector .selector-filter label {
-    display: none;
+  display: none;
 }
 
 .selector .selector-filter input {
-    width: 100%;
-    padding: .25rem .5rem;
-    font-size: var(--bs-body-font-size);
-    border: 1px solid var(--bs-border-color);
-    border-radius: .25rem;
-    background-color: var(--bs-body-bg);
-    color: var(--bs-body-color);
+  width: 100%;
+  padding: .25rem .5rem;
+  font-size: var(--bs-body-font-size);
+  border: 1px solid var(--bs-border-color);
+  border-radius: .25rem;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
 
 html[data-bs-theme="dark"] .selector select option:checked {
-    background-color: var(--bs-primary);
-    color: var(--bs-white);
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
 }
 
 
 /* ============================================================================
-   ACTIONS PANEL - Detail page sidebar (save, delete, history, etc.)
+   PANEL DE ACCIONES - Barra lateral de la página de detalle (guardar, eliminar, historial, etc.)
    ========================================================================== */
 #jazzy-actions {
-    position: sticky;
-    top: 4rem;
+  position: sticky;
+  top: 4rem;
 }
 
 #jazzy-actions .d-flex {
-    flex-direction: column;
+  flex-direction: column;
 }
 
 #jazzy-actions .d-flex .btn,
 #jazzy-actions .d-flex input[type="submit"] {
-    width: 100%;
+  width: 100%;
 }
 
 #jazzy-actions .object-tools {
-    list-style: none;
-    padding: 0;
-    margin: 1rem 0 0 0;
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
 }
 
 #jazzy-actions .object-tools li {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 #jazzy-actions .object-tools li a {
-    display: block;
-    padding: .25rem .5rem;
-    font-size: var(--bs-body-font-size);
-    text-align: center;
-    border-radius: .375rem;
-    background-color: var(--bs-secondary-bg);
-    border: 1px solid var(--bs-border-color);
-    color: var(--bs-body-color);
+  display: block;
+  padding: .25rem .5rem;
+  font-size: var(--bs-body-font-size);
+  text-align: center;
+  border-radius: .375rem;
+  background-color: var(--bs-secondary-bg);
+  border: 1px solid var(--bs-border-color);
+  color: var(--bs-body-color);
 }
 
 #jazzy-actions .object-tools li a:hover {
-    background-color: var(--bs-tertiary-bg);
+  background-color: var(--bs-tertiary-bg);
 }
 
 
 /* ============================================================================
-   TAB CONTENT - Prevent inline overflow in tabbed change forms
+   CONTENIDO DE PESTAÑAS - Evita el desbordamiento en línea en formularios con pestañas
    ========================================================================== */
 .tab-content {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 .tab-pane .inline-related {
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 
 /* ============================================================================
-   HELP TEXT AND ERRORS
+   TEXTOS DE AYUDA Y ERRORES
    ========================================================================== */
 .help-block,
 .helptext {
-    font-size: 0.8125rem;
-    color: var(--bs-secondary-color);
-    margin-top: 0.25rem;
-    display: block;
+  font-size: 0.8125rem;
+  color: var(--bs-secondary-color);
+  margin-top: 0.25rem;
+  display: block;
 }
 
 .help-block.red,
 .errorlist {
-    color: var(--bs-danger);
-    font-size: 0.8125rem;
+  color: var(--bs-danger);
+  font-size: 0.8125rem;
 }
 
-/* Required field indicator */
+/* Indicador de campo obligatorio */
 .text-red {
-    color: var(--bs-danger);
+  color: var(--bs-danger);
 }
 
-/* Readonly fields */
+/* Campos de solo lectura */
 .readonly {
-    padding: .375rem .75rem;
-    background-color: var(--bs-secondary-bg);
-    border: 1px solid var(--bs-border-color);
-    border-radius: .375rem;
-    color: var(--bs-secondary-color);
+  padding: .375rem .75rem;
+  background-color: var(--bs-secondary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: .375rem;
+  color: var(--bs-secondary-color);
 }
 
 
 /* ============================================================================
-   CHANGELIST - Checkbox select-all column
+   LISTA DE CAMBIOS (CHANGELIST) - Columna de casillas de selección múltiple
    ========================================================================== */
 .djn-checkbox-select-all {
-    width: 1.5em;
-    text-align: center;
-    padding-right: 0 !important;
+  width: 1.5em;
+  text-align: center;
+  padding-right: 0 !important;
 }
 
 .table td.action-checkbox {
-    width: 1.5em;
-    text-align: center;
-    padding-right: 0 !important;
+  width: 1.5em;
+  text-align: center;
+  padding-right: 0 !important;
 }
 
 
 /* ============================================================================
-   USER PANEL - Sidebar user info (not a native AdminLTE v4 component)
+   PANEL DE USUARIO - Información del usuario en la barra lateral (no es un componente nativo de AdminLTE v4)
    ========================================================================== */
 .user-panel {
-    padding: 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .user-panel .info {
-    display: flex;
-    align-items: center;
-    padding-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  padding-left: 0.5rem;
 }

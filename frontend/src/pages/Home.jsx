@@ -159,7 +159,7 @@ export default function Home() {
               {/* Imagen de fondo translúcida dinámica */}
               <img
                 src={getImageUrl(banners[index]?.imagen)}
-                className="absolute inset-0 h-full w-full object-cover opacity-25 filter blur-xs scale-105"
+                className="absolute inset-0 h-full w-full object-cover opacity-125 filter blur-xs scale-105"
                 alt="Fondo Ambience"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-slate-950/60" />
