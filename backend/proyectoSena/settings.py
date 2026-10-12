@@ -145,7 +145,7 @@ JAZZMIN_SETTINGS = {
     "site_header": "Expomarket",
     "welcome_sign": "Pescados y Mariscos Premium",
     "copyright": "Expomarket Grupo GRB",
-    "search_model": ["tienda.Producto"],
+    "search_model": ["tienda.tiendaproducto"],  # Actualizado en minúsculas para coincidir con Django
 
     "topmenu_links": [
         {"name": "Panel Principal", "url": "admin:index", "permissions": ["auth.view_user"]},
@@ -179,33 +179,11 @@ JAZZMIN_SETTINGS = {
     "changeform_format": "horizontal_tabs",
 }
 
+# Corrige aquí asignando un tema válido y el modo de tema por defecto
 JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": False,
-    "footer_small_text": True,
-    "body_small_text": False,
-    "brand_small_text": False,
-    "navbar": "navbar-dark bg-dark",
-    "no_navbar_border": True,
-    "navbar_fixed": True,
-    "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-primary",
-    "sidebar_nav_small_text": False,
-    "sidebar_nav_flat_style": True,
-    "theme": "navy",
-    "dark_mode_theme": None,
-    "button_classes": {
-        "primary": "btn-expomarket",
-        "secondary": "btn-outline-light"
-    },
-    "actions_sticky": True
+    "default_theme_mode": "auto",
+    "theme": "default",
 }
 
-# --- CONFIGURACIÓN DE ALMACENAMIENTO (Cloudinary) ---
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
-}
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
