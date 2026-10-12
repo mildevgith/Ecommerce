@@ -50,14 +50,6 @@ export default function Home() {
     return `${baseURL}${urlStr}`;
   };
 
-  // Carrusel automático basado en los banners de la base de datos
-  useEffect(() => {
-    if (banners.length <= 1) return;
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % banners.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [banners]);
 
   // CARGA DE DATOS DESDE EL BACKEND
   useEffect(() => {
