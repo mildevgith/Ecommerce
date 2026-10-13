@@ -145,7 +145,7 @@ JAZZMIN_SETTINGS = {
     "site_header": "Expomarket",
     "welcome_sign": "Pescados y Mariscos Premium",
     "copyright": "Expomarket Grupo GRB",
-    "search_model": ["tienda.tiendaproducto"],  # Actualizado en minúsculas para coincidir con Django
+    "search_model": ["tienda.tiendaproducto"],
 
     "topmenu_links": [
         {"name": "Panel Principal", "url": "admin:index", "permissions": ["auth.view_user"]},
