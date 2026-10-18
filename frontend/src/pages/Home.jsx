@@ -177,11 +177,11 @@ export default function Home() {
                     {banners[index]?.titulo || "Frescura que se siente en"}
                   </span>
                   <span className="block mt-2 text-orange-400">
-                    {banners[index]?.descripcion || "Cada bocado"}
+                    {/*{banners[index]?.descripcion || "Cada bocado"} */}
                   </span>
                 </h1>
                 <p className="mt-4 text-slate-300 text-base md:text-lg font-medium">
-                  Productos del mar seleccionados con calidad y sabor inigualable.
+                  Productos seleccionados con calidad.
                 </p>
 
                 <div className="mt-8 flex flex-col sm:flex-row justify-center md:justify-start gap-4">
