@@ -172,17 +172,22 @@ export default function Home() {
                 <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#DE6E28]/20 border border-[#DE6E28]/40 text-orange-300 text-xs font-bold uppercase tracking-widest backdrop-blur-md mb-4">
                   <Sparkles className="w-3.5 h-3.5" /> Exclusivo en Cali
                 </span>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-tight">
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
-                    {banners[index]?.titulo || "Frescura que se siente en"}
+
+
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight">
+                  <span className="block text-coral-expomar">
+                    {banners[index]?.titulo || ""}
                   </span>
-                  <span className="block mt-2 text-orange-400">
-                    {/*{banners[index]?.descripcion || "Cada bocado"} */}
+                  <span className="block mt-2 text-coral-expomar">
+                    {banners[index]?.descripcion || ""}
                   </span>
                 </h1>
-                <p className="mt-4 text-slate-300 text-base md:text-lg font-medium">
+
+                <p className="mt-3 text-blue-expomar text-sm md:text-base font-semibold">
                   Productos seleccionados con calidad.
                 </p>
+
+
 
                 <div className="mt-8 flex flex-col sm:flex-row justify-center md:justify-start gap-4">
                   <Link

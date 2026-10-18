@@ -75,23 +75,35 @@ export default function Navbar() {
 
   return (
     <header className="bg-white sticky top-0 z-50 border-b border-gray-100 shadow-sm font-sans">
+      {/* top bar */}
       {/* BARRA SUPERIOR PROFESIONAL (TOP BAR) */}
-      <div className="bg-[#242A57] text-white text-[12px] py-1.5 px-4 md:px-10">
-        <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1 text-gray-200">
-              <MapPin className="w-3.5 h-3.5 text-[#DE6E28]" />Calidad de exportación y sabor inigualable: Tu mejor aliado mayorista esta Navidad.
+      <div className="bg-[#242A57] text-white text-[12px] py-2 px-4 md:px-10">
+        <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-1 sm:gap-4 text-center sm:text-left">
+
+          {/* Mensaje principal */}
+          <div className="flex items-center justify-center gap-1 text-gray-200 whitespace-nowrap">
+            <MapPin className="w-3.5 h-3.5 text-[#DE6E28] shrink-0" />
+            <span className="hidden sm:inline">
+              Calidad de exportación y sabor inigualable: Tu mejor aliado mayorista esta Navidad.
             </span>
-            <span className="hidden md:inline text-gray-400">|</span>
-            <span className="hidden md:flex items-center gap-1 text-gray-200">
-               Envíos seguros y cadena de frío garantizada
+            <span className="sm:hidden text-[11px]">
+              Tu mejor aliado mayorista esta Navidad
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <a href="https://wa.me/573174262521" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-gray-200 hover:text-[#DE6E28] transition-colors font-medium">
-              <Phone className="w-3.5 h-3.5 text-[#DE6E28]" /> WhatsApp: 317 426 2521
+
+          {/* WhatsApp */}
+          <div className="flex items-center justify-center shrink-0">
+            <a
+              href="https://wa.me/573174262521"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-gray-200 hover:text-[#DE6E28] transition-colors font-medium whitespace-nowrap"
+            >
+              <Phone className="w-3.5 h-3.5 text-[#DE6E28] shrink-0" />
+              <span>WhatsApp: 317 426 2521</span>
             </a>
           </div>
+
         </div>
       </div>
 
