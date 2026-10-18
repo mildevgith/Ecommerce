@@ -231,8 +231,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     lookup_field = 'slug'
 
+
     @action(detail=True, methods=['get'], url_path='productos', permission_classes=[AllowAny]) # Define un endpoint anidado en la ruta /api/categorias/<id>/productos/.
-    def productos(self, request, pk=None):
+    def productos(self, request, slug=None):
         try:
             self.pagination_class = None # Limpia el limitador de paginación para retornar de corrido todos los productos pertenecientes a esta categoría.
             categoria = self.get_object() # Ejecuta un control interno para extraer la categoría según el ID (pk) provisto en la URL.
