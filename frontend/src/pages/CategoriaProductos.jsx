@@ -17,7 +17,7 @@ export default function CategoriaProductos() {
 
   // CONFIGURACIÓN DE RUTA INTELIGENTE (IGUAL AL HOME)
   const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
-  const BASE_URL = "https://serene-peace-production-62ee.up.railway.app";
+  const BASE_URL = "https://ecommerce-dsr6.onrender.com";
   const LOCAL_URL = "http://localhost:8000";
   const API_URL = esLocal ? `${LOCAL_URL}/api` : `${BASE_URL}/api`;
 
