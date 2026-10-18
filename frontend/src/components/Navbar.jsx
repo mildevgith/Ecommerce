@@ -80,7 +80,7 @@ export default function Navbar() {
         <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1 text-gray-200">
-              <MapPin className="w-3.5 h-3.5 text-[#DE6E28]" /> Cali y Alrededores
+              <MapPin className="w-3.5 h-3.5 text-[#DE6E28]" />Calidad de exportación y sabor inigualable: Tu mejor aliado mayorista esta Navidad.
             </span>
             <span className="hidden md:inline text-gray-400">|</span>
             <span className="hidden md:flex items-center gap-1 text-gray-200">
