@@ -51,7 +51,8 @@ class TiendaClienteSerializer(serializers.ModelSerializer):
 class TiendaCategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = TiendaCategoria                                         # Vincula este serializador con la tabla encargada de agrupar las familias de productos.
-        fields = ['id', 'nombre', 'descripcion', 'imagen']              # Serializa el identificador, título, texto explicativo y la ruta de la foto de la categoría.
+        fields = ['id', 'nombre', 'slug', 'descripcion', 'imagen']              # Serializa el identificador, título, texto explicativo y la ruta de la foto de la categoría.
+
 
 # 6. TRADUCTOR DEL CARRITO: Maneja lo que el usuario quiere comprar
 class TiendaCarritoSerializer(serializers.ModelSerializer):

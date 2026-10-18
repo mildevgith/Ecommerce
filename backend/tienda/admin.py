@@ -39,9 +39,10 @@ class TiendaCategoriaAdmin(admin.ModelAdmin):
     list_filter = ('activo', 'categoria_padre')
     search_fields = ('nombre', 'descripcion')
     list_editable = ('activo', 'orden')
+    prepopulated_fields = {'slug': ('nombre',)}
     fieldsets = (
         ('Información Principal', {
-            'fields': ('nombre', 'descripcion', 'imagen', 'categoria_padre')
+            'fields': ('nombre', 'descripcion', 'slug', 'imagen', 'categoria_padre')
         }),
         ('Configuración y Estado', {
             'fields': ('activo', 'orden')

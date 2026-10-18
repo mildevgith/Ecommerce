@@ -219,12 +219,17 @@ class CrearPedidoView(APIView):
             return Response({"error": str(e)}, status=400) # Responde detallando cualquier otra excepción o regla rota con un estado HTTP 400.
 
 
+
+
+
+
 # --- VIEWSETS RESTANTES ---
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = TiendaCategoria.objects.all() # Define la consulta por defecto abstrayendo todas las categorías registradas en el ecommerce.
     serializer_class = TiendaCategoriaSerializer # Configura el formateador para empaquetar el nombre, descripción e imagen de las categorías en JSON.
     permission_classes = [AllowAny]
+    lookup_field = 'slug'
 
     @action(detail=True, methods=['get'], url_path='productos', permission_classes=[AllowAny]) # Define un endpoint anidado en la ruta /api/categorias/<id>/productos/.
     def productos(self, request, pk=None):
@@ -238,6 +243,15 @@ class CategoryViewSet(viewsets.ModelViewSet):
             return Response({"error": "La categoría especificada no existe"}, status=status.HTTP_404_NOT_FOUND) # Controla el error 404 si la ID de la categoría está errada.
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST) # Captura cualquier otro fallo enviando un código de estado HTTP 400.
+
+
+
+
+
+
+
+
+
 
 
 class OrderViewSet(viewsets.ModelViewSet):

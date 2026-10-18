@@ -159,14 +159,14 @@ export default function Navbar() {
                   <div className="text-[11px] font-bold text-gray-400 uppercase px-3 py-1 tracking-wider">Categorías</div>
                   <Link to="/productos" className="block px-3 py-2 rounded-xl text-sm font-bold text-[#242A57] hover:bg-orange-50 hover:text-[#DE6E28] transition-colors">
                      Ver Todos los Productos
-                  </Link>
-                  {categories.map((cat) => (
+                    </Link>
+                    {categories.map((cat) => (
                     <Link
-                      key={cat.id}
-                      to={`/categoria/${cat.id}`}
-                      className="block px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-orange-50 hover:text-[#DE6E28] transition-colors"
-                    >
-                      {cat.nombre}
+                        key={cat.slug || cat.id}
+                        to={`/categoria/${cat.slug}`}
+                        className="block px-3 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:bg-orange-50 hover:text-[#DE6E28] transition-colors"
+                      >
+                        {cat.nombre}
                     </Link>
                   ))}
                 </div>

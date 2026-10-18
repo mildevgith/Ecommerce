@@ -455,7 +455,7 @@ export default function Home() {
                     </button>
                     {!isTransportCategory(cat) && (
                       <Link
-                        to={`/categoria/${cat.id}`}
+                        to={`/categoria/${cat.slug}`}
                         className="text-orange-300 font-bold text-xs hover:underline text-center pt-1"
                       >
                         Ver selección premium →

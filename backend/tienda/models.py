@@ -95,6 +95,15 @@ class TiendaCategoria(models.Model):
     meta_titulo = models.CharField(max_length=150, blank=True, null=True)
     meta_descripcion = models.CharField(max_length=255, blank=True, null=True)
 
+
+    slug = models.SlugField(max_length=120, unique=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.nombre)
+        super().save(*args, **kwargs)
+
+
     class Meta:
         db_table = 'tienda_categoria'
         verbose_name = 'Categoría'
@@ -105,6 +114,18 @@ class TiendaCategoria(models.Model):
         if self.categoria_padre:
             return f"{self.categoria_padre.nombre} > {self.nombre}"
         return self.nombre
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class TiendaProducto(models.Model):

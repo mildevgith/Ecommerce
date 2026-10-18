@@ -28,7 +28,7 @@ function App() {
           <Route path="carrito" element={<Carrito />} />
           <Route path="confirmacion" element={<Confirmacion />} />
 
-          <Route path="categoria/:id" element={<CategoriaProductos />} />
+          <Route path="/categoria/:slug" element={<CategoriaProductos />} />
 
           {/* Rutas de Autenticación Unificadas */}
           <Route path="auth" element={<AuthPage />} />

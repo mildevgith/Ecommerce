@@ -1,18 +1,18 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ShoppingCart, Eye, X, CheckCircle2, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock, Eye, ShoppingCart, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 export default function CategoriaProductos() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const { addToCart } = useCart();
 
   const [categoria, setCategoria] = useState({ nombre: "" });
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // NUEVO: Estado para abrir el modal del producto seleccionado
+  // Estado para abrir el modal del producto seleccionado
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // CONFIGURACIÓN DE RUTA INTELIGENTE (IGUAL AL HOME)
@@ -31,20 +31,20 @@ export default function CategoriaProductos() {
     const fetchDatos = async () => {
       setLoading(true);
       try {
-        // 1. Obtener información de la categoría con fallback
-        let catRes = await fetch(`${API_URL}/categorias/${id}/`);
+        // 1. Obtener información de la categoría usando el SLUG con fallback
+        let catRes = await fetch(`${API_URL}/categorias/${slug}/`);
         if (!catRes.ok && esLocal) {
-          catRes = await fetch(`${BASE_URL}/api/categorias/${id}/`);
+          catRes = await fetch(`${BASE_URL}/api/categorias/${slug}/`);
         }
         if (catRes.ok) {
           const catData = await catRes.json();
           setCategoria(catData);
         }
 
-        // 2. Obtener los productos con fallback
+        // 2. Obtener los productos de la categoría usando el SLUG con fallback
         const currentApi = (!catRes.ok && esLocal) ? `${BASE_URL}/api` : API_URL;
-        const prodRes = await fetch(`${currentApi}/categorias/${id}/productos/`);
-        
+        const prodRes = await fetch(`${currentApi}/categorias/${slug}/productos/`);
+
         if (prodRes.ok) {
           const prodData = await prodRes.json();
           setProductos(Array.isArray(prodData) ? prodData : prodData.results || []);
@@ -56,10 +56,10 @@ export default function CategoriaProductos() {
       }
     };
 
-    if (id) {
+    if (slug) {
       fetchDatos();
     }
-  }, [id, API_URL, esLocal]);
+  }, [slug, API_URL, esLocal]);
 
   if (loading) {
     return (
@@ -78,7 +78,7 @@ export default function CategoriaProductos() {
 
       <div className="mb-8">
         <span className="text-xs font-bold text-orange-500 tracking-wider uppercase">Categoría</span>
-        <h1 className="text-4xl font-extrabold text-slate-900 uppercase">{categoria?.nombre || "MOLUSCOS"}</h1>
+        <h1 className="text-4xl font-extrabold text-slate-900 uppercase">{categoria?.nombre || "Categoría"}</h1>
         <p className="text-slate-500 mt-1">
           {productos.length} {productos.length === 1 ? "producto disponible" : "productos disponibles"}
         </p>
@@ -101,7 +101,7 @@ export default function CategoriaProductos() {
                   />
                   {/* Vista rápida flotante al hacer hover */}
                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button 
+                    <button
                       onClick={() => setSelectedProduct(producto)}
                       className="bg-white/90 backdrop-blur-xs text-slate-900 px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:bg-white transition-all transform scale-90 group-hover:scale-100"
                     >
@@ -144,22 +144,22 @@ export default function CategoriaProductos() {
       <AnimatePresence>
         {selectedProduct && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md">
-            <motion.div 
-              className="absolute inset-0" 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedProduct(null)}
             />
 
-            <motion.div 
+            <motion.div
               className="relative bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden z-10 border border-slate-100 max-h-[90vh] flex flex-col lg:flex-row"
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 350 }}
             >
-              <button 
+              <button
                 onClick={() => setSelectedProduct(null)}
                 className="absolute top-4 right-4 z-20 bg-slate-100 text-slate-600 p-2 rounded-full hover:bg-orange-500 hover:text-white transition-colors"
               >
