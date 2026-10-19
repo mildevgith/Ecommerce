@@ -258,10 +258,10 @@ export default function Navbar() {
             </Link>
 
             <div className="pl-4 space-y-2 border-l-2 border-orange-200 my-1">
-              {categories.map((cat) => (
+            {categories.map((cat) => (
                 <Link
                   key={cat.id}
-                  to={`/categoria/${cat.id}`}
+                  to={`/categoria/${cat.slug || cat.id}`}
                   onClick={() => setIsMenuOpen(false)}
                   className="block py-1.5 text-sm font-medium text-gray-600 hover:text-[#DE6E28]"
                 >
