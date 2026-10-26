@@ -290,7 +290,7 @@ class OrderViewSet(viewsets.ModelViewSet):
                     producto = TiendaProducto.objects.get(id=item['producto_id']) # Trae de la tabla la información del producto para asegurar stock y consistencia.
                     TiendaDetallepedido.objects.create(
                         pedido=pedido, producto=producto,
-                        amount=item['cantidad'], precio_unitario=item['precio_unitario']
+                        cantidad=item['cantidad'], precio_unitario=item['precio_unitario']
                     ) # Escribe las líneas unitarias de facturación congelando cantidades y costos del momento exacto de la compra.
 
                 return Response({"message": "Pedido creado", "pedido_id": pedido.id}, status=201) # Finaliza enviando el número de confirmación de pedido y código HTTP 201 Created.

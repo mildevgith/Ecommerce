@@ -22,17 +22,18 @@ export default function Checkout() {
     direccion: "",
     ciudad: "",
     departamento: "",
-    metodoPago: "tarjeta", // Este estado controla dinámicamente los botones y las vistas de pago
+    metodoPago: "tarjeta",
   });
 
-  // Estados locales extras para los datos específicos de la tarjeta de crédito
+  const esLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
+  const BASE_URL = esLocal ? "http://localhost:8000" : "https://ecommerce-dsr6.onrender.com";
+
   const [datosTarjeta, setDatosTarjeta] = useState({
     numero: "",
     vencimiento: "",
     cvv: "",
   });
 
-  // Estado local para el banco seleccionado en PSE
   const [bancoPse, setBancoPse] = useState("");
 
   const handleChange = (e) =>
@@ -52,18 +53,18 @@ export default function Checkout() {
     e.preventDefault();
     if (cart.length === 0) return alert("Tu carrito está vacío");
     
-    // Validación manual rápida antes de enviar al backend según el pago elegido
     if (form.metodoPago === "pse" && !bancoPse) {
       return alert("Por favor, selecciona tu banco para continuar con la transacción PSE.");
     }
 
     setLoading(true);
 
+    // Estructura correcta de los datos del pedido a enviar
     const pedidoData = {
       datos_envio: form,
       items: cart.map((item) => ({
         producto_id: item.id,
-        producto_nombre: item.nombre, // Pasamos el nombre para que la factura lo use directamente
+        producto_nombre: item.nombre,
         cantidad: item.cantidad,
         precio_unitario: item.precio_oferta || item.precio,
       })),
@@ -71,32 +72,31 @@ export default function Checkout() {
     };
 
     try {
-      const response = await fetch("http://localhost:8000/api/pedidos/", {
+      const response = await fetch(`${BASE_URL}/api/pedidos/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(pedidoData),
       });
 
       if (response.ok) {
-        const pedidoCreado = await response.json(); // <--- Capturamos los datos reales generados por Django
+        const pedidoCreado = await response.json();
         clearCart();
-        // Redirigimos pasando el objeto real del pedido en el estado de la navegación
         navigate("/confirmacion", { state: { pedido: pedidoCreado } });
       } else {
         const err = await response.json();
         alert("Error: " + (err.error || "No se pudo procesar el pedido"));
       }
     } catch (error) {
+      console.error("Error de red:", error);
       alert("Error de conexión con el servidor");
     } finally {
-      setLoading(false);
+      setLoading(false); // Garantiza que el botón vuelva a la normalidad pase lo que pase
     }
   };
 
   return (
     <div className="pt-24 pb-16 bg-slate-50 min-h-screen text-slate-900">
       <div className="max-w-6xl mx-auto px-4">
-        {/* Enlace de regreso */}
         <Link
           to="/carrito"
           className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-orange-500 transition-colors mb-6"
@@ -105,7 +105,7 @@ export default function Checkout() {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* COLUMNA IZQUIERDA: FORMULARIOS (7 columnas en PC) */}
+          {/* COLUMNA IZQUIERDA: FORMULARIOS */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -205,7 +205,7 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Sección 2: Métodos de Pago Profesionales e Interactivos */}
+              {/* Sección 2: Métodos de Pago */}
               <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
                 <div className="flex items-center gap-3">
                   <div className="bg-[#1a1f3c]/10 p-2 rounded-lg text-[#1a1f3c]">
@@ -216,9 +216,7 @@ export default function Checkout() {
                   </h3>
                 </div>
 
-                {/* Fila de Botones de Opción */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {/* Tarjeta */}
                   <label
                     className={`border rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
                       form.metodoPago === "tarjeta"
@@ -238,7 +236,6 @@ export default function Checkout() {
                     <span className="text-xs">Tarjeta de Crédito</span>
                   </label>
 
-                  {/* PSE / Transferencia */}
                   <label
                     className={`border rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
                       form.metodoPago === "pse"
@@ -258,7 +255,6 @@ export default function Checkout() {
                     <span className="text-xs">PSE / Transferencia</span>
                   </label>
 
-                  {/* Contra Entrega */}
                   <label
                     className={`border rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all ${
                       form.metodoPago === "efectivo"
@@ -279,7 +275,6 @@ export default function Checkout() {
                   </label>
                 </div>
 
-                {/* Subformulario Condicional Dinámico */}
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
                   {form.metodoPago === "tarjeta" && (
                     <motion.div 
@@ -372,7 +367,6 @@ export default function Checkout() {
                   )}
                 </div>
 
-                {/* Mensaje de Transacción Secura */}
                 <div className="mt-6 flex items-center gap-2 bg-emerald-50 text-emerald-700 p-3 rounded-xl text-xs font-medium">
                   <ShieldCheck size={16} className="shrink-0" />
                   <span>
@@ -382,7 +376,6 @@ export default function Checkout() {
                 </div>
               </div>
 
-              {/* Botón de Envío Dinámico */}
               <button
                 type="submit"
                 disabled={loading || cart.length === 0}
@@ -397,7 +390,7 @@ export default function Checkout() {
             </form>
           </motion.div>
 
-          {/* COLUMNA DERECHA: RESUMEN DE COMPRA (5 columnas en PC) */}
+          {/* COLUMNA DERECHA: RESUMEN DE COMPRA */}
           <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-4">
             <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
               <div className="flex items-center gap-2 border-b pb-4 mb-4">
@@ -407,7 +400,6 @@ export default function Checkout() {
                 </h3>
               </div>
 
-              {/* Contenedor de Items */}
               <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 pr-2">
                 {cart.map((item) => (
                   <div
@@ -437,7 +429,6 @@ export default function Checkout() {
                 ))}
               </div>
 
-              {/* Desgloses Matemáticos */}
               <div className="border-t pt-4 mt-4 space-y-2 text-sm text-slate-500">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
