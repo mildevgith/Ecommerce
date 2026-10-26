@@ -7,7 +7,7 @@ import os                                   # Importa el módulo del sistema ope
 
 urlpatterns = [
     path('admin/', admin.site.urls),        # Define la ruta principal para acceder al panel de control de Django Jazzmin.
-    path('api/', include('tienda.urls')),   # Redirecciona e incluye todas las sub-rutas de la API creadas dentro de tu app 'tienda'.
+    path('api/', include('tienda.urls'))  # Redirecciona e incluye todas las sub-rutas de la API creadas dentro de tu app 'tienda'.
 ]
 
 # Manejo de archivos para Desarrollo y Producción

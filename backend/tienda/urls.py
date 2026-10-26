@@ -10,7 +10,8 @@ from .views import (
     BannerViewSet,
     RecetaViewSet,
     ValidarCuponView,
-    RegistrarSuscripcionView
+    RegistrarSuscripcionView, 
+    CrearPedidoView
 )
 
 # Configuración del Router automático de DRF
@@ -20,10 +21,13 @@ router.register(r'productos', ProductCatalogViewSet, basename='producto')
 router.register(r'categorias', CategoryViewSet, basename='categoria')
 router.register(r'pedidos', OrderViewSet, basename='pedido')
 router.register(r'recetas', RecetaViewSet, basename='receta')
+router.register(r'pedidos', OrderViewSet, basename='pedidos')
 
 urlpatterns = [
     # Rutas del Router de DRF
     path('', include(router.urls)),
+    
+    path('pedidos/', CrearPedidoView.as_view(), name='crear-pedido'),
 
     # Rutas de Autenticación
     path('auth/register/', AuthRegisterView.as_view(), name='auth_register'),
