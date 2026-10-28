@@ -52,9 +52,9 @@ class CatalogoPagination(PageNumberPagination):
     Configuración de paginación para el catálogo de productos.
     Divide los resultados devueltos en bloques de 8 elementos.
     """
-    page_size = 8                          # Define de forma fija el límite máximo de 8 registros de productos devueltos por cada página.
+    page_size = 8                        # Define de forma fija el límite máximo de 8 registros de productos devueltos por cada página.
     page_size_query_param = 'page_size'    # Expone el parámetro en la URL para que el cliente pueda solicitar opcionalmente otro tamaño de página.
-    max_page_size = 100                    # Restringe el límite máximo absoluto a 100 registros para proteger el rendimiento de la base de datos.
+    max_page_size = 100                  # Restringe el límite máximo absoluto a 100 registros para proteger el rendimiento de la base de datos.
 
 
 # --- AUTENTICACIÓN REAL ---
@@ -128,9 +128,9 @@ class LegacyBannerViewSet(viewsets.ModelViewSet):
 
 class ProductCatalogViewSet(viewsets.ModelViewSet):
     queryset = TiendaProducto.objects.all().order_by('-id') # Define la consulta inicial trayendo todos los productos ordenados del más nuevo al más antiguo.
-    serializer_class = TiendaProductoSerializer             # Asigna el serializador encargado de traducir los campos de los productos a formato JSON.
-    permission_classes = [AllowAny]                         # Libera el acceso para que el público general pueda navegar y consultar el catálogo de productos.
-    pagination_class = CatalogoPagination                   # Vincula la paginación de 8 elementos por página a la respuesta de la lista general.
+    serializer_class = TiendaProductoSerializer            # Asigna el serializador encargado de traducir los campos de los productos a formato JSON.
+    permission_classes = [AllowAny]                        # Libera el acceso para que el público general pueda navegar y consultar el catálogo de productos.
+    pagination_class = CatalogoPagination                  # Vincula la paginación de 8 elementos por página a la respuesta de la lista general.
 
     def get_queryset(self):
         queryset = self.queryset # Obtiene la consulta base de los productos ordenada por ID de forma descendente.
@@ -204,23 +204,18 @@ class CrearPedidoView(APIView):
                     TiendaDetallepedido.objects.create(
                         pedido=pedido,
                         producto=producto,
-                        amount=item['cantidad'],
+                        cantidad=item['cantidad'],
                         precio_unitario=item['precio_unitario']
                     ) # Inserta en la base de datos la línea de detalle vinculando las unidades compradas y congelando el precio unitario.
 
-                return Response({
-                    "message": "Pedido creado con éxito en la base de datos",
-                    "pedido_id": pedido.id
-                }, status=201) # Envía una respuesta satisfactoria con el ID de la orden generada para la pasarela y un código HTTP 201 Created.
+                # Serializamos el pedido completo para que la factura del frontend reciba todos los datos necesarios
+                serializer = TiendaPedidoSerializer(pedido)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except KeyError as e:
             return Response({"error": f"Falta el campo: {str(e)}"}, status=400) # Atrapa errores de formato en el JSON si falta alguna llave clave como la dirección.
         except Exception as e:
             return Response({"error": str(e)}, status=400) # Responde detallando cualquier otra excepción o regla rota con un estado HTTP 400.
-
-
-
-
 
 
 # --- VIEWSETS RESTANTES ---
@@ -246,15 +241,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST) # Captura cualquier otro fallo enviando un código de estado HTTP 400.
 
 
-
-
-
-
-
-
-
-
-
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = TiendaPedido.objects.all() # Establece el mapeo de datos apuntando a la tabla maestra de órdenes y compras generales.
     serializer_class = TiendaPedidoSerializer # Asigna el serializador para transformar los montos, estados e IDs de pedidos a JSON.
@@ -263,7 +249,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         """
         Sobrescribimos el método create para usar la lógica personalizada
-        de creación de pedidos dentro del router automático.
+        de creación de pedidos dentro del router automático y retornar el objeto completo.
         """
         data = request.data
         try:
@@ -293,38 +279,15 @@ class OrderViewSet(viewsets.ModelViewSet):
                         cantidad=item['cantidad'], precio_unitario=item['precio_unitario']
                     ) # Escribe las líneas unitarias de facturación congelando cantidades y costos del momento exacto de la compra.
 
-                return Response({"message": "Pedido creado", "pedido_id": pedido.id}, status=201) # Finaliza enviando el número de confirmación de pedido y código HTTP 201 Created.
+                # Serializamos y retornamos el objeto completo para alimentar correctamente la factura en el frontend
+                serializer = self.get_serializer(pedido)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         except Exception as e:
             return Response({"error": str(e)}, status=400) # Controla y responde con los detalles de cualquier excepción arrojada mediante un código HTTP 400.
 
 
 class ValidarCuponView(APIView):
-    def post(self, request):
-        codigo = request.data.get('codigo', '').strip().upper()
-        total_carrito = float(request.data.get('total', 0))
-
-        if not codigo:
-            return Response({"error": "Ingresa un código de cupón válido."}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            cupon = TiendaCupondescuento.objects.get(codigo=codigo, activo=True)
-
-            # Validar fecha de expiración si existe
-            if cupon.fecha_expiracion and cupon.fecha_expiracion < timezone.now().date():
-                return Response({"error": "Este cupón ha expirado."}, status=status.HTTP_400_BAD_REQUEST)
-
-            # Cálculo real del descuento basado en el porcentaje
-            monto_descuento = (total_carrito * float(cupon.porcentaje_descuento)) / 100
-
-            return Response({
-                "valido": True,
-                "codigo": cupon.codigo,
-                "descuento": monto_descuento,
-                "mensaje": f"¡Cupón '{cupon.codigo}' aplicado con éxito!"
-            }, status=status.HTTP_200_OK)
-
-        except TiendaCupondescuento.DoesNotExist:
-            return Response({"error": "El cupón ingresado no existe o no está activo."}, status=status.HTTP_404_NOT_FOUND)
     def post(self, request):
         codigo = request.data.get('codigo', '').strip().upper()
         total_carrito = float(request.data.get('total', 0))
