@@ -45,13 +45,13 @@ export default function Checkout() {
     (acc, item) => acc + (item.precio_oferta || item.precio) * item.cantidad,
     0,
   );
-  const envio = subtotal > 150000 ? 0 : 12000; 
+  const envio = subtotal > 150000 ? 0 : 12000;
   const total = subtotal + envio;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (cart.length === 0) return alert("Tu carrito está vacío");
-    
+
     // Validación manual rápida antes de enviar al backend según el pago elegido
     if (form.metodoPago === "pse" && !bancoPse) {
       return alert("Por favor, selecciona tu banco para continuar con la transacción PSE.");
@@ -282,8 +282,8 @@ export default function Checkout() {
                 {/* Subformulario Condicional Dinámico */}
                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
                   {form.metodoPago === "tarjeta" && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 5 }} 
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-3"
                     >
@@ -333,15 +333,15 @@ export default function Checkout() {
                   )}
 
                   {form.metodoPago === "pse" && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 5 }} 
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-2"
                     >
                       <h4 className="text-sm font-bold text-slate-700">Pago Seguro vía PSE</h4>
                       <p className="text-xs text-slate-400 mb-2">Serás redirigido a la plataforma oficial de tu entidad financiera al procesar la orden.</p>
                       <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Selecciona tu Banco</label>
-                      <select 
+                      <select
                         value={bancoPse}
                         onChange={(e) => setBancoPse(e.target.value)}
                         className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg outline-none text-sm"
@@ -356,8 +356,8 @@ export default function Checkout() {
                   )}
 
                   {form.metodoPago === "efectivo" && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 5 }} 
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="flex items-start gap-3 text-amber-800"
                     >

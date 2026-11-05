@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Ofertas from "./pages/Ofertas";
 import Productos from "./pages/Productos";
 import Recetas from "./pages/Recetas";
+import ScrollToTop from './components/ScrollToTop';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -19,7 +20,9 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <CartProvider>
+       <ScrollToTop />
       <Routes>
+
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="productos" element={<Productos />} />
