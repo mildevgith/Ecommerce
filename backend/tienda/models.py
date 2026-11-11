@@ -223,6 +223,9 @@ class TiendaHistorialestadopedido(models.Model):
 
     class Meta:
         db_table = 'tienda_historialestadopedido'
+        
+    def __str__(self):
+        return f"Historial {self.estado} - Pedido #{self.pedido_id}"
 
 
 class TiendaMetodopago(models.Model):
