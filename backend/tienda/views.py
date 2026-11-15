@@ -32,17 +32,40 @@ from .serializers import (
 
 
 class RecetaViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para el modelo Receta.
+    Permite realizar operaciones CRUD completas sobre las recetas de la tienda,
+    ordenándolas por ID de forma descendente (las más recientes primero).
+    """
     queryset = Receta.objects.all().order_by('-id')
     serializer_class = RecetaSerializer
 
 
-def eliminar_tildes(cadena):
-    if not cadena: return ""
-    return ''.join((c for c in unicodedata.normalize('NFD', cadena) if unicodedata.category(c) != 'Mn'))
+def get_queryset(self):
+        """
+        Filtra dinámicamente el catálogo de productos según los parámetros de búsqueda o categoría recibidos en la URL,
+        ignorando mayúsculas, minúsculas y tildes gracias a __unaccent.
+        """
+        queryset = self.queryset
+
+        search = self.request.query_params.get('search', None)
+        if search:
+            self.pagination_class = None
+            # Usamos unaccent__icontains para buscar ignorando tildes y mayúsculas en PostgreSQL
+            queryset = queryset.filter(nombre__unaccent__icontains=search)
+
+        categoria_id = self.request.query_params.get('categoria', None)
+        if categoria_id:
+            queryset = queryset.filter(categoria_id=categoria_id)
+
+        return queryset.distinct()
 
 
 class CatalogoPagination(PageNumberPagination):
-
+    """
+    Configuración de paginación personalizada para el catálogo de productos.
+    Divide los resultados devueltos en bloques de 8 elementos por página.
+    """
     page_size = 8
     page_size_query_param = 'page_size'
     max_page_size = 100
@@ -59,9 +82,18 @@ class CatalogoPagination(PageNumberPagination):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AuthRegisterView(APIView):
+    """
+    Vista de API encargada del registro de nuevos usuarios en el sistema.
+    Valida datos obligatorios, comprueba si el correo ya existe,
+    crea el usuario y su perfil asociado de forma atómica.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Procesa la petición HTTP POST con los datos de registro (email, contraseña, nombre y whatsapp),
+        creando la cuenta y retornando un mensaje de éxito o error.
+        """
         data = request.data
         email = data.get('email', '').lower().strip()
         password = data.get('password')
@@ -99,9 +131,16 @@ class AuthRegisterView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AuthVerifyView(APIView):
+    """
+    Vista de API para verificar las credenciales de inicio de sesión (Login) de un usuario.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Recibe email y contraseña, autentica contra la base de datos de Django
+        y retorna una respuesta de éxito o error de credenciales.
+        """
         email = request.data.get('email', '').lower().strip()
         password = request.data.get('password')
         user = authenticate(username=email, password=password)
@@ -115,17 +154,27 @@ class AuthVerifyView(APIView):
 
 
 class BannerViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para administrar los banners de la tienda de forma pública.
+    """
     queryset = TiendaBanner.objects.all()
     serializer_class = TiendaBannerSerializer
     permission_classes = [AllowAny]
 
 class LegacyBannerViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet de respaldo (Legacy) para mantener compatibilidad con endpoints antiguos de banners.
+    """
     queryset = TiendaBanner.objects.all()
     serializer_class = TiendaBannerSerializer
     permission_classes = [AllowAny]
 
 class ProductCatalogViewSet(viewsets.ModelViewSet):
-
+    """
+    ViewSet principal para el catálogo de productos.
+    Soporta paginación, filtros de búsqueda por texto (ignorando tildes) y filtrado por categoría,
+    además de acciones personalizadas para productos recomendados y en oferta.
+    """
     queryset = TiendaProducto.objects.all().order_by('-id')
     serializer_class = TiendaProductoSerializer
     permission_classes = [AllowAny]
@@ -138,6 +187,9 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
 
 
     def get_queryset(self):
+        """
+        Filtra dinámicamente el catálogo de productos según los parámetros de búsqueda o categoría recibidos en la URL.
+        """
         queryset = self.queryset
 
         search = self.request.query_params.get('search', None)
@@ -155,6 +207,10 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='recomendados', permission_classes=[AllowAny])
     def recomendados(self, request):
+        """
+        Endpoint personalizado que retorna hasta 4 productos destacados,
+        o los últimos 4 productos agregados si no hay destacados disponibles.
+        """
         try:
             productos = TiendaProducto.objects.filter(es_destacado=True)[:4]
             if not productos.exists():
@@ -168,6 +224,9 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='ofertas', permission_classes=[AllowAny])
     def ofertas(self, request):
+        """
+        Endpoint personalizado que lista todos los productos que se encuentran actualmente en oferta.
+        """
         try:
             self.pagination_class = None
             productos = TiendaProducto.objects.filter(en_oferta=True).order_by('-id')
@@ -180,9 +239,17 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
 
 
 class CrearPedidoView(APIView):
+    """
+    Vista de API dedicada a procesar y registrar la creación de un nuevo pedido de compra
+    dentro de una transacción segura de base de datos.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Recibe la información de envío, usuario y elementos del carrito,
+        registra al cliente, genera el pedido y almacena cada detalle de producto asociado.
+        """
         data = request.data
         try:
             with transaction.atomic():
@@ -236,6 +303,10 @@ class CrearPedidoView(APIView):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para gestionar las categorías de productos, permitiendo filtrar
+    los productos pertenecientes a una categoría específica mediante su campo 'slug'.
+    """
     queryset = TiendaCategoria.objects.all()
     serializer_class = TiendaCategoriaSerializer
     permission_classes = [AllowAny]
@@ -244,6 +315,10 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'], url_path='productos', permission_classes=[AllowAny])
     def productos(self, request, slug=None):
+        """
+        Acción personalizada que retorna la lista de productos asociados
+        a una categoría consultada a través de su 'slug'.
+        """
         try:
             self.pagination_class = None
             categoria = self.get_object()
@@ -261,11 +336,18 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 class OrderViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para administrar los pedidos de la tienda dentro del enrutador automático de DRF.
+    """
     queryset = TiendaPedido.objects.all()
     serializer_class = TiendaPedidoSerializer
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
+        """
+        Sobrescribe el método create predeterminado para gestionar la creación personalizada
+        de pedidos, validación de clientes y registro de detalles de compra.
+        """
 
 
         """
@@ -315,7 +397,15 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 class ValidarCuponView(APIView):
+    """
+    Vista de API encargada de validar códigos de cupones de descuento
+    y calcular el monto aplicable sobre el total del carrito del cliente.
+    """
     def post(self, request):
+        """
+        Procesa la solicitud HTTP POST para verificar existencia, vigencia y cálculo
+        del descuento de un cupón ingresado.
+        """
         codigo = request.data.get('codigo', '').strip().upper()
         total_carrito = float(request.data.get('total', 0))
 
@@ -341,6 +431,10 @@ class ValidarCuponView(APIView):
         except TiendaCupondescuento.DoesNotExist:
             return Response({"error": "El cupón ingresado no existe o no está activo."}, status=status.HTTP_404_NOT_FOUND)
     def post(self, request):
+        """
+        Método secundario post para validación extendida de cupones con soporte
+        para porcentajes o montos fijos de descuento.
+        """
         codigo = request.data.get('codigo', '').strip().upper()
         total_carrito = float(request.data.get('total', 0))
 
@@ -375,7 +469,15 @@ class ValidarCuponView(APIView):
 
 
 class RegistrarSuscripcionView(APIView):
+    """
+    Vista de API destinada a gestionar las suscripciones de correo electrónico
+    de los usuarios interesados en novedades o boletines de la tienda.
+    """
     def post(self, request):
+        """
+        Registra un nuevo correo de suscripción validando que no se encuentre duplicado
+        en la base de datos.
+        """
         email = request.data.get('email', '').strip().lower()
 
         if not email:
