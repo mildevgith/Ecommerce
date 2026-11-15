@@ -100,8 +100,6 @@ class TiendaBannerAdmin(admin.ModelAdmin):
     list_display = ('id', 'titulo', 'activo', 'fecha_creacion')
     list_editable = ('activo',)
 
-
-# Modelos auxiliares registrados de forma estándar
 admin.site.register(TiendaCarrito)
 admin.site.register(TiendaItemcarrito)
 admin.site.register(TiendaDetallepedido)

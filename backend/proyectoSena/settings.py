@@ -14,7 +14,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,.onrender.com").split(",")
 
-# --- APLICACIONES ---
+
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'tienda',
 ]
 
-# --- MIDDLEWARE ---
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -62,7 +62,6 @@ TEMPLATES = [
     },
 ]
 
-# --- BASE DE DATOS (Supabase / Local) ---
 DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL'),
@@ -78,7 +77,7 @@ if not DATABASES['default']:
         }
     }
 
-# --- ARCHIVOS ESTÁTICOS Y MEDIA ---
+
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
@@ -97,7 +96,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-# --- CONFIGURACIÓN DE CORS Y CSRF (Render + Vercel + Local) ---
+
 CORS_ALLOWED_ORIGINS = [
     "https://ecommerce-expomar-12.vercel.app",
     "https://expomarket-pescados-mariscos.netlify.app",
@@ -112,7 +111,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://ecommerce-expomar-12.vercel.app"
 ]
 
-# --- DJANGO REST FRAMEWORK ---
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -123,7 +122,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-# --- CONFIGURACIÓN DE EMAIL ---
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -132,9 +131,6 @@ EMAIL_HOST_USER = os.getenv("EMAIL_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS")
 DEFAULT_FROM_EMAIL = f'EXPOMARKET <{EMAIL_HOST_USER}>'
 
-# ==========================================
-# CONFIGURACIÓN PRINCIPAL DE JAZZMIN
-# ==========================================
 JAZZMIN_SETTINGS = {
     "site_logo": "admin/img/logo.png",
     "login_logo": "admin/img/slogan.png",
@@ -179,7 +175,7 @@ JAZZMIN_SETTINGS = {
     "changeform_format": "horizontal_tabs",
 }
 
-# Corrige aquí asignando un tema válido y el modo de tema por defecto
+
 JAZZMIN_UI_TWEAKS = {
     "default_theme_mode": "auto",
     "theme": "default",

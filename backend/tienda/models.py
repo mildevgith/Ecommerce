@@ -116,18 +116,6 @@ class TiendaCategoria(models.Model):
         return self.nombre
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 class TiendaProducto(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()

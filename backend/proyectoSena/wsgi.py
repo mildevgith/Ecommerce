@@ -1,22 +1,20 @@
 import os
 from django.core.wsgi import get_wsgi_application
 from django.core.management import call_command
+from django.contrib.auth import get_user_model
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proyectoSena.settings')
 
-# Sincronización forzada de tablas faltantes en PostgreSQL
 try:
     print("Iniciando sincronización de base de datos...")
-    call_command('migrate', 'tienda', fake=True)  # Marca la app temporalmente como aplicada si hay conflicto
-    call_command('migrate')                       # Aplica cualquier pendiente real
+    call_command('migrate', 'tienda', fake=True)
+    call_command('migrate')                       
     print("Sincronización de base de datos finalizada.")
 except Exception as e:
     print(f"Error en la sincronización automática: {e}")
 
 application = get_wsgi_application()
 
-# Creación automática de superusuario en producción
-from django.contrib.auth import get_user_model
 
 if not os.environ.get('DEBUG', False):
     try:
