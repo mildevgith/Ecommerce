@@ -50,6 +50,7 @@ def get_queryset(self):
 
         search = self.request.query_params.get('search', None)
         if search:
+            search = search.strip()
             self.pagination_class = None
             # Usamos unaccent__icontains para buscar ignorando tildes y mayúsculas en PostgreSQL
             queryset = queryset.filter(nombre__unaccent__icontains=search)
