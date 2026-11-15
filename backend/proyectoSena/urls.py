@@ -6,8 +6,12 @@ from django.views.static import serve
 import os
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
     path('api/', include('tienda.urls')),
+    path('admin/', admin.site.urls),        # Define la ruta principal para acceder al panel de control de Django Jazzmin.
+    path('api/', include('tienda.urls'))  # Redirecciona e incluye todas las sub-rutas de la API creadas dentro de tu app 'tienda'.
+
 ]
 
 
@@ -22,4 +26,4 @@ else:
 
 admin.site.site_header = "Panel Administrativo EXPOMARKET"
 admin.site.site_title = "EXPOMARKET Admin"
-admin.site.index_title = "Bienvenido a la gestión de EXPOMARKET" 
+admin.site.index_title = "Bienvenido a la gestión de EXPOMARKET"

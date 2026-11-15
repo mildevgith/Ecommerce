@@ -42,9 +42,19 @@ def eliminar_tildes(cadena):
 
 
 class CatalogoPagination(PageNumberPagination):
+
     page_size = 8
     page_size_query_param = 'page_size'
     max_page_size = 100
+
+    """
+    Configuración de paginación para el catálogo de productos.
+    Divide los resultados devueltos en bloques de 8 elementos.
+    """
+    page_size = 8                        # Define de forma fija el límite máximo de 8 registros de productos devueltos por cada página.
+    page_size_query_param = 'page_size'    # Expone el parámetro en la URL para que el cliente pueda solicitar opcionalmente otro tamaño de página.
+    max_page_size = 100                  # Restringe el límite máximo absoluto a 100 registros para proteger el rendimiento de la base de datos.
+
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -115,10 +125,17 @@ class LegacyBannerViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
 class ProductCatalogViewSet(viewsets.ModelViewSet):
+
     queryset = TiendaProducto.objects.all().order_by('-id')
     serializer_class = TiendaProductoSerializer
     permission_classes = [AllowAny]
     pagination_class = CatalogoPagination
+
+    queryset = TiendaProducto.objects.all().order_by('-id') # Define la consulta inicial trayendo todos los productos ordenados del más nuevo al más antiguo.
+    serializer_class = TiendaProductoSerializer            # Asigna el serializador encargado de traducir los campos de los productos a formato JSON.
+    permission_classes = [AllowAny]                        # Libera el acceso para que el público general pueda navegar y consultar el catálogo de productos.
+    pagination_class = CatalogoPagination                  # Vincula la paginación de 8 elementos por página a la respuesta de la lista general.
+
 
     def get_queryset(self):
         queryset = self.queryset
@@ -194,7 +211,7 @@ class CrearPedidoView(APIView):
                     TiendaDetallepedido.objects.create(
                         pedido=pedido,
                         producto=producto,
-                        amount=item['cantidad'],
+                        cantidad=item['cantidad'],
                         precio_unitario=item['precio_unitario']
                     )
 
@@ -203,10 +220,19 @@ class CrearPedidoView(APIView):
                     "pedido_id": pedido.id
                 }, status=201)
 
+                # Serializamos el pedido completo para que la factura del frontend reciba todos los datos necesarios
+                serializer = TiendaPedidoSerializer(pedido)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         except KeyError as e:
             return Response({"error": f"Falta el campo: {str(e)}"}, status=400)
         except Exception as e:
             return Response({"error": str(e)}, status=400)
+
+
+
+
+# --- VIEWSETS RESTANTES ---
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -227,7 +253,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
         except TiendaCategoria.DoesNotExist:
             return Response({"error": "La categoría especificada no existe"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST) # Captura cualquier otro fallo enviando un código de estado HTTP 400.
+
 
 
 class OrderViewSet(viewsets.ModelViewSet):
@@ -236,7 +266,13 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
-        data = request.data
+
+
+        """
+        Sobrescribimos el método create para usar la lógica personalizada
+        de creación de pedidos dentro del router automático y retornar el objeto completo.
+        """
+
         try:
             with transaction.atomic():
                 email_cliente = data['datos_envio']['email'].lower().strip()
@@ -262,9 +298,18 @@ class OrderViewSet(viewsets.ModelViewSet):
                     TiendaDetallepedido.objects.create(
                         pedido=pedido, producto=producto,
                         cantidad=item['cantidad'], precio_unitario=item['precio_unitario']
+
                     )
 
                 return Response({"message": "Pedido creado", "pedido_id": pedido.id}, status=201) #
+
+                    # Escribe las líneas unitarias de facturación congelando cantidades y costos del momento exacto de la compra.
+
+                # Serializamos y retornamos el objeto completo para alimentar correctamente la factura en el frontend
+                serializer = self.get_serializer(pedido)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
         except Exception as e:
             return Response({"error": str(e)}, status=400)
 
@@ -279,6 +324,7 @@ class ValidarCuponView(APIView):
 
         try:
             cupon = TiendaCupondescuento.objects.get(codigo=codigo, activo=True)
+
 
             if cupon.fecha_expiracion and cupon.fecha_expiracion < timezone.now().date():
                 return Response({"error": "Este cupón ha expirado."}, status=status.HTTP_400_BAD_REQUEST)
@@ -303,6 +349,9 @@ class ValidarCuponView(APIView):
 
         try:
             cupon = TiendaCupondescuento.objects.get(codigo=codigo, activo=True)
+
+
+            # Validar fecha de expiración si el modelo la tiene
 
             if hasattr(cupon, 'fecha_expiracion') and cupon.fecha_expiracion:
                 if cupon.fecha_expiracion < timezone.now().date():
