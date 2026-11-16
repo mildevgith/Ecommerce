@@ -170,11 +170,15 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
         search = self.request.query_params.get('search', None)
         if search:
             self.pagination_class = None
-            termino = eliminar_tildes(search.strip()).lower()
-            ids_coincidentes = [
-                p.id for p in queryset
-                if termino in eliminar_tildes(p.nombre).lower()
-            ]
+            palabras = eliminar_tildes(search.strip()).lower().split()
+            ids_coincidentes = []
+            for p in queryset:
+                cat_nombre = p.categoria.nombre if p.categoria else ""
+                desc = p.descripcion or ""
+                texto_completo = eliminar_tildes(f"{p.nombre} {desc} {cat_nombre}").lower()
+
+                if all(palabra in texto_completo for palabra in palabras):
+                    ids_coincidentes.append(p.id)
             queryset = queryset.filter(id__in=ids_coincidentes)
 
         return queryset.distinct()
