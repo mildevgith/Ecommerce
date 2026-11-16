@@ -15,6 +15,9 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from .serializers import RecetaSerializer
 from django.utils import timezone
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import check_password
 
 
 from .models import (
@@ -25,18 +28,6 @@ from .serializers import (
     TiendaProductoSerializer, TiendaCategoriaSerializer,
     TiendaPedidoSerializer, ProfileSerializer, TiendaBannerSerializer
 )
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class RecetaViewSet(viewsets.ModelViewSet):
@@ -70,22 +61,36 @@ class CatalogoPagination(PageNumberPagination):
     max_page_size = 100
 
 
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import check_password
+
 @method_decorator(csrf_exempt, name='dispatch')
 class AuthRegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
         data = request.data
-        email = data.get('email', '').lower().strip()
-        password = data.get('password')
-        nombre = data.get('nombre')
-        whatsapp = data.get('whatsapp', '')
+        email = str(data.get('email', '')).lower().strip()
+        password = str(data.get('password', '')).strip()
+        nombre = str(data.get('nombre', '')).strip()
+        whatsapp = str(data.get('whatsapp', '')).strip()
 
+        # 1. Validaciones de entrada
         if not email or not password:
-            return Response({"error": "Email y contraseña son obligatorios"}, status=400)
+            return Response({"error": "El correo y la contraseña son obligatorios."}, status=400)
 
-        if User.objects.filter(Q(username=email) | Q(email=email)).exists():
-            return Response({"error": "Este correo ya está registrado"}, status=400)
+        try:
+            validate_email(email)
+        except ValidationError:
+            return Response({"error": "El formato del correo electrónico no es válido."}, status=400)
+
+        if len(password) < 8:
+            return Response({"error": "La contraseña debe tener al menos 8 caracteres."}, status=400)
+
+        # 2. Verificar duplicados sin importar mayúsculas/minúsculas
+        if User.objects.filter(Q(username__iexact=email) | Q(email__iexact=email)).exists():
+            return Response({"error": "Este correo ya se encuentra registrado."}, status=400)
 
         try:
             with transaction.atomic():
@@ -93,7 +98,7 @@ class AuthRegisterView(APIView):
                     username=email,
                     email=email,
                     password=password,
-                    first_name=nombre if nombre else ""
+                    first_name=nombre
                 )
 
                 profile, _ = Profile.objects.get_or_create(user=user)
@@ -103,15 +108,49 @@ class AuthRegisterView(APIView):
 
                 return Response({
                     "message": "Usuario creado correctamente",
-                    "user": { "email": user.email, "first_name": user.first_name }
+                    "user": {
+                        "email": user.email,
+                        "first_name": user.first_name
+                    }
                 }, status=201)
 
-        except Exception as e:
-            return Response({"error": str(e)}, status=500)
+        except Exception:
+            # Evitar exponer trazas internas de la base de datos al cliente
+            return Response({"error": "No se pudo completar el registro. Intenta nuevamente."}, status=500)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AuthVerifyView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = str(request.data.get('email', '')).lower().strip()
+        password = str(request.data.get('password', '')).strip()
+
+        if not email or not password:
+            return Response({"error": "Ingresa tu correo y contraseña."}, status=400)
+
+        # Buscar usuario por email o username ignorando mayúsculas
+        user = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).first()
+
+        # Validación segura en tiempo constante (evita enumeración de usuarios)
+        if user is not None:
+            password_valida = user.check_password(password)
+        else:
+            # Ejecuta un hash dummy para igualar el tiempo de respuesta si el usuario no existe
+            check_password(password, "pbkdf2_sha256$600000$dummy$dummyhashvalue=")
+            password_valida = False
+
+        if user and password_valida and user.is_active:
+            return Response({
+                "message": "Login exitoso",
+                "user": {
+                    "email": user.email,
+                    "first_name": user.first_name
+                }
+            }, status=200)
+
+        return Response({"error": "Correo o contraseña incorrectos."}, status=401)
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -125,6 +164,17 @@ class AuthVerifyView(APIView):
                 "user": { "email": user.email, "first_name": user.first_name }
             }, status=200)
         return Response({"error": "Credenciales inválidas"}, status=401)
+
+
+
+
+
+
+
+
+
+
+
 
 
 class BannerViewSet(viewsets.ModelViewSet):
@@ -210,18 +260,6 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
-
-
-
-
-
-
 
     @action(detail=False, methods=['get'], url_path='recomendados', permission_classes=[AllowAny])
     def recomendados(self, request):
