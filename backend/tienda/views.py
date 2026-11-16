@@ -170,16 +170,20 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
         search = self.request.query_params.get('search', None)
         if search:
             self.pagination_class = None
-            palabras = eliminar_tildes(search.strip()).lower().split()
-            ids_coincidentes = []
-            for p in queryset:
-                cat_nombre = p.categoria.nombre if p.categoria else ""
-                desc = p.descripcion or ""
-                texto_completo = eliminar_tildes(f"{p.nombre} {desc} {cat_nombre}").lower()
+            termino_limpio = eliminar_tildes(search.strip()).lower()
 
-                if all(palabra in texto_completo for palabra in palabras):
-                    ids_coincidentes.append(p.id)
-            queryset = queryset.filter(id__in=ids_coincidentes)
+            if termino_limpio in ['oferta', 'ofertas', 'promocion', 'promociones']:
+                queryset = queryset.filter(en_oferta=True)
+            else:
+                palabras = termino_limpio.split()
+                ids_coincidentes = []
+                for p in queryset:
+                    cat_nombre = p.categoria.nombre if p.categoria else ""
+                    desc = p.descripcion or ""
+                    texto_completo = eliminar_tildes(f"{p.nombre} {desc} {cat_nombre}").lower()
+                    if all(palabra in texto_completo for palabra in palabras):
+                        ids_coincidentes.append(p.id)
+                queryset = queryset.filter(id__in=ids_coincidentes)
 
         return queryset.distinct()
 
