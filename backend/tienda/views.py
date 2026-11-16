@@ -16,6 +16,7 @@ from rest_framework.pagination import PageNumberPagination
 from .serializers import RecetaSerializer
 from django.utils import timezone
 
+
 from .models import (
     TiendaProducto, TiendaCategoria, TiendaCarrito, TiendaCliente,
     TiendaPedido, TiendaDetallepedido, TiendaPago, TiendaMetodopago, Profile, TiendaBanner, TiendaCupondescuento, TiendaSuscripcion, Receta
@@ -43,10 +44,24 @@ class RecetaViewSet(viewsets.ModelViewSet):
     serializer_class = RecetaSerializer
 
 
-def eliminar_tildes(cadena):
-    if not cadena:
-        return ""
-    return ''.join((c for c in unicodedata.normalize('NFD', cadena) if unicodedata.category(c) != 'Mn'))
+def get_queryset(self):
+        queryset = self.queryset
+
+        categoria_id = self.request.query_params.get('categoria', None)
+        if categoria_id:
+            queryset = queryset.filter(categoria_id=categoria_id)
+
+        search = self.request.query_params.get('search', None)
+        if search:
+            self.pagination_class = None
+            termino = eliminar_tildes(search.strip()).lower()
+            ids_coincidentes = [
+                p.id for p in queryset
+                if termino in eliminar_tildes(p.nombre).lower()
+            ]
+            queryset = queryset.filter(id__in=ids_coincidentes)
+
+        return queryset.distinct()
 
 
 class CatalogoPagination(PageNumberPagination):
@@ -126,6 +141,19 @@ class LegacyBannerViewSet(viewsets.ModelViewSet):
 
 
 
+
+
+
+
+
+
+
+def eliminar_tildes(cadena):
+    if not cadena:
+        return ""
+    return ''.join((c for c in unicodedata.normalize('NFD', cadena) if unicodedata.category(c) != 'Mn'))
+
+
 class ProductCatalogViewSet(viewsets.ModelViewSet):
     queryset = TiendaProducto.objects.all().order_by('-id')
     serializer_class = TiendaProductoSerializer
@@ -134,18 +162,53 @@ class ProductCatalogViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
-        search = self.request.query_params.get('search', None)
-        if search:
-            search = search.strip()  # <--- Agrega esta línea
-            self.pagination_class = None
-            st = eliminar_tildes(search)
-            queryset = queryset.filter(Q(nombre__icontains=search) | Q(nombre__icontains=st))
 
         categoria_id = self.request.query_params.get('categoria', None)
         if categoria_id:
             queryset = queryset.filter(categoria_id=categoria_id)
 
+        search = self.request.query_params.get('search', None)
+        if search:
+            self.pagination_class = None
+            termino = eliminar_tildes(search.strip()).lower()
+            ids_coincidentes = [
+                p.id for p in queryset
+                if termino in eliminar_tildes(p.nombre).lower()
+            ]
+            queryset = queryset.filter(id__in=ids_coincidentes)
+
         return queryset.distinct()
+
+    @action(detail=False, methods=['get'], url_path='recomendados', permission_classes=[AllowAny])
+    def recomendados(self, request):
+        try:
+            productos = TiendaProducto.objects.filter(es_destacado=True)[:4]
+            if not productos.exists():
+                productos = TiendaProducto.objects.all().order_by('-id')[:4]
+            serializer = self.get_serializer(productos, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'], url_path='ofertas', permission_classes=[AllowAny])
+    def ofertas(self, request):
+        try:
+            self.pagination_class = None
+            productos = TiendaProducto.objects.filter(en_oferta=True).order_by('-id')
+            serializer = self.get_serializer(productos, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
 
 
 
