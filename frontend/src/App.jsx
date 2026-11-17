@@ -11,6 +11,7 @@ import Ofertas from "./pages/Ofertas";
 import Productos from "./pages/Productos";
 import Recetas from "./pages/Recetas";
 import ScrollToTop from './components/ScrollToTop';
+import RecuperarPassword from "./pages/RecuperarPassword";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -22,7 +23,6 @@ function App() {
     <CartProvider>
        <ScrollToTop />
       <Routes>
-
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="productos" element={<Productos />} />
@@ -30,13 +30,11 @@ function App() {
           <Route path="/recetas" element={<Recetas />} />
           <Route path="carrito" element={<Carrito />} />
           <Route path="confirmacion" element={<Confirmacion />} />
-
           <Route path="/categoria/:slug" element={<CategoriaProductos />} />
-
-          {/* Rutas de Autenticación Unificadas */}
           <Route path="auth" element={<AuthPage />} />
           <Route path="login" element={<Navigate to="/auth" replace />} />
           <Route path="registro" element={<Navigate to="/auth" replace />} />
+          <Route path="/recuperar-password" element={<RecuperarPassword />} />
           <Route path="cuenta" element={<ProtectedRoute><Home /></ProtectedRoute>} />
 
           {/* Checkout Real Protegido */}

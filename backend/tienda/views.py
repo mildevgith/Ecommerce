@@ -1,7 +1,11 @@
 import os
+import secrets
 import unicodedata
+from django.conf import settings
 import random
 from django.db import transaction
+from django.core.mail import send_mail
+from datetime import timedelta
 from django.db.models import Q
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -18,8 +22,6 @@ from django.utils import timezone
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import check_password
-
-
 from .models import (
     TiendaProducto, TiendaCategoria, TiendaCarrito, TiendaCliente,
     TiendaPedido, TiendaDetallepedido, TiendaPago, TiendaMetodopago, Profile, TiendaBanner, TiendaCupondescuento, TiendaSuscripcion, Receta
@@ -28,6 +30,9 @@ from .serializers import (
     TiendaProductoSerializer, TiendaCategoriaSerializer,
     TiendaPedidoSerializer, ProfileSerializer, TiendaBannerSerializer
 )
+
+
+
 
 
 class RecetaViewSet(viewsets.ModelViewSet):
@@ -59,11 +64,6 @@ class CatalogoPagination(PageNumberPagination):
     page_size = 8
     page_size_query_param = 'page_size'
     max_page_size = 100
-
-
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from django.contrib.auth.hashers import check_password
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AuthRegisterView(APIView):
@@ -165,16 +165,92 @@ class AuthVerifyView(APIView):
             }, status=200)
         return Response({"error": "Credenciales inválidas"}, status=401)
 
+@method_decorator(csrf_exempt, name='dispatch')
+class SolicitarRecuperacionView(APIView):
+    permission_classes = [AllowAny]
 
+    def post(self, request):
+        email = str(request.data.get('email', '')).lower().strip()
+        if not email:
+            return Response({"error": "Ingresa tu correo electrónico."}, status=400)
 
+        user = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).first()
 
+        # Por seguridad, respondemos siempre 200 OK aunque el correo no exista (evita enumeración)
+        if user and user.is_active:
+            codigo = f"{secrets.randbelow(900000) + 100000}"  # Código criptográficamente seguro de 6 dígitos
+            profile, _ = Profile.objects.get_or_create(user=user)
+            profile.otp_code = codigo
+            profile.otp_created_at = timezone.now()
+            profile.save()
 
+            asunto = "Código de recuperación de contraseña - Expomar"
+            mensaje = (
+                f"Hola {user.first_name or 'cliente'},\n\n"
+                f"Tu código de verificación para restablecer tu contraseña en Expomar es:\n\n"
+                f"    {codigo}\n\n"
+                f"Este código es válido por 15 minutos. Si no solicitaste este cambio, ignora este mensaje."
+            )
 
+            try:
+                send_mail(
+                    asunto,
+                    mensaje,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                    fail_silently=False,
+                )
+            except Exception:
+                return Response({"error": "No se pudo enviar el correo. Intenta más tarde."}, status=500)
 
+        return Response({
+            "message": "Si el correo está registrado, recibirás un código de 6 dígitos en unos segundos."
+        }, status=200)
 
+@method_decorator(csrf_exempt, name='dispatch')
+class ConfirmarRecuperacionView(APIView):
+    permission_classes = [AllowAny]
 
+    def post(self, request):
+        email = str(request.data.get('email', '')).lower().strip()
+        codigo = str(request.data.get('codigo', '')).strip()
+        nueva_password = str(request.data.get('nueva_password', '')).strip()
 
+        if not email or not codigo or not nueva_password:
+            return Response({"error": "Todos los campos son obligatorios."}, status=400)
 
+        if len(nueva_password) < 8:
+            return Response({"error": "La nueva contraseña debe tener al menos 8 caracteres."}, status=400)
+
+        user = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=email)).first()
+        if not user or not hasattr(user, 'profile'):
+            return Response({"error": "Código inválido o expirado."}, status=400)
+
+        profile = user.profile
+
+        # Verificar existencia y expiración (15 minutos)
+        if not profile.otp_code or not profile.otp_created_at:
+            return Response({"error": "No hay una solicitud activa. Pide un nuevo código."}, status=400)
+
+        if timezone.now() > profile.otp_created_at + timedelta(minutes=15):
+            profile.otp_code = None
+            profile.otp_created_at = None
+            profile.save()
+            return Response({"error": "El código ha expirado. Solicita uno nuevo."}, status=400)
+
+        # Comparación segura contra ataques de tiempo
+        if not secrets.compare_digest(profile.otp_code, codigo):
+            return Response({"error": "El código ingresado es incorrecto."}, status=400)
+
+        # Actualizar contraseña e invalidar el código inmediatamente
+        user.set_password(nueva_password)
+        user.save()
+
+        profile.otp_code = None
+        profile.otp_created_at = None
+        profile.save()
+
+        return Response({"message": "Contraseña actualizada correctamente. Ya puedes iniciar sesión."}, status=200)
 
 
 class BannerViewSet(viewsets.ModelViewSet):
@@ -186,16 +262,6 @@ class LegacyBannerViewSet(viewsets.ModelViewSet):
     queryset = TiendaBanner.objects.all()
     serializer_class = TiendaBannerSerializer
     permission_classes = [AllowAny]
-
-
-
-
-
-
-
-
-
-
 
 
 def eliminar_tildes(cadena):

@@ -211,7 +211,7 @@ class TiendaHistorialestadopedido(models.Model):
 
     class Meta:
         db_table = 'tienda_historialestadopedido'
-        
+
     def __str__(self):
         return f"Historial {self.estado} - Pedido #{self.pedido_id}"
 
@@ -271,6 +271,8 @@ class Profile(models.Model):
     puntos = models.IntegerField(default=0, verbose_name="Puntos de Fidelidad")
     direccion = models.TextField(null=True, blank=True, verbose_name="Dirección de Envío")
     img = models.ImageField(upload_to='perfiles/', null=True, blank=True)
+    otp_code = models.CharField(max_length=6, null=True, blank=True)
+    otp_created_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Perfil de {self.user.email}"

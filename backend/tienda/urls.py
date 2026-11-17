@@ -10,8 +10,8 @@ from .views import (
     BannerViewSet,
     RecetaViewSet,
     ValidarCuponView,
-    RegistrarSuscripcionView, 
-    CrearPedidoView
+    RegistrarSuscripcionView,
+    CrearPedidoView, SolicitarRecuperacionView, ConfirmarRecuperacionView
 )
 
 # Configuración del Router automático de DRF
@@ -26,7 +26,7 @@ router.register(r'pedidos', OrderViewSet, basename='pedidos')
 urlpatterns = [
     # Rutas del Router de DRF
     path('', include(router.urls)),
-    
+
     path('pedidos/', CrearPedidoView.as_view(), name='crear-pedido'),
 
     # Rutas de Autenticación
@@ -36,4 +36,7 @@ urlpatterns = [
     # Rutas de Funcionalidades del Ecommerce (Cupones y Suscripciones)
     path('api/validar-cupon/', ValidarCuponView.as_view(), name='validar-cupon'),
     path('api/suscripcion/', RegistrarSuscripcionView.as_view(), name='suscripcion'),
+    path('auth/password-reset/request/', SolicitarRecuperacionView.as_view(), name='password-reset-request'),
+    path('auth/password-reset/confirm/', ConfirmarRecuperacionView.as_view(), name='password-reset-confirm'),
+
 ]
