@@ -10,8 +10,9 @@ import Home from "./pages/Home";
 import Ofertas from "./pages/Ofertas";
 import Productos from "./pages/Productos";
 import Recetas from "./pages/Recetas";
-import ScrollToTop from './components/ScrollToTop';
+import ScrollToTop from "./components/ScrollToTop";
 import RecuperarPassword from "./pages/RecuperarPassword";
+import GoogleOneTap from "./components/GoogleOneTap";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
@@ -19,9 +20,14 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  const isAuthenticated = Boolean(localStorage.getItem("token"));
+
   return (
     <CartProvider>
-       <ScrollToTop />
+      <ScrollToTop />
+      {!isAuthenticated && (
+        <GoogleOneTap onSuccessLogin={() => window.location.reload()} />
+      )}
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -35,14 +41,22 @@ function App() {
           <Route path="login" element={<Navigate to="/auth" replace />} />
           <Route path="registro" element={<Navigate to="/auth" replace />} />
           <Route path="/recuperar-password" element={<RecuperarPassword />} />
-          <Route path="cuenta" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-
-          {/* Checkout Real Protegido */}
-          <Route path="checkout" element={
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          } />
+          <Route
+            path="cuenta"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="checkout"
+            element={
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </CartProvider>

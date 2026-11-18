@@ -22,6 +22,10 @@ from django.utils import timezone
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import check_password
+from django.contrib.auth import get_user_model
+from rest_framework import status
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 from .models import (
     TiendaProducto, TiendaCategoria, TiendaCarrito, TiendaCliente,
     TiendaPedido, TiendaDetallepedido, TiendaPago, TiendaMetodopago, Profile, TiendaBanner, TiendaCupondescuento, TiendaSuscripcion, Receta
@@ -32,7 +36,51 @@ from .serializers import (
 )
 
 
+User = get_user_model()
 
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        credential = request.data.get("credential")
+        if not credential:
+            return Response({"error": "Token de Google requerido"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            idinfo = id_token.verify_oauth2_token(
+                credential,
+                google_requests.Request(),
+                settings.GOOGLE_CLIENT_ID
+            )
+        except ValueError:
+            return Response({"error": "Token de Google inválido o expirado"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        email = idinfo.get("email")
+        first_name = idinfo.get("given_name", "")
+        last_name = idinfo.get("family_name", "")
+
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={
+                "username": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "is_active": True,
+            }
+        )
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+            },
+            "is_new_user": created
+        }, status=status.HTTP_200_OK)
 
 
 class RecetaViewSet(viewsets.ModelViewSet):

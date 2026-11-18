@@ -12,7 +12,7 @@ from .views import (
     RecetaViewSet,
     ValidarCuponView,
     RegistrarSuscripcionView,
-    CrearPedidoView, SolicitarRecuperacionView, ConfirmarRecuperacionView
+    CrearPedidoView, SolicitarRecuperacionView, ConfirmarRecuperacionView, GoogleLoginView
 )
 
 def politica_privacidad(request):
@@ -46,5 +46,6 @@ urlpatterns = [
     path('api/suscripcion/', RegistrarSuscripcionView.as_view(), name='suscripcion'),
     path('auth/password-reset/request/', SolicitarRecuperacionView.as_view(), name='password-reset-request'),
     path('auth/password-reset/confirm/', ConfirmarRecuperacionView.as_view(), name='password-reset-confirm'),
+    path("api/auth/google/", GoogleLoginView.as_view(), name="google-login"),
 
 ]
