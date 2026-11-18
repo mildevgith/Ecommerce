@@ -200,7 +200,7 @@ class SolicitarRecuperacionView(APIView):
                     [user.email],
                     fail_silently=False,
                 )
-            except Exception:
+            except Exception as e:
                 return Response({"error": "No se pudo enviar el correo. Intenta más tarde."}, status=500)
 
         return Response({

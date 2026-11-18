@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from django.http import HttpResponse
 from .views import (
     AuthRegisterView,
     AuthVerifyView,
@@ -13,6 +14,13 @@ from .views import (
     RegistrarSuscripcionView,
     CrearPedidoView, SolicitarRecuperacionView, ConfirmarRecuperacionView
 )
+
+def politica_privacidad(request):
+    return HttpResponse(
+        "<h1>Política de Privacidad - EXPOMARKET</h1>"
+        "<p>EXPOMARKET utiliza los datos básicos de Google (nombre y correo electrónico) "
+        "únicamente para autenticar usuarios y gestionar pedidos dentro de la plataforma.</p>"
+    )
 
 # Configuración del Router automático de DRF
 router = DefaultRouter()
